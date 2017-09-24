@@ -6,10 +6,15 @@
     <Authors>electricessence</Authors>
     <Company />
     <Product />
-    <Description>Provides a set of useful classes for working with strings and formatting values.
+    <Description>A set of useful classes for working with strings and formatting values.
 
 Part of the "Open" set of libraries.</Description>
-    <PackageLicenseUrl>https://github.com/electricessence/Open/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseUrl>https://github.com/electricessence/Open.Text/blob/master/LISCENSE.md</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/electricessence/Open.Text</PackageProjectUrl>
+    <Copyright>https://github.com/electricessence/Open.Text/blob/master/LISCENSE.md</Copyright>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/electricessence/Open.Text</RepositoryUrl>
+    <PackageTags>dotnet, dotnetcore, string, text, format, stringbuilder, extensions</PackageTags>
   </PropertyGroup>
 
 </Project>
