@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Authors>electricessence</Authors>
+    <Company />
+    <Product />
+    <Description>Provides a set of useful classes for working with strings and formatting values.
+
+Part of the "Open" set of libraries.</Description>
+    <PackageLicenseUrl>https://github.com/electricessence/Open/blob/master/LICENSE</PackageLicenseUrl>
+  </PropertyGroup>
+
+</Project>
