@@ -17,4 +17,11 @@ Part of the "Open" set of libraries.</Description>
     <PackageTags>dotnet, dotnetcore, string, text, format, stringbuilder, extensions</PackageTags>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove=".git" />
+    <None Remove=".gitignore" />
+    <None Remove="LISCENSE.md" />
+    <None Remove="README.md" />
+  </ItemGroup>
+
 </Project>
