@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Authors>electricessence</Authors>
     <Company />
@@ -15,6 +15,8 @@ Part of the "Open" set of libraries.</Description>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/electricessence/Open.Text</RepositoryUrl>
     <PackageTags>dotnet, dotnetcore, string, text, format, stringbuilder, extensions</PackageTags>
+    <Version>1.1.0</Version>
+    <PackageReleaseNotes>Updated to .NET Standard for compatability.</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
