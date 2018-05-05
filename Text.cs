@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -13,7 +14,7 @@ using System.Text.RegularExpressions;
 
 namespace Open.Text
 {
-    public static class Extensions
+	public static class Extensions
 	{
 		private const uint BYTE_RED = 1024;
 		private static readonly string[] _byte_labels = new[] { "KB", "MB", "GB", "TB" };
@@ -31,6 +32,7 @@ namespace Open.Text
 		{
 			if (source == null)
 				throw new NullReferenceException();
+			Contract.EndContractBlock();
 
 			if (String.IsNullOrEmpty(search))
 				return null;
@@ -50,6 +52,7 @@ namespace Open.Text
 		{
 			if (source == null)
 				throw new NullReferenceException();
+			Contract.EndContractBlock();
 
 			if (String.IsNullOrEmpty(search))
 				return null;
@@ -69,6 +72,7 @@ namespace Open.Text
 		{
 			if (source == null)
 				throw new NullReferenceException();
+			Contract.EndContractBlock();
 
 			if (String.IsNullOrEmpty(search))
 				return null;
@@ -88,6 +92,7 @@ namespace Open.Text
 		{
 			if (source == null)
 				throw new NullReferenceException();
+			Contract.EndContractBlock();
 
 			if (String.IsNullOrEmpty(search))
 				return null;
@@ -105,6 +110,7 @@ namespace Open.Text
 		{
 			if (source == null)
 				throw new NullReferenceException();
+			Contract.EndContractBlock();
 
 			return ToTitleCaseRegex.Replace(
 				source.ToLowerInvariant(),
@@ -125,6 +131,7 @@ namespace Open.Text
 		{
 			if (String.IsNullOrWhiteSpace(source))
 				throw new ArgumentException();
+			Contract.EndContractBlock();
 
 			return source;
 		}
@@ -188,10 +195,11 @@ namespace Open.Text
 		#region Regex helper methods.
 		public static string GetValue(this GroupCollection groups, string groupName, bool throwIfInvalid = false)
 		{
-            if (groups == null)
+			if (groups == null)
 				throw new NullReferenceException();
-            if (groupName == null)
-				throw new ArgumentNullException("groupName");
+			if (groupName == null)
+				throw new ArgumentNullException(nameof(groupName));
+			Contract.EndContractBlock();
 
 			var group = groups[groupName];
 			if (group == null)
@@ -212,8 +220,9 @@ namespace Open.Text
 		/// </summary>
 		public static StringBuilder AppendAll<T>(this StringBuilder target, IEnumerable<T> values, string separator = null)
 		{
-            if (target == null)
+			if (target == null)
 				throw new NullReferenceException();
+			Contract.EndContractBlock();
 
 			if (values != null)
 			{
@@ -236,8 +245,9 @@ namespace Open.Text
 		/// </summary>
 		public static StringBuilder AppendAll<T>(this StringBuilder target, IEnumerable<T> values, char separator)
 		{
-            if (target == null)
+			if (target == null)
 				throw new NullReferenceException();
+			Contract.EndContractBlock();
 
 			if (values != null)
 				foreach (var value in values)
@@ -251,10 +261,11 @@ namespace Open.Text
 		/// </summary>
 		public static StringBuilder AppendWithSeparator<T>(this StringBuilder target, string separator, params T[] values)
 		{
-            if (target == null)
+			if (target == null)
 				throw new NullReferenceException();
-            if (values==null || values.Length==0)
+			if (values == null || values.Length == 0)
 				throw new ArgumentException("Parameters missing.");
+			Contract.EndContractBlock();
 
 			if (!String.IsNullOrEmpty(separator) && target.Length != 0)
 				target.Append(separator);
@@ -268,10 +279,11 @@ namespace Open.Text
 		/// </summary>
 		public static StringBuilder AppendWithSeparator<T>(this StringBuilder target, char separator, params T[] values)
 		{
-            if (target == null)
+			if (target == null)
 				throw new NullReferenceException();
-            if (values==null || values.Length==0)
+			if (values == null || values.Length == 0)
 				throw new ArgumentException("Parameters missing.");
+			Contract.EndContractBlock();
 
 			if (target.Length != 0)
 				target.Append(separator);
@@ -285,22 +297,23 @@ namespace Open.Text
 		/// </summary>
 		public static void AppendWithSeparator<T>(this StringBuilder target, IDictionary<string, T> source, string key, string itemSeparator, string keyValueSeparator)
 		{
-            if (target == null)
+			if (target == null)
 				throw new NullReferenceException();
-            if (source==null)
-				throw new ArgumentNullException("source");
-            if (key==null)
-				throw new ArgumentNullException("key");
-            if (itemSeparator==null)
-				throw new ArgumentNullException("itemSeparator");
-            if (keyValueSeparator==null)
-				throw new ArgumentNullException("keyValueSeparator");
+			if (source == null)
+				throw new ArgumentNullException(nameof(source));
+			if (key == null)
+				throw new ArgumentNullException(nameof(key));
+			if (itemSeparator == null)
+				throw new ArgumentNullException(nameof(itemSeparator));
+			if (keyValueSeparator == null)
+				throw new ArgumentNullException(nameof(keyValueSeparator));
+			Contract.EndContractBlock();
 
-            if(source.TryGetValue(key, out T result))
+			if (source.TryGetValue(key, out T result))
 				target
-                    .AppendWithSeparator(itemSeparator, key)
-                    .Append(keyValueSeparator)
-                    .Append(result);
+					.AppendWithSeparator(itemSeparator, key)
+					.Append(keyValueSeparator)
+					.Append(result);
 		}
 		#endregion
 
@@ -311,8 +324,9 @@ namespace Open.Text
 		/// </summary>
 		public static string ToString(this double? value, string format)
 		{
-            if (format==null)
-				throw new ArgumentNullException("format");
+			if (format == null)
+				throw new ArgumentNullException(nameof(format));
+			Contract.EndContractBlock();
 
 			return value.HasValue ? value.Value.ToString(format) : double.NaN.ToString(format);
 		}
@@ -323,8 +337,9 @@ namespace Open.Text
 		/// </summary>
 		public static string ToString(this float? value, string format)
 		{
-            if (format==null)
-				throw new ArgumentNullException("format");
+			if (format == null)
+				throw new ArgumentNullException(nameof(format));
+			Contract.EndContractBlock();
 
 			return value.HasValue ? value.Value.ToString(format) : float.NaN.ToString(format);
 		}
@@ -334,8 +349,9 @@ namespace Open.Text
 		/// </summary>
 		public static string ToString(this int? value, string format)
 		{
-            if (format==null)
-				throw new ArgumentNullException("format");
+			if (format == null)
+				throw new ArgumentNullException(nameof(format));
+			Contract.EndContractBlock();
 
 			return value.HasValue ? value.Value.ToString(format) : 0.ToString(format);
 		}
@@ -426,7 +442,8 @@ namespace Open.Text
 			if (source == null)
 				throw new NullReferenceException();
 			if (replace == null)
-				throw new ArgumentNullException("replace");
+				throw new ArgumentNullException(nameof(replace));
+			Contract.EndContractBlock();
 
 			return WHITESPACE.Replace(source, replace);
 		}
@@ -435,6 +452,7 @@ namespace Open.Text
 		{
 			if (source == null)
 				throw new NullReferenceException();
+			Contract.EndContractBlock();
 
 			if (pattern == null)
 				return source.TrimStart();
@@ -451,6 +469,7 @@ namespace Open.Text
 		{
 			if (source == null)
 				throw new NullReferenceException();
+			Contract.EndContractBlock();
 
 			if (pattern == null)
 				return source.TrimEnd();
@@ -473,6 +492,7 @@ namespace Open.Text
 		{
 			if (writer == null)
 				throw new NullReferenceException();
+			Contract.EndContractBlock();
 
 			if (s != null)
 				writer.Write(s);
