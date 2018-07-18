@@ -34,10 +34,10 @@ namespace Open.Text
 				throw new NullReferenceException();
 			Contract.EndContractBlock();
 
-			if (String.IsNullOrEmpty(search))
+			if (string.IsNullOrEmpty(search))
 				return null;
 
-			int i = source.IndexOf(search, comparisonType);
+			var i = source.IndexOf(search, comparisonType);
 			return i == -1 ? null : source.Substring(0, i);
 		}
 
@@ -54,10 +54,10 @@ namespace Open.Text
 				throw new NullReferenceException();
 			Contract.EndContractBlock();
 
-			if (String.IsNullOrEmpty(search))
+			if (string.IsNullOrEmpty(search))
 				return null;
 
-			int i = source.IndexOf(search, comparisonType);
+			var i = source.IndexOf(search, comparisonType);
 			return i == -1 ? null : source.Substring(i + search.Length);
 		}
 
@@ -74,10 +74,10 @@ namespace Open.Text
 				throw new NullReferenceException();
 			Contract.EndContractBlock();
 
-			if (String.IsNullOrEmpty(search))
+			if (string.IsNullOrEmpty(search))
 				return null;
 
-			int i = source.LastIndexOf(search, comparisonType);
+			var i = source.LastIndexOf(search, comparisonType);
 			return i == -1 ? null : source.Substring(0, i);
 		}
 
@@ -94,10 +94,10 @@ namespace Open.Text
 				throw new NullReferenceException();
 			Contract.EndContractBlock();
 
-			if (String.IsNullOrEmpty(search))
+			if (string.IsNullOrEmpty(search))
 				return null;
 
-			int i = source.LastIndexOf(search, comparisonType);
+			var i = source.LastIndexOf(search, comparisonType);
 			return i == -1 ? null : source.Substring(i + search.Length);
 		}
 
@@ -124,12 +124,12 @@ namespace Open.Text
 			if (values == null || values.Length == 0)
 				return false;
 
-			return values.Any(v => String.IsNullOrWhiteSpace(v));
+			return values.Any(string.IsNullOrWhiteSpace);
 		}
 
 		public static string AssertIsNotNullOrWhiteSpace(this string source)
 		{
-			if (String.IsNullOrWhiteSpace(source))
+			if (string.IsNullOrWhiteSpace(source))
 				throw new ArgumentException();
 			Contract.EndContractBlock();
 
@@ -141,55 +141,60 @@ namespace Open.Text
 		/// </summary>
 		public static bool IsNullOrWhiteSpace(this string source)
 		{
-			return String.IsNullOrWhiteSpace(source);
+			return string.IsNullOrWhiteSpace(source);
 		}
 
 		/// <summary>
 		/// Shortcut for returning a null addValue if the source string is null, white space or empty.
 		/// </summary>
+		/// <param name="value">The value to be trimmed.</param>
 		/// <param name="trim">True will trim whitespace from valid response.</param>
 		public static string ToNullIfWhiteSpace(this string value, bool trim = false)
 		{
-			return String.IsNullOrWhiteSpace(value) ? null : (trim) ? value.Trim() : value;
+			return string.IsNullOrWhiteSpace(value) ? null : (trim ? value.Trim() : value);
 		}
 
 		/// <summary>
 		/// Shortcut for returning a formatted string if non-null, non-whitespace action exists.
 		/// </summary>
-		/// <param name="trim">True will trim whitespace from valid response.</param>
+		/// <param name="value">The value to be formatted.</param>
+		/// <param name="format">The format string.</param>
 		public static string ToFormat(this string value, string format = null)
 		{
-			return String.IsNullOrWhiteSpace(value) ? String.Empty : (format == null ? value : String.Format(format, value));
+			return string.IsNullOrWhiteSpace(value) ? string.Empty : (format == null ? value : string.Format(format, value));
 		}
 
 		/// <summary>
 		/// Shortcut for returning a formatted string if non-null, non-whitespace action exists.
 		/// </summary>
-		/// <param name="trim">True will trim whitespace from valid response.</param>
+		/// <param name="value">The value to be formatted.</param>
+		/// <param name="format">The format string.</param>
 		public static string ToFormat(this int? value, string format = null)
 		{
 			if (format == null) format = "{0}";
-			return value == null ? String.Empty : String.Format(format, value.Value);
+			return value == null ? string.Empty : string.Format(format, value.Value);
 		}
 
 		/// <summary>
 		/// Shortcut for returning a formatted string if non-null, non-whitespace action exists.
 		/// </summary>
-		/// <param name="trim">True will trim whitespace from valid response.</param>
+		/// <param name="value">The value to be formatted.</param>
+		/// <param name="format">The format string.</param>
 		public static string ToFormat(this short? value, string format = null)
 		{
 			if (format == null) format = "{0}";
-			return value == null ? String.Empty : String.Format(format, value.Value);
+			return value == null ? string.Empty : string.Format(format, value.Value);
 		}
 
 
 		/// <summary>
 		/// Returns true if only contains alphanumeric characters. Regex: (^\w+$).
 		/// </summary>
-		/// <param name="trim">Trims white space from source string before validation.</param>
+		/// <param name="source">The value to be formatted.</param>
+		/// <param name="trim">Will be trimmed if true.</param>
 		public static bool IsAlphaNumeric(this string source, bool trim = false)
 		{
-			return !String.IsNullOrWhiteSpace(source) && VALID_ALPHA_NUMERIC_ONLY.IsMatch(trim ? source.Trim() : source);
+			return !string.IsNullOrWhiteSpace(source) && VALID_ALPHA_NUMERIC_ONLY.IsMatch(trim ? source.Trim() : source);
 		}
 
 		#region Regex helper methods.
@@ -226,7 +231,7 @@ namespace Open.Text
 
 			if (values != null)
 			{
-				if (String.IsNullOrEmpty(separator))
+				if (string.IsNullOrEmpty(separator))
 				{
 					foreach (var value in values)
 						target.Append(value);
@@ -267,7 +272,7 @@ namespace Open.Text
 				throw new ArgumentException("Parameters missing.");
 			Contract.EndContractBlock();
 
-			if (!String.IsNullOrEmpty(separator) && target.Length != 0)
+			if (!string.IsNullOrEmpty(separator) && target.Length != 0)
 				target.Append(separator);
 
 			target.AppendAll(values);
@@ -309,7 +314,7 @@ namespace Open.Text
 				throw new ArgumentNullException(nameof(keyValueSeparator));
 			Contract.EndContractBlock();
 
-			if (source.TryGetValue(key, out T result))
+			if (source.TryGetValue(key, out var result))
 				target
 					.AppendWithSeparator(itemSeparator, key)
 					.Append(keyValueSeparator)
@@ -373,7 +378,7 @@ namespace Open.Text
 			if (Math.Abs(bytes) < BYTE_RED)
 				return bytes.ToString("0") + " bytes";
 
-			foreach (string s in _byte_labels)
+			foreach (var s in _byte_labels)
 			{
 				bytes /= BYTE_RED;
 				if (Math.Abs(bytes) < BYTE_RED)
@@ -407,7 +412,7 @@ namespace Open.Text
 			if (Math.Abs(number) < 1000)
 				return number.ToString("0.0");
 
-			foreach (string s in _number_labels)
+			foreach (var s in _number_labels)
 			{
 				number /= 1000;
 				if (Math.Abs(number) < 1000)
@@ -457,10 +462,10 @@ namespace Open.Text
 			if (pattern == null)
 				return source.TrimStart();
 
-			if (pattern == String.Empty)
+			if (pattern == string.Empty)
 				return source;
 
-			return source.IndexOf(pattern) == 0
+			return source.IndexOf(pattern, StringComparison.Ordinal) == 0
 				? source.Substring(pattern.Length)
 				: source;
 		}
@@ -474,11 +479,11 @@ namespace Open.Text
 			if (pattern == null)
 				return source.TrimEnd();
 
-			if (pattern == String.Empty)
+			if (pattern == string.Empty)
 				return source;
 
 			var expectedIndex = source.Length - pattern.Length;
-			var result = source.IndexOf(pattern);
+			var result = source.IndexOf(pattern, StringComparison.Ordinal);
 			return result >= 0 && result == expectedIndex
 				? source.Substring(0, expectedIndex)
 				: source;
