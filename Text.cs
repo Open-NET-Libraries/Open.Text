@@ -3,23 +3,146 @@
  * Licensing: MIT https://github.com/electricessence/Open/blob/dotnet-core/LICENSE.md
  */
 
+using Open.Memory;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 
 
 namespace Open.Text
 {
-	public static class Extensions
+	public static partial class Extensions
 	{
 		private const uint BYTE_RED = 1024;
 		private static readonly string[] _byte_labels = new[] { "KB", "MB", "GB", "TB" };
 		private static readonly string[] _number_labels = new[] { "K", "M", "B" };
 		public static readonly Regex VALID_ALPHA_NUMERIC_ONLY = new Regex(@"^\w+$");
+
+		/// <summary>
+		/// Finds the first instance of a character and returns the set of characters up to that sequence.
+		/// </summary>
+		/// <param name="source">The source characters to look through.</param>
+		/// <param name="splitCharacter">The charcter to find.</param>
+		/// <param name="nextIndex">The next possible index following the the current one.</param>
+		/// <param name="startIndex">The index to start the split.</param>
+		/// <returns>The portion of the source up to and excluding the sequence searched for.</returns>
+		public static ReadOnlySpan<char> FirstSplit(this string source,
+			char splitCharacter,
+			out int nextIndex,
+			int startIndex = 0)
+		{
+			if (source == null) throw new NullReferenceException();
+			Contract.EndContractBlock();
+
+			var i = source.Length == 0 ? -1 : source.IndexOf(splitCharacter, startIndex);
+			if (i == -1)
+			{
+				nextIndex = -1;
+				return source.AsSpan();
+			}
+
+			nextIndex = i + 1;
+			if (nextIndex >= source.Length) nextIndex = -1;
+			return source.AsSpan().Slice(startIndex, i);
+		}
+
+		/// <summary>
+		/// Finds the first instance of a character sequence and returns the set of characters up to that sequence.
+		/// </summary>
+		/// <param name="source">The source characters to look through.</param>
+		/// <param name="splitSequence">The sequence to find.</param>
+		/// <param name="nextIndex">The next possible index following the the current one.</param>
+		/// <param name="startIndex">The index to start the split.</param>
+		/// <param name="comparisonType">The string comparison type to use.</param>
+		/// <returns>The portion of the source up to and excluding the sequence searched for.</returns>
+		public static ReadOnlySpan<char> FirstSplit(this string source,
+			string splitSequence,
+			out int nextIndex,
+			int startIndex = 0,
+			StringComparison comparisonType = StringComparison.Ordinal)
+		{
+			if (source == null) throw new NullReferenceException();
+			if (splitSequence == null) throw new ArgumentNullException(nameof(splitSequence));
+			if (splitSequence.Length == 0)
+				throw new ArgumentException("Cannot split using empty sequence.", nameof(splitSequence));
+			Contract.EndContractBlock();
+
+			var i = source.Length == 0 ? -1 : source.IndexOf(splitSequence, startIndex, comparisonType);
+			if (i == -1)
+			{
+				nextIndex = -1;
+				return source.AsSpan();
+			}
+
+			nextIndex = i + splitSequence.Length;
+			if (nextIndex >= source.Length) nextIndex = -1;
+			return source.AsSpan().Slice(startIndex, i);
+		}
+
+		/// <summary>
+		/// Finds the first instance of a character sequence and returns the set of characters up to that sequence.
+		/// </summary>
+		/// <param name="source">The source characters to look through.</param>
+		/// <param name="splitCharacter">The charcter to find.</param>
+		/// <returns>The portion of the source up to and excluding the character searched for.</returns>
+		public static IEnumerable<string> SplitAsEnumerable(this string source,
+			char splitCharacter)
+		{
+			if (source == null) throw new NullReferenceException();
+			Contract.EndContractBlock();
+
+			return source.Length == 0
+				? Enumerable.Empty<string>()
+				: SplitAsEnumerableCore();
+
+			IEnumerable<string> SplitAsEnumerableCore()
+			{
+				var startIndex = 0;
+				do
+				{
+					yield return source.FirstSplit(splitCharacter, out var nextIndex, startIndex).ToString();
+					startIndex = nextIndex;
+				}
+				while (startIndex != -1);
+			}
+		}
+
+
+		/// <summary>
+		/// Finds the first instance of a character sequence and returns the set of characters up to that sequence.
+		/// </summary>
+		/// <param name="source">The source characters to look through.</param>
+		/// <param name="splitSequence">The sequence to find.</param>
+		/// <param name="comparisonType">The string comparison type to use.</param>
+		/// <returns>The portion of the source up to and excluding the sequence searched for.</returns>
+		public static IEnumerable<string> SplitAsEnumerable(this string source,
+			string splitSequence,
+			StringComparison comparisonType = StringComparison.Ordinal)
+		{
+			if (source == null) throw new NullReferenceException();
+			if (splitSequence == null) throw new ArgumentNullException(nameof(splitSequence));
+			if (splitSequence.Length == 0)
+				throw new ArgumentException("Cannot split using empty sequence.", nameof(splitSequence));
+			Contract.EndContractBlock();
+
+			return source.Length == 0
+				? Enumerable.Empty<string>()
+				: SplitAsEnumerableCore();
+
+			IEnumerable<string> SplitAsEnumerableCore()
+			{
+				var startIndex = 0;
+				do
+				{
+					yield return source.FirstSplit(splitSequence, out var nextIndex, startIndex, comparisonType).ToString();
+					startIndex = nextIndex;
+				}
+				while (startIndex != -1);
+			}
+		}
 
 		/// <summary>
 		/// Provides the substring before the search string.
@@ -101,6 +224,136 @@ namespace Open.Text
 			return i == -1 ? null : source.Substring(i + search.Length);
 		}
 
+		/// <summary>
+		/// Splits a sequence of characters into strings using the character sequence provided.
+		/// </summary>
+		/// <param name="source">The source string to split up.</param>
+		/// <param name="characters">The sequence to split by.</param>
+		/// <param name="comparisonType">The optional comparsion type.</param>
+		/// <returns>The resultant list of string segments.</returns>
+		public static List<string> Split(this in ReadOnlySpan<char> source,
+			in ReadOnlySpan<char> characters, StringComparison comparisonType = StringComparison.Ordinal)
+		{
+			var result = new List<string>();
+			var item = source;
+			while (item.Length != 0)
+				result.Add(item.FirstSplit(in characters, out item, comparisonType).ToString());
+			return result;
+		}
+
+		/// <summary>
+		/// Splits a sequence of characters into strings using the character provided.
+		/// </summary>
+		/// <param name="source">The source string to split up.</param>
+		/// <param name="characters">The character to split by.</param>
+		/// <returns>The resultant list of string segments.</returns>
+		public static List<string> Split(this in ReadOnlySpan<char> source,
+			in char character)
+		{
+			var result = new List<string>();
+			var item = source;
+			while (item.Length != 0)
+				result.Add(item.FirstSplit(in character, out item).ToString());
+			return result;
+		}
+
+		/// <summary>
+		/// Provides the substring before the search string.
+		/// </summary>
+		/// <param name="source">The source string to search in.</param>
+		/// <param name="search">The search string to look for.  If the search is null or empty this method returns null.</param>
+		/// <param name="comparisonType">The comparison type to use when searching.</param>
+		/// <returns>The source of the string before the search string.  Returns null if search string is not found.</returns>
+		public static int LastIndexOf(this in ReadOnlySpan<char> source,
+			in ReadOnlySpan<char> search, StringComparison comparisonType = StringComparison.Ordinal)
+		{
+			// TODO: This all could be improved or replaced later...
+			if (search.Length > source.Length)
+				return -1;
+
+			// Nothing found?
+			var i = search.IndexOf(search, comparisonType);
+			if (i == -1)
+				return i;
+
+			// Next possible can't fit?
+			var n = i + search.Length;
+			if (n + search.Length > source.Length)
+				return i;
+
+			var next = source
+				.Slice(n)
+				.LastIndexOf(search, comparisonType);
+
+			return next == -1 ? i : (i + next);
+		}
+
+		/// <summary>
+		/// Provides the substring before the search string.
+		/// </summary>
+		/// <param name="source">The source string to search in.</param>
+		/// <param name="search">The search string to look for.  If the search is null or empty this method returns null.</param>
+		/// <param name="comparisonType">The comparison type to use when searching.</param>
+		/// <returns>The source of the string before the search string.  Returns null if search string is not found.</returns>
+		public static ReadOnlySpan<char> BeforeFirst(this in ReadOnlySpan<char> source,
+			in ReadOnlySpan<char> search, StringComparison comparisonType = StringComparison.Ordinal)
+		{
+			var i = source.IndexOf(search, comparisonType);
+			return i > 0
+				? source.Slice(0, i)
+				: ReadOnlySpan<char>.Empty;
+		}
+
+		/// <summary>
+		/// Provides the substring after the search string.
+		/// </summary>
+		/// <param name="source">The source string to search in.</param>
+		/// <param name="search">The search string to look for.  If the search is null or empty this method returns null.</param>
+		/// <param name="comparisonType">The comparison type to use when searching.</param>
+		/// <returns>The source of the string after the search string.  Returns null if search string is not found.</returns>
+		public static ReadOnlySpan<char> AfterFirst(this in ReadOnlySpan<char> source,
+			in ReadOnlySpan<char> search, StringComparison comparisonType = StringComparison.Ordinal)
+		{
+			var i = source.IndexOf(search, comparisonType);
+			var p = i + search.Length;
+			return (i == -1 || p >= source.Length)
+				? ReadOnlySpan<char>.Empty
+				: source.Slice(p);
+		}
+
+		/// <summary>
+		/// Provides the substring before the search string.
+		/// </summary>
+		/// <param name="source">The source string to search in.</param>
+		/// <param name="search">The search string to look for.  If the search is null or empty this method returns null.</param>
+		/// <param name="comparisonType">The comparison type to use when searching.</param>
+		/// <returns>The source of the string before the search string.  Returns null if search string is not found.</returns>
+		public static ReadOnlySpan<char> BeforeLast(this in ReadOnlySpan<char> source,
+			in ReadOnlySpan<char> search, StringComparison comparisonType = StringComparison.Ordinal)
+		{
+			var i = source.LastIndexOf(search, comparisonType);
+			return i > 0
+				? source.Slice(0, i)
+				: ReadOnlySpan<char>.Empty;
+		}
+
+		/// <summary>
+		/// Provides the substring after the search string.
+		/// </summary>
+		/// <param name="source">The source string to search in.</param>
+		/// <param name="search">The search string to look for.  If the search is null or empty this method returns null.</param>
+		/// <param name="comparisonType">The comparison type to use when searching.</param>
+		/// <returns>The source of the string after the search string.  Returns null if search string is not found.</returns>
+		public static ReadOnlySpan<char> AfterLast(this in ReadOnlySpan<char> source,
+			in ReadOnlySpan<char> search, StringComparison comparisonType = StringComparison.Ordinal)
+		{
+			var i = source.LastIndexOf(search, comparisonType);
+			var p = i + search.Length;
+			return (i == -1 || p >= source.Length)
+				? ReadOnlySpan<char>.Empty
+				: source.Slice(p);
+		}
+
 		static readonly Regex ToTitleCaseRegex = new Regex(@"\b(\[a-z]})");
 
 		/// <summary>
@@ -140,9 +393,7 @@ namespace Open.Text
 		/// Shortcut for String.IsNullOrWhiteSpace(source).
 		/// </summary>
 		public static bool IsNullOrWhiteSpace(this string source)
-		{
-			return string.IsNullOrWhiteSpace(source);
-		}
+			=> string.IsNullOrWhiteSpace(source);
 
 		/// <summary>
 		/// Shortcut for returning a null addValue if the source string is null, white space or empty.
@@ -150,9 +401,9 @@ namespace Open.Text
 		/// <param name="value">The value to be trimmed.</param>
 		/// <param name="trim">True will trim whitespace from valid response.</param>
 		public static string ToNullIfWhiteSpace(this string value, bool trim = false)
-		{
-			return string.IsNullOrWhiteSpace(value) ? null : (trim ? value.Trim() : value);
-		}
+			=> string.IsNullOrWhiteSpace(value) ? null
+				: (trim ? value.Trim() : value);
+
 
 		/// <summary>
 		/// Shortcut for returning a formatted string if non-null, non-whitespace action exists.
@@ -160,9 +411,9 @@ namespace Open.Text
 		/// <param name="value">The value to be formatted.</param>
 		/// <param name="format">The format string.</param>
 		public static string ToFormat(this string value, string format = null)
-		{
-			return string.IsNullOrWhiteSpace(value) ? string.Empty : (format == null ? value : string.Format(format, value));
-		}
+			=> string.IsNullOrWhiteSpace(value) ? string.Empty
+				: (format == null ? value : string.Format(format, value));
+
 
 		/// <summary>
 		/// Shortcut for returning a formatted string if non-null, non-whitespace action exists.
@@ -215,110 +466,6 @@ namespace Open.Text
 			}
 
 			return group.Success ? group.Value : null;
-		}
-		#endregion
-
-
-		#region StringBuilder helper methods.
-		/// <summary>
-		/// Shortcut for adding an array of values to a StringBuilder.
-		/// </summary>
-		public static StringBuilder AppendAll<T>(this StringBuilder target, IEnumerable<T> values, string separator = null)
-		{
-			if (target == null)
-				throw new NullReferenceException();
-			Contract.EndContractBlock();
-
-			if (values != null)
-			{
-				if (string.IsNullOrEmpty(separator))
-				{
-					foreach (var value in values)
-						target.Append(value);
-				}
-				else
-				{
-					foreach (var value in values)
-						target.AppendWithSeparator(separator, value);
-				}
-			}
-			return target;
-		}
-
-		/// <summary>
-		/// Shortcut for adding an array of values to a StringBuilder.
-		/// </summary>
-		public static StringBuilder AppendAll<T>(this StringBuilder target, IEnumerable<T> values, char separator)
-		{
-			if (target == null)
-				throw new NullReferenceException();
-			Contract.EndContractBlock();
-
-			if (values != null)
-				foreach (var value in values)
-					target.AppendWithSeparator(separator, value);
-			return target;
-		}
-
-
-		/// <summary>
-		/// Appends values to StringBuilder prefixing the provided separator.
-		/// </summary>
-		public static StringBuilder AppendWithSeparator<T>(this StringBuilder target, string separator, params T[] values)
-		{
-			if (target == null)
-				throw new NullReferenceException();
-			if (values == null || values.Length == 0)
-				throw new ArgumentException("Parameters missing.");
-			Contract.EndContractBlock();
-
-			if (!string.IsNullOrEmpty(separator) && target.Length != 0)
-				target.Append(separator);
-
-			target.AppendAll(values);
-			return target;
-		}
-
-		/// <summary>
-		/// Appends values to StringBuilder prefixing the provided separator.
-		/// </summary>
-		public static StringBuilder AppendWithSeparator<T>(this StringBuilder target, char separator, params T[] values)
-		{
-			if (target == null)
-				throw new NullReferenceException();
-			if (values == null || values.Length == 0)
-				throw new ArgumentException("Parameters missing.");
-			Contract.EndContractBlock();
-
-			if (target.Length != 0)
-				target.Append(separator);
-			target.AppendAll(values);
-
-			return target;
-		}
-
-		/// <summary>
-		/// Appends a key/value pair to StringBuilder using the provided separators.
-		/// </summary>
-		public static void AppendWithSeparator<T>(this StringBuilder target, IDictionary<string, T> source, string key, string itemSeparator, string keyValueSeparator)
-		{
-			if (target == null)
-				throw new NullReferenceException();
-			if (source == null)
-				throw new ArgumentNullException(nameof(source));
-			if (key == null)
-				throw new ArgumentNullException(nameof(key));
-			if (itemSeparator == null)
-				throw new ArgumentNullException(nameof(itemSeparator));
-			if (keyValueSeparator == null)
-				throw new ArgumentNullException(nameof(keyValueSeparator));
-			Contract.EndContractBlock();
-
-			if (source.TryGetValue(key, out var result))
-				target
-					.AppendWithSeparator(itemSeparator, key)
-					.Append(keyValueSeparator)
-					.Append(result);
 		}
 		#endregion
 
@@ -504,11 +651,28 @@ namespace Open.Text
 			writer.Write(NEWLINE);
 		}
 
-		static readonly Regex NumericSupplantRegex = new Regex(@"{(?<index>\d+)}");
-		public static string Supplant<T>(this string source, T[] values)
+		/// <summary>
+		/// An alternative to String.Format that takes an array of values.
+		/// </summary>
+		/// <typeparam name="T">The generic type of the values provided.</typeparam>
+		/// <param name="format">The format string.</param>
+		/// <param name="values">The values to inject.</param>
+		/// <returns>The resultant string.</returns>
+		public static string Supplant<T>(this string format, T[] values)
 		{
-			return NumericSupplantRegex.Replace(source, match =>
-				values[int.Parse(match.Groups["index"].Value)].ToString());
+			if (values == null)
+				return format;
+
+			switch (values.Length)
+			{
+				case 0:
+					return format;
+				case 1:
+					return string.Format(format, values[0]);
+				default:
+					return string.Format(format,
+						values as object[] ?? values.Cast<object>().ToArray());
+			}
 		}
 
 	}

@@ -15,10 +15,10 @@ Part of the "Open" set of libraries.</Description>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/electricessence/Open.Text</RepositoryUrl>
     <PackageTags>dotnet, dotnetcore, string, text, format, stringbuilder, extensions</PackageTags>
-    <Version>1.2.0</Version>
-    <PackageReleaseNotes>Implemented updated for C# 7.2 features.</PackageReleaseNotes>
-    <AssemblyVersion>1.2.0.0</AssemblyVersion>
-    <FileVersion>1.2.0.0</FileVersion>
+    <Version>2.0.4</Version>
+    <PackageReleaseNotes></PackageReleaseNotes>
+    <AssemblyVersion>2.0.4.0</AssemblyVersion>
+    <FileVersion>2.0.4.0</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -37,7 +37,7 @@ Part of the "Open" set of libraries.</Description>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Memory" Version="4.5.1" />
+    <PackageReference Include="Open.MemoryExtensions" Version="2.0.1" />
   </ItemGroup>
 
 </Project>
