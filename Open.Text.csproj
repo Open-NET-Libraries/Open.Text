@@ -36,7 +36,7 @@ Part of the "Open" set of libraries.</Description>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Open.MemoryExtensions" Version="2.1.0" />
+    <PackageReference Include="Open.MemoryExtensions" Version="2.5.2" />
   </ItemGroup>
 
 </Project>
