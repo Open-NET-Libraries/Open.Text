@@ -10,9 +10,8 @@
 
 Part of the "Open" set of libraries.
 </Description>
-    <PackageLicenseUrl></PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/Open-NET-Libraries/Open.Text</PackageProjectUrl>
-    <Copyright>https://github.com/Open-NET-Libraries/Open.Text/blob/master/LICENSE.md</Copyright>
+		<Copyright>https://github.com/Open-NET-Libraries/Open.Text/blob/master/LICENSE.md</Copyright>
+		<PackageProjectUrl>https://github.com/Open-NET-Libraries/Open.Text</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/Open-NET-Libraries/Open.Text</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<PackageTags>dotnet, dotnetcore, string, text, format, stringbuilder, extensions</PackageTags>
