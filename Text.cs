@@ -34,7 +34,7 @@ namespace Open.Text
 			out int nextIndex,
 			int startIndex = 0)
 		{
-			if (source == null) throw new NullReferenceException();
+			if (source is null) throw new NullReferenceException();
 			Contract.EndContractBlock();
 
 			var i = source.Length == 0 ? -1 : source.IndexOf(splitCharacter, startIndex);
@@ -64,8 +64,8 @@ namespace Open.Text
 			int startIndex = 0,
 			StringComparison comparisonType = StringComparison.Ordinal)
 		{
-			if (source == null) throw new NullReferenceException();
-			if (splitSequence == null) throw new ArgumentNullException(nameof(splitSequence));
+			if (source is null) throw new NullReferenceException();
+			if (splitSequence is null) throw new ArgumentNullException(nameof(splitSequence));
 			if (splitSequence.Length == 0)
 				throw new ArgumentException("Cannot split using empty sequence.", nameof(splitSequence));
 			Contract.EndContractBlock();
@@ -91,7 +91,7 @@ namespace Open.Text
 		public static IEnumerable<string> SplitAsEnumerable(this string source,
 			char splitCharacter)
 		{
-			if (source == null) throw new NullReferenceException();
+			if (source is null) throw new NullReferenceException();
 			Contract.EndContractBlock();
 
 			return source.Length == 0
@@ -122,8 +122,8 @@ namespace Open.Text
 			string splitSequence,
 			StringComparison comparisonType = StringComparison.Ordinal)
 		{
-			if (source == null) throw new NullReferenceException();
-			if (splitSequence == null) throw new ArgumentNullException(nameof(splitSequence));
+			if (source is null) throw new NullReferenceException();
+			if (splitSequence is null) throw new ArgumentNullException(nameof(splitSequence));
 			if (splitSequence.Length == 0)
 				throw new ArgumentException("Cannot split using empty sequence.", nameof(splitSequence));
 			Contract.EndContractBlock();
@@ -153,7 +153,7 @@ namespace Open.Text
 		/// <returns>The source of the string before the search string.  Returns null if search string is not found.</returns>
 		public static string BeforeFirst(this string source, string search, StringComparison comparisonType = StringComparison.Ordinal)
 		{
-			if (source == null)
+			if (source is null)
 				throw new NullReferenceException();
 			Contract.EndContractBlock();
 
@@ -173,7 +173,7 @@ namespace Open.Text
 		/// <returns>The source of the string after the search string.  Returns null if search string is not found.</returns>
 		public static string AfterFirst(this string source, string search, StringComparison comparisonType = StringComparison.Ordinal)
 		{
-			if (source == null)
+			if (source is null)
 				throw new NullReferenceException();
 			Contract.EndContractBlock();
 
@@ -193,7 +193,7 @@ namespace Open.Text
 		/// <returns>The source of the string before the search string.  Returns null if search string is not found.</returns>
 		public static string BeforeLast(this string source, string search, StringComparison comparisonType = StringComparison.Ordinal)
 		{
-			if (source == null)
+			if (source is null)
 				throw new NullReferenceException();
 			Contract.EndContractBlock();
 
@@ -213,7 +213,7 @@ namespace Open.Text
 		/// <returns>The source of the string after the search string.  Returns null if search string is not found.</returns>
 		public static string AfterLast(this string source, string search, StringComparison comparisonType = StringComparison.Ordinal)
 		{
-			if (source == null)
+			if (source is null)
 				throw new NullReferenceException();
 			Contract.EndContractBlock();
 
@@ -361,7 +361,7 @@ namespace Open.Text
 		/// </summary>
 		public static string ToTitleCase(this string source)
 		{
-			if (source == null)
+			if (source is null)
 				throw new NullReferenceException();
 			Contract.EndContractBlock();
 
@@ -374,7 +374,7 @@ namespace Open.Text
 
 		public static bool IsAnyNullOrWhiteSpace(params string[] values)
 		{
-			if (values == null || values.Length == 0)
+			if (values is null || values.Length == 0)
 				return false;
 
 			return values.Any(string.IsNullOrWhiteSpace);
@@ -412,7 +412,7 @@ namespace Open.Text
 		/// <param name="format">The format string.</param>
 		public static string ToFormat(this string value, string format = null)
 			=> string.IsNullOrWhiteSpace(value) ? string.Empty
-				: (format == null ? value : string.Format(format, value));
+				: (format is null ? value : string.Format(format, value));
 
 
 		/// <summary>
@@ -422,8 +422,8 @@ namespace Open.Text
 		/// <param name="format">The format string.</param>
 		public static string ToFormat(this int? value, string format = null)
 		{
-			if (format == null) format = "{0}";
-			return value == null ? string.Empty : string.Format(format, value.Value);
+			if (format is null) format = "{0}";
+			return value is null ? string.Empty : string.Format(format, value.Value);
 		}
 
 		/// <summary>
@@ -433,8 +433,8 @@ namespace Open.Text
 		/// <param name="format">The format string.</param>
 		public static string ToFormat(this short? value, string format = null)
 		{
-			if (format == null) format = "{0}";
-			return value == null ? string.Empty : string.Format(format, value.Value);
+			if (format is null) format = "{0}";
+			return value is null ? string.Empty : string.Format(format, value.Value);
 		}
 
 
@@ -451,14 +451,14 @@ namespace Open.Text
 		#region Regex helper methods.
 		public static string GetValue(this GroupCollection groups, string groupName, bool throwIfInvalid = false)
 		{
-			if (groups == null)
+			if (groups is null)
 				throw new NullReferenceException();
-			if (groupName == null)
+			if (groupName is null)
 				throw new ArgumentNullException(nameof(groupName));
 			Contract.EndContractBlock();
 
 			var group = groups[groupName];
-			if (group == null)
+			if (group is null)
 			{
 				if (throwIfInvalid)
 					throw new ArgumentException();
@@ -476,7 +476,7 @@ namespace Open.Text
 		/// </summary>
 		public static string ToString(this double? value, string format)
 		{
-			if (format == null)
+			if (format is null)
 				throw new ArgumentNullException(nameof(format));
 			Contract.EndContractBlock();
 
@@ -489,7 +489,7 @@ namespace Open.Text
 		/// </summary>
 		public static string ToString(this float? value, string format)
 		{
-			if (format == null)
+			if (format is null)
 				throw new ArgumentNullException(nameof(format));
 			Contract.EndContractBlock();
 
@@ -501,7 +501,7 @@ namespace Open.Text
 		/// </summary>
 		public static string ToString(this int? value, string format)
 		{
-			if (format == null)
+			if (format is null)
 				throw new ArgumentNullException(nameof(format));
 			Contract.EndContractBlock();
 
@@ -591,9 +591,9 @@ namespace Open.Text
 		public static readonly Regex WHITESPACE = new Regex(@"\s+");
 		public static string ReplaceWhiteSpace(this string source, string replace = " ")
 		{
-			if (source == null)
+			if (source is null)
 				throw new NullReferenceException();
-			if (replace == null)
+			if (replace is null)
 				throw new ArgumentNullException(nameof(replace));
 			Contract.EndContractBlock();
 
@@ -602,11 +602,11 @@ namespace Open.Text
 
 		public static string TrimStart(this string source, string pattern)
 		{
-			if (source == null)
+			if (source is null)
 				throw new NullReferenceException();
 			Contract.EndContractBlock();
 
-			if (pattern == null)
+			if (pattern is null)
 				return source.TrimStart();
 
 			if (pattern == string.Empty)
@@ -619,11 +619,11 @@ namespace Open.Text
 
 		public static string TrimEnd(this string source, string pattern)
 		{
-			if (source == null)
+			if (source is null)
 				throw new NullReferenceException();
 			Contract.EndContractBlock();
 
-			if (pattern == null)
+			if (pattern is null)
 				return source.TrimEnd();
 
 			if (pattern == string.Empty)
@@ -642,7 +642,7 @@ namespace Open.Text
 		/// </summary>
 		public static void WriteLineNoTabs(this TextWriter writer, string s = null)
 		{
-			if (writer == null)
+			if (writer is null)
 				throw new NullReferenceException();
 			Contract.EndContractBlock();
 
@@ -660,7 +660,7 @@ namespace Open.Text
 		/// <returns>The resultant string.</returns>
 		public static string Supplant<T>(this string format, T[] values)
 		{
-			if (values == null)
+			if (values is null)
 				return format;
 
 			switch (values.Length)

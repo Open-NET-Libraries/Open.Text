@@ -95,7 +95,7 @@ namespace Open.Text
 		/// </summary>
 		public static StringBuilder AppendAll<T>(this StringBuilder target, IEnumerable<T> values, string separator = null)
 		{
-			if (target == null)
+			if (target is null)
 				throw new NullReferenceException();
 			Contract.EndContractBlock();
 
@@ -120,7 +120,7 @@ namespace Open.Text
 		/// </summary>
 		public static StringBuilder AppendAll<T>(this StringBuilder target, IEnumerable<T> values, in char separator)
 		{
-			if (target == null)
+			if (target is null)
 				throw new NullReferenceException();
 			Contract.EndContractBlock();
 
@@ -136,9 +136,9 @@ namespace Open.Text
 		/// </summary>
 		public static StringBuilder AppendWithSeparator<T>(this StringBuilder target, string separator, params T[] values)
 		{
-			if (target == null)
+			if (target is null)
 				throw new NullReferenceException();
-			if (values == null || values.Length == 0)
+			if (values is null || values.Length == 0)
 				throw new ArgumentException("Parameters missing.");
 			Contract.EndContractBlock();
 
@@ -154,9 +154,9 @@ namespace Open.Text
 		/// </summary>
 		public static StringBuilder AppendWithSeparator<T>(this StringBuilder target, in char separator, params T[] values)
 		{
-			if (target == null)
+			if (target is null)
 				throw new NullReferenceException();
-			if (values == null || values.Length == 0)
+			if (values is null || values.Length == 0)
 				throw new ArgumentException("Parameters missing.");
 			Contract.EndContractBlock();
 
@@ -172,15 +172,15 @@ namespace Open.Text
 		/// </summary>
 		public static void AppendWithSeparator<T>(this StringBuilder target, IDictionary<string, T> source, string key, string itemSeparator, string keyValueSeparator)
 		{
-			if (target == null)
+			if (target is null)
 				throw new NullReferenceException();
-			if (source == null)
+			if (source is null)
 				throw new ArgumentNullException(nameof(source));
-			if (key == null)
+			if (key is null)
 				throw new ArgumentNullException(nameof(key));
-			if (itemSeparator == null)
+			if (itemSeparator is null)
 				throw new ArgumentNullException(nameof(itemSeparator));
-			if (keyValueSeparator == null)
+			if (keyValueSeparator is null)
 				throw new ArgumentNullException(nameof(keyValueSeparator));
 			Contract.EndContractBlock();
 
