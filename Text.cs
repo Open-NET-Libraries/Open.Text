@@ -151,7 +151,7 @@ namespace Open.Text
 		/// <param name="search">The search string to look for.  If the search is null or empty this method returns null.</param>
 		/// <param name="comparisonType">The comparison type to use when searching.</param>
 		/// <returns>The source of the string before the search string.  Returns null if search string is not found.</returns>
-		public static string BeforeFirst(this string source, string search, StringComparison comparisonType = StringComparison.Ordinal)
+		public static string? BeforeFirst(this string source, string search, StringComparison comparisonType = StringComparison.Ordinal)
 		{
 			if (source is null)
 				throw new NullReferenceException();
@@ -171,7 +171,7 @@ namespace Open.Text
 		/// <param name="search">The search string to look for.  If the search is null or empty this method returns null.</param>
 		/// <param name="comparisonType">The comparison type to use when searching.</param>
 		/// <returns>The source of the string after the search string.  Returns null if search string is not found.</returns>
-		public static string AfterFirst(this string source, string search, StringComparison comparisonType = StringComparison.Ordinal)
+		public static string? AfterFirst(this string source, string search, StringComparison comparisonType = StringComparison.Ordinal)
 		{
 			if (source is null)
 				throw new NullReferenceException();
@@ -191,7 +191,7 @@ namespace Open.Text
 		/// <param name="search">The search string to look for.  If the search is null or empty this method returns null.</param>
 		/// <param name="comparisonType">The comparison type to use when searching.</param>
 		/// <returns>The source of the string before the search string.  Returns null if search string is not found.</returns>
-		public static string BeforeLast(this string source, string search, StringComparison comparisonType = StringComparison.Ordinal)
+		public static string? BeforeLast(this string source, string search, StringComparison comparisonType = StringComparison.Ordinal)
 		{
 			if (source is null)
 				throw new NullReferenceException();
@@ -211,7 +211,7 @@ namespace Open.Text
 		/// <param name="search">The search string to look for.  If the search is null or empty this method returns null.</param>
 		/// <param name="comparisonType">The comparison type to use when searching.</param>
 		/// <returns>The source of the string after the search string.  Returns null if search string is not found.</returns>
-		public static string AfterLast(this string source, string search, StringComparison comparisonType = StringComparison.Ordinal)
+		public static string? AfterLast(this string source, string search, StringComparison comparisonType = StringComparison.Ordinal)
 		{
 			if (source is null)
 				throw new NullReferenceException();
@@ -400,7 +400,7 @@ namespace Open.Text
 		/// </summary>
 		/// <param name="value">The value to be trimmed.</param>
 		/// <param name="trim">True will trim whitespace from valid response.</param>
-		public static string ToNullIfWhiteSpace(this string value, bool trim = false)
+		public static string? ToNullIfWhiteSpace(this string value, bool trim = false)
 			=> string.IsNullOrWhiteSpace(value) ? null
 				: (trim ? value.Trim() : value);
 
@@ -410,7 +410,7 @@ namespace Open.Text
 		/// </summary>
 		/// <param name="value">The value to be formatted.</param>
 		/// <param name="format">The format string.</param>
-		public static string ToFormat(this string value, string format = null)
+		public static string ToFormat(this string value, string? format = null)
 			=> string.IsNullOrWhiteSpace(value) ? string.Empty
 				: (format is null ? value : string.Format(format, value));
 
@@ -420,7 +420,7 @@ namespace Open.Text
 		/// </summary>
 		/// <param name="value">The value to be formatted.</param>
 		/// <param name="format">The format string.</param>
-		public static string ToFormat(this int? value, string format = null)
+		public static string ToFormat(this int? value, string? format = null)
 		{
 			if (format is null) format = "{0}";
 			return value is null ? string.Empty : string.Format(format, value.Value);
@@ -431,7 +431,7 @@ namespace Open.Text
 		/// </summary>
 		/// <param name="value">The value to be formatted.</param>
 		/// <param name="format">The format string.</param>
-		public static string ToFormat(this short? value, string format = null)
+		public static string ToFormat(this short? value, string? format = null)
 		{
 			if (format is null) format = "{0}";
 			return value is null ? string.Empty : string.Format(format, value.Value);
@@ -449,7 +449,7 @@ namespace Open.Text
 		}
 
 		#region Regex helper methods.
-		public static string GetValue(this GroupCollection groups, string groupName, bool throwIfInvalid = false)
+		public static string? GetValue(this GroupCollection groups, string groupName, bool throwIfInvalid = false)
 		{
 			if (groups is null)
 				throw new NullReferenceException();
@@ -640,14 +640,12 @@ namespace Open.Text
 		/// <summary>
 		/// Shortcut for WriteLineNoTabs on a TextWriter. Mimimcs similar classes.
 		/// </summary>
-		public static void WriteLineNoTabs(this TextWriter writer, string s = null)
+		public static void WriteLineNoTabs(this TextWriter writer, string? s = null)
 		{
-			if (writer is null)
-				throw new NullReferenceException();
+			if (writer is null) throw new NullReferenceException();
 			Contract.EndContractBlock();
 
-			if (s != null)
-				writer.Write(s);
+			if (s != null) writer.Write(s);
 			writer.Write(NEWLINE);
 		}
 
@@ -659,21 +657,12 @@ namespace Open.Text
 		/// <param name="values">The values to inject.</param>
 		/// <returns>The resultant string.</returns>
 		public static string Supplant<T>(this string format, T[] values)
-		{
-			if (values is null)
-				return format;
-
-			switch (values.Length)
+			=> values is null ? format : values.Length switch
 			{
-				case 0:
-					return format;
-				case 1:
-					return string.Format(format, values[0]);
-				default:
-					return string.Format(format,
-						values as object[] ?? values.Cast<object>().ToArray());
-			}
-		}
+				0 => format,
+				1 => string.Format(format, values[0]),
+				_ => string.Format(format, values as object[] ?? values.Cast<object>().ToArray()),
+			};
 
 	}
 }

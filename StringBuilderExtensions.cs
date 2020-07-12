@@ -27,7 +27,7 @@ namespace Open.Text
 			return sb;
 		}
 
-		public static StringBuilder ToStringBuilder<T>(this in ReadOnlySpan<T> source, in string separator)
+		public static StringBuilder ToStringBuilder<T>(this in ReadOnlySpan<T> source, string separator)
 		{
 			var len = source.Length;
 			if (len < 2 || string.IsNullOrEmpty(separator))
@@ -63,7 +63,7 @@ namespace Open.Text
 			return sb;
 		}
 
-		public static StringBuilder ToStringBuilder<T>(this IEnumerable<T> source, in string separator)
+		public static StringBuilder ToStringBuilder<T>(this IEnumerable<T> source, string separator)
 		{
 			var sb = new StringBuilder();
 			var first = true;
@@ -93,7 +93,7 @@ namespace Open.Text
 		/// <summary>
 		/// Shortcut for adding an array of values to a StringBuilder.
 		/// </summary>
-		public static StringBuilder AppendAll<T>(this StringBuilder target, IEnumerable<T> values, string separator = null)
+		public static StringBuilder AppendAll<T>(this StringBuilder target, IEnumerable<T> values, string? separator = null)
 		{
 			if (target is null)
 				throw new NullReferenceException();
@@ -109,7 +109,7 @@ namespace Open.Text
 				else
 				{
 					foreach (var value in values)
-						target.AppendWithSeparator(separator, value);
+						target.AppendWithSeparator(separator!, value);
 				}
 			}
 			return target;
