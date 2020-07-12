@@ -15,7 +15,7 @@ Part of the "Open" set of libraries.
 		<RepositoryUrl>https://github.com/Open-NET-Libraries/Open.Text</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<PackageTags>dotnet, dotnetcore, string, text, format, stringbuilder, extensions</PackageTags>
-    <Version>2.2.0</Version>
+    <Version>2.3.0</Version>
     <PackageReleaseNotes></PackageReleaseNotes>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -29,8 +29,10 @@ Part of the "Open" set of libraries.
 	</ItemGroup>
 	
   <ItemGroup>
+    <None Remove=".editorconfig" />
     <None Remove=".git" />
     <None Remove=".gitignore" />
+    <AdditionalFiles Include=".editorconfig" />
     <None Include="logo.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
@@ -39,6 +41,10 @@ Part of the "Open" set of libraries.
 
   <ItemGroup>
     <PackageReference Include="Open.MemoryExtensions" Version="2.7.0" />
-  </ItemGroup>
+		<PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.0.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
 
 </Project>

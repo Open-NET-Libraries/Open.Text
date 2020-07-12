@@ -1,4 +1,9 @@
-﻿using System;
+﻿/*!
+ * @author electricessence / https://github.com/electricessence/
+ * Licensing: MIT
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Text;
@@ -7,6 +12,14 @@ namespace Open.Text
 {
 	public static class StringBuilderExtensions
 	{
+		private const string ParametersMissing = "Parameters missing.";
+
+		/// <summary>
+		/// Adds every entry to a StringBuilder.
+		/// </summary>
+		/// <typeparam name="T">The type of the source.</typeparam>
+		/// <param name="source">The source span.</param>
+		/// <returns>The resultant StringBuilder.</returns>
 		public static StringBuilder ToStringBuilder<T>(this in ReadOnlySpan<T> source)
 		{
 			var len = source.Length;
@@ -18,8 +31,15 @@ namespace Open.Text
 			return sb;
 		}
 
+		/// <summary>
+		/// Adds every entry to a StringBuilder.
+		/// </summary>
+		/// <typeparam name="T">The type of the source.</typeparam>
+		/// <param name="source">The source span.</param>
+		/// <returns>The resultant StringBuilder.</returns>
 		public static StringBuilder ToStringBuilder<T>(this IEnumerable<T> source)
 		{
+			if (source is null) throw new NullReferenceException();
 			var sb = new StringBuilder();
 			foreach (var s in source)
 				sb.Append(s);
@@ -27,6 +47,13 @@ namespace Open.Text
 			return sb;
 		}
 
+		/// <summary>
+		/// Adds every entry to a StringBuilder separated by the specified sequence.
+		/// </summary>
+		/// <typeparam name="T">The type of the source.</typeparam>
+		/// <param name="source">The source span.</param>
+		/// <param name="separator">The separator sequence.</param>
+		/// <returns>The resultant StringBuilder.</returns>
 		public static StringBuilder ToStringBuilder<T>(this in ReadOnlySpan<T> source, string separator)
 		{
 			var len = source.Length;
@@ -45,11 +72,17 @@ namespace Open.Text
 			return sb;
 		}
 
+		/// <summary>
+		/// Adds every entry to a StringBuilder separated by the specified character.
+		/// </summary>
+		/// <typeparam name="T">The type of the source.</typeparam>
+		/// <param name="source">The source span.</param>
+		/// <param name="separator">The separator character.</param>
+		/// <returns>The resultant StringBuilder.</returns>
 		public static StringBuilder ToStringBuilder<T>(this in ReadOnlySpan<T> source, in char separator)
 		{
 			var len = source.Length;
-			if (len < 2)
-				return ToStringBuilder(source);
+			if (len < 2) return ToStringBuilder(source);
 
 			var sb = new StringBuilder(2 * len - 1);
 
@@ -63,10 +96,23 @@ namespace Open.Text
 			return sb;
 		}
 
+		/// <summary>
+		/// Adds every entry to a StringBuilder separated by the specified sequence.
+		/// </summary>
+		/// <typeparam name="T">The type of the source.</typeparam>
+		/// <param name="source">The source enumerable.</param>
+		/// <param name="separator">The separator sequence.</param>
+		/// <returns>The resultant StringBuilder.</returns>
 		public static StringBuilder ToStringBuilder<T>(this IEnumerable<T> source, string separator)
 		{
-			var sb = new StringBuilder();
+			if (source is null) throw new NullReferenceException();
+			Contract.EndContractBlock();
+
+			if (string.IsNullOrEmpty(separator))
+				return ToStringBuilder(source);
+
 			var first = true;
+			var sb = new StringBuilder();
 			foreach (var s in source)
 			{
 				if (first) first = false;
@@ -76,8 +122,18 @@ namespace Open.Text
 			return sb;
 		}
 
+		/// <summary>
+		/// Adds every entry to a StringBuilder separated by the specified character.
+		/// </summary>
+		/// <typeparam name="T">The type of the source.</typeparam>
+		/// <param name="source">The source enumerable.</param>
+		/// <param name="separator">The separator character.</param>
+		/// <returns>The resultant StringBuilder.</returns>
 		public static StringBuilder ToStringBuilder<T>(this IEnumerable<T> source, in char separator)
 		{
+			if (source is null) throw new NullReferenceException();
+			Contract.EndContractBlock();
+
 			var sb = new StringBuilder();
 			var first = true;
 			foreach (var s in source)
@@ -139,7 +195,7 @@ namespace Open.Text
 			if (target is null)
 				throw new NullReferenceException();
 			if (values is null || values.Length == 0)
-				throw new ArgumentException("Parameters missing.");
+				throw new ArgumentException(ParametersMissing);
 			Contract.EndContractBlock();
 
 			if (!string.IsNullOrEmpty(separator) && target.Length != 0)
@@ -157,7 +213,7 @@ namespace Open.Text
 			if (target is null)
 				throw new NullReferenceException();
 			if (values is null || values.Length == 0)
-				throw new ArgumentException("Parameters missing.");
+				throw new ArgumentException(ParametersMissing);
 			Contract.EndContractBlock();
 
 			if (target.Length != 0)

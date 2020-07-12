@@ -1,12 +1,13 @@
 ﻿/*!
  * @author electricessence / https://github.com/electricessence/
- * Licensing: MIT https://github.com/electricessence/Open/blob/dotnet-core/LICENSE.md
+ * Licensing: MIT
  */
 
 using Open.Memory;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -17,7 +18,7 @@ namespace Open.Text
 	public static partial class Extensions
 	{
 		private const uint BYTE_RED = 1024;
-		private static readonly string[] _byte_labels = new[] { "KB", "MB", "GB", "TB" };
+		private static readonly string[] _byte_labels = new[] { "KB", "MB", "GB", "TB", "PB" };
 		private static readonly string[] _number_labels = new[] { "K", "M", "B" };
 		public static readonly Regex VALID_ALPHA_NUMERIC_ONLY = new Regex(@"^\w+$");
 
@@ -109,7 +110,6 @@ namespace Open.Text
 				while (startIndex != -1);
 			}
 		}
-
 
 		/// <summary>
 		/// Finds the first instance of a character sequence and returns the set of characters up to that sequence.
@@ -265,14 +265,16 @@ namespace Open.Text
 		/// <param name="comparisonType">The comparison type to use when searching.</param>
 		/// <returns>The source of the string before the search string.  Returns null if search string is not found.</returns>
 		public static int LastIndexOf(this in ReadOnlySpan<char> source,
-			in ReadOnlySpan<char> search, StringComparison comparisonType = StringComparison.Ordinal)
+			in ReadOnlySpan<char> search, StringComparison comparisonType)
 		{
-			// TODO: This all could be improved or replaced later...
 			if (search.Length > source.Length)
 				return -1;
 
+			if (comparisonType == StringComparison.Ordinal)
+				return source.LastIndexOf(search);
+
 			// Nothing found?
-			var i = search.IndexOf(search, comparisonType);
+			var i = source.IndexOf(search, comparisonType);
 			if (i == -1)
 				return i;
 
@@ -281,11 +283,12 @@ namespace Open.Text
 			if (n + search.Length > source.Length)
 				return i;
 
+			// Recurse to get the last one.
 			var next = source
 				.Slice(n)
 				.LastIndexOf(search, comparisonType);
 
-			return next == -1 ? i : (i + next);
+			return next == -1 ? i : (n + next);
 		}
 
 		/// <summary>
@@ -354,36 +357,41 @@ namespace Open.Text
 				: source.Slice(p);
 		}
 
-		static readonly Regex ToTitleCaseRegex = new Regex(@"\b(\[a-z]})");
+		//static readonly Regex ToTitleCaseRegex = new Regex(@"\b(\[a-z]})");
 
 		/// <summary>
-		/// Shortcut for rendering the current culture's title case.
+		/// Converts a string to title-case.
 		/// </summary>
-		public static string ToTitleCase(this string source)
+		/// <param name="source">The string to apply title-casing to.</param>
+		/// <param name="cultureInfo">The optional culture info.  Default is invariant.</param>
+		/// <returns>The new title-cased string.</returns>
+		public static string ToTitleCase(this string source, CultureInfo? cultureInfo = default)
 		{
-			if (source is null)
-				throw new NullReferenceException();
+			if (source is null) throw new NullReferenceException();
 			Contract.EndContractBlock();
 
-			return ToTitleCaseRegex.Replace(
-				source.ToLowerInvariant(),
-				match => match.Value.ToUpperInvariant());
-
-			//return Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(source);
+			return (cultureInfo ?? CultureInfo.InvariantCulture).TextInfo.ToTitleCase(source);
 		}
 
+		/// <summary>
+		/// Returns true if any string is null, empty or white-space only.
+		/// </summary>
+		/// <param name="values">The set of values to validate.</param>
+		/// <returns>True if any of the provided values is is null, empty or white-space only. Otherwise false.</returns>
 		public static bool IsAnyNullOrWhiteSpace(params string[] values)
-		{
-			if (values is null || values.Length == 0)
-				return false;
+			=> values != null && values.Length != 0 && values.Any(string.IsNullOrWhiteSpace);
 
-			return values.Any(string.IsNullOrWhiteSpace);
-		}
-
+		/// <summary>
+		/// Throws if null, empty or white-space only.
+		/// </summary>
+		/// <exception cref="NullReferenceException">If the source is null.</exception>
+		/// <exception cref="ArgumentException">If the source is empty or white-space.</exception>
+		/// <param name="source">The source string to validate.</param>
+		/// <returns>The original string.</returns>
 		public static string AssertIsNotNullOrWhiteSpace(this string source)
 		{
-			if (string.IsNullOrWhiteSpace(source))
-				throw new ArgumentException();
+			if (source is null) throw new NullReferenceException();
+			if (string.IsNullOrWhiteSpace(source)) throw new ArgumentException("Cannot be empty or white-space.", nameof(source));
 			Contract.EndContractBlock();
 
 			return source;
@@ -396,7 +404,7 @@ namespace Open.Text
 			=> string.IsNullOrWhiteSpace(source);
 
 		/// <summary>
-		/// Shortcut for returning a null addValue if the source string is null, white space or empty.
+		/// Shortcut for returning a null if the source string is null, white space or empty.
 		/// </summary>
 		/// <param name="value">The value to be trimmed.</param>
 		/// <param name="trim">True will trim whitespace from valid response.</param>
@@ -412,31 +420,21 @@ namespace Open.Text
 		/// <param name="format">The format string.</param>
 		public static string ToFormat(this string value, string? format = null)
 			=> string.IsNullOrWhiteSpace(value) ? string.Empty
-				: (format is null ? value : string.Format(format, value));
-
+				: (format is null ? value : string.Format(CultureInfo.InvariantCulture, format, value));
 
 		/// <summary>
-		/// Shortcut for returning a formatted string if non-null, non-whitespace action exists.
+		/// Shortcut for returning a formatted a value if non-null.
 		/// </summary>
 		/// <param name="value">The value to be formatted.</param>
 		/// <param name="format">The format string.</param>
-		public static string ToFormat(this int? value, string? format = null)
+		/// <param name="cultureInfo">The optional culture info.  Default is invariant.</param>
+		/// <returns>The formatted string, or empty string if the value is null.</returns>
+		public static string ToFormat<T>(this T? value, string? format = null, CultureInfo? cultureInfo = default)
+			where T : struct
 		{
-			if (format is null) format = "{0}";
-			return value is null ? string.Empty : string.Format(format, value.Value);
+			if (!value.HasValue) return string.Empty;
+			return string.Format(cultureInfo ?? CultureInfo.InvariantCulture, format ?? "{0}", value.Value);
 		}
-
-		/// <summary>
-		/// Shortcut for returning a formatted string if non-null, non-whitespace action exists.
-		/// </summary>
-		/// <param name="value">The value to be formatted.</param>
-		/// <param name="format">The format string.</param>
-		public static string ToFormat(this short? value, string? format = null)
-		{
-			if (format is null) format = "{0}";
-			return value is null ? string.Empty : string.Format(format, value.Value);
-		}
-
 
 		/// <summary>
 		/// Returns true if only contains alphanumeric characters. Regex: (^\w+$).
@@ -444,9 +442,7 @@ namespace Open.Text
 		/// <param name="source">The value to be formatted.</param>
 		/// <param name="trim">Will be trimmed if true.</param>
 		public static bool IsAlphaNumeric(this string source, bool trim = false)
-		{
-			return !string.IsNullOrWhiteSpace(source) && VALID_ALPHA_NUMERIC_ONLY.IsMatch(trim ? source.Trim() : source);
-		}
+			=> !string.IsNullOrWhiteSpace(source) && VALID_ALPHA_NUMERIC_ONLY.IsMatch(trim ? source.Trim() : source);
 
 		#region Regex helper methods.
 		public static string? GetValue(this GroupCollection groups, string groupName, bool throwIfInvalid = false)
@@ -461,7 +457,7 @@ namespace Open.Text
 			if (group is null)
 			{
 				if (throwIfInvalid)
-					throw new ArgumentException();
+					throw new ArgumentException("Group not found.", nameof(groupName));
 				return null;
 			}
 
@@ -472,166 +468,240 @@ namespace Open.Text
 
 		#region Numeric string formatting.
 		/// <summary>
-		/// Shortcut for formating Nullable&lt;double&gt;.
+		/// Shortcut for formating Nullable&lt;T&gt;.
 		/// </summary>
-		public static string ToString(this double? value, string format)
+		public static string ToString<T>(this T? value, string format, T defaultValue = default, CultureInfo? cultureInfo = default)
+			where T : struct, IFormattable
 		{
-			if (format is null)
-				throw new ArgumentNullException(nameof(format));
+			if (format is null) throw new ArgumentNullException(nameof(format));
 			Contract.EndContractBlock();
 
-			return value.HasValue ? value.Value.ToString(format) : double.NaN.ToString(format);
+			return (value ?? defaultValue).ToString(format, cultureInfo ?? CultureInfo.InvariantCulture);
 		}
 
+		/// <summary>
+		/// Shortcut for formating Nullable&lt;double&gt;.
+		/// </summary>
+		public static string ToString(this double? value, string format, double defaultValue = double.NaN, CultureInfo? cultureInfo = default)
+			=> ToString<double>(value, format, defaultValue, cultureInfo);
 
 		/// <summary>
 		/// Shortcut for formating Nullable&lt;float&gt;.
 		/// </summary>
-		public static string ToString(this float? value, string format)
-		{
-			if (format is null)
-				throw new ArgumentNullException(nameof(format));
-			Contract.EndContractBlock();
-
-			return value.HasValue ? value.Value.ToString(format) : float.NaN.ToString(format);
-		}
-
-		/// <summary>
-		/// Shortcut for formating Nullable&lt;int&gt;.
-		/// </summary>
-		public static string ToString(this int? value, string format)
-		{
-			if (format is null)
-				throw new ArgumentNullException(nameof(format));
-			Contract.EndContractBlock();
-
-			return value.HasValue ? value.Value.ToString(format) : 0.ToString(format);
-		}
+		public static string ToString(this float? value, string format, float defaultValue = float.NaN, CultureInfo? cultureInfo = default)
+			=> ToString<float>(value, format, defaultValue, cultureInfo);
 
 		/// <summary>
 		/// Shortcut for formating to a percent.
 		/// </summary>
-		public static string ToPercentString(this int value, int range, int decimals = 0)
-		{
-			return ((double)value / range).ToString("p" + decimals);
-		}
+		public static string ToPercentString(this int value, int range, int decimals = 0, CultureInfo? cultureInfo = default)
+			=> ((double)value / range).ToString("p" + decimals, cultureInfo);
 
 
 		/// <summary>
 		/// Returns an abbreviated metric representation of a quantity of bytes. 
 		/// </summary>
-		public static string ToByteString(this double bytes)
+		public static string ToByteString(this double bytes, string decimalFormat = "N1", CultureInfo? cultureInfo = default)
 		{
-			if (Math.Abs(bytes) < BYTE_RED)
-				return bytes.ToString("0") + " bytes";
+			const string BYTE = "{0:N0} byte";
+			const string BYTES = BYTE + "s";
 
+			if (Math.Abs(bytes) < BYTE_RED)
+				return string.Format(cultureInfo, bytes == 1 ? BYTE : BYTES, bytes);
+
+			var label = string.Empty;
 			foreach (var s in _byte_labels)
 			{
+				label = s;
 				bytes /= BYTE_RED;
-				if (Math.Abs(bytes) < BYTE_RED)
-					return bytes.ToString("0.0") + " " + s;
+				if (Math.Abs(bytes) < BYTE_RED) break;
 			}
 
-			return bytes.ToString("#,##0.0") + " " + _byte_labels.Last();
+			return bytes.ToString(decimalFormat, cultureInfo) + ' ' + label;
 		}
 
 		/// <summary>
 		/// Returns an abbreviated metric representation of a quantity of bytes. 
 		/// </summary>
-		public static string ToByteString(this long bytes)
-		{
-			return ToByteString((double)bytes);
-		}
+		public static string ToByteString(this int bytes, string decimalFormat = "N1", CultureInfo? cultureInfo = default)
+			=> ToByteString((double)bytes, decimalFormat, cultureInfo);
 
 		/// <summary>
 		/// Returns an abbreviated metric representation of a quantity of bytes. 
 		/// </summary>
-		public static string ToByteString(this int bytes)
-		{
-			return ToByteString((double)bytes);
-		}
+		public static string ToByteString(this long bytes, string decimalFormat = "N1", CultureInfo? cultureInfo = default)
+			=> ToByteString((double)bytes, decimalFormat, cultureInfo);
+
+		/// <summary>
+		/// Returns an abbreviated metric representation of a quantity of bytes. 
+		/// </summary>
+		public static string ToByteString(this ulong bytes, string decimalFormat = "N1", CultureInfo? cultureInfo = default)
+			=> ToByteString((double)bytes, decimalFormat, cultureInfo);
 
 		/// <summary>
 		/// Returns an abbreviated metric representation of a number. 
 		/// </summary>
-		public static string ToMetricString(this double number)
+		public static string ToMetricString(this double number, string decimalFormat = "N1", CultureInfo? cultureInfo = default)
 		{
 			if (Math.Abs(number) < 1000)
-				return number.ToString("0.0");
+				return number.ToString(decimalFormat, cultureInfo ?? CultureInfo.InvariantCulture);
 
+			var label = string.Empty;
 			foreach (var s in _number_labels)
 			{
+				label = s;
 				number /= 1000;
-				if (Math.Abs(number) < 1000)
-					return number.ToString("0.0") + s;
+				if (Math.Abs(number) < 1000) break;
 			}
 
-			return number.ToString("#,##0.0") + _number_labels.Last();
+			return number.ToString(decimalFormat, cultureInfo ?? CultureInfo.InvariantCulture) + label;
 		}
 
 		/// <summary>
 		/// Returns an abbreviated metric representation of a number. 
 		/// </summary>
-		public static string ToMetricString(this long number)
-		{
-			return ToMetricString((double)number);
-		}
+		public static string ToMetricString(this ulong number, string decimalFormat = "N1", CultureInfo? cultureInfo = default)
+			=> ToMetricString((double)number, decimalFormat, cultureInfo);
 
 		/// <summary>
 		/// Returns an abbreviated metric representation of a number. 
 		/// </summary>
-		public static string ToMetricString(this int number)
-		{
-			return ToMetricString((double)number);
-		}
+		public static string ToMetricString(this long number, string decimalFormat = "N1", CultureInfo? cultureInfo = default)
+			=> ToMetricString((double)number, decimalFormat, cultureInfo);
+
+		/// <summary>
+		/// Returns an abbreviated metric representation of a number. 
+		/// </summary>
+		public static string ToMetricString(this int number, string decimalFormat = "N1", CultureInfo? cultureInfo = default)
+			=> ToMetricString((double)number, decimalFormat, cultureInfo);
 		#endregion
 
-
-
 		public static readonly Regex WHITESPACE = new Regex(@"\s+");
+
+		/// <summary>
+		/// Replaces any white-space with the specified string.
+		/// Collapses multiple white-space characters to a single space if no replacement specified.
+		/// </summary>
+		/// <param name="source">The source string.</param>
+		/// <param name="replace">The optional pattern to replace with.</param>
+		/// <returns>The resultant string.</returns>
 		public static string ReplaceWhiteSpace(this string source, string replace = " ")
 		{
-			if (source is null)
-				throw new NullReferenceException();
-			if (replace is null)
-				throw new ArgumentNullException(nameof(replace));
+			if (source is null) throw new NullReferenceException();
+			if (replace is null) throw new ArgumentNullException(nameof(replace));
 			Contract.EndContractBlock();
 
 			return WHITESPACE.Replace(source, replace);
 		}
 
-		public static string TrimStart(this string source, string pattern)
+		/// <summary>
+		/// Trims a matching string from the start of a sequence of characters.
+		/// </summary>
+		/// <param name="source">The source sequence of characters.</param>
+		/// <param name="pattern">The pattern to search for.</param>
+		/// <param name="comparisonType">The comparison type to use when searching.  Default is ordinal.</param>
+		/// <param name="max">The maximum number of times to remove the specified sequence from the start.  -1 (default) = all instances.</param>
+		/// <returns>The resultant trimmed string.</returns>
+		public static ReadOnlySpan<char> TrimStart(this ReadOnlySpan<char> source,
+			string pattern,
+			StringComparison comparisonType = StringComparison.Ordinal,
+			int max = -1)
 		{
-			if (source is null)
-				throw new NullReferenceException();
+			if (pattern is null) throw new ArgumentNullException(nameof(pattern));
 			Contract.EndContractBlock();
 
-			if (pattern is null)
-				return source.TrimStart();
+			if (max == 0 || source.IsEmpty || pattern.Length == 0 || pattern.Length > source.Length) return source;
+			var pLen = pattern.Length;
+			var pSpan = pattern.AsSpan();
 
-			if (pattern == string.Empty)
-				return source;
+			while (0 != max-- && source.IndexOf(pSpan, comparisonType) == 0)
+			{
+				source = source.Slice(pLen);
+				if (pattern.Length > source.Length) break;
+			}
 
-			return source.IndexOf(pattern, StringComparison.Ordinal) == 0
+			return source;
+		}
+
+		/// <summary>
+		/// Trims a matching string from the start of a sequence of characters.
+		/// </summary>
+		/// <param name="source">The source sequence of characters.</param>
+		/// <param name="pattern">The pattern to search for.</param>
+		/// <param name="comparisonType">The comparison type to use when searching.  Default is ordinal.</param>
+		/// <param name="max">The maximum number of times to remove the specified sequence from the start.  -1 (default) = all instances.</param>
+		/// <returns>The resultant trimmed string.</returns>
+		public static string TrimStart(this string source,
+			string pattern,
+			StringComparison comparisonType = StringComparison.Ordinal,
+			int max = -1)
+		{
+			if (source is null) throw new NullReferenceException();
+			if (pattern is null) throw new ArgumentNullException(nameof(pattern));
+			Contract.EndContractBlock();
+
+			if (max == 0 || source.Length == 0 || pattern.Length == 0 || pattern.Length > source.Length) return source;
+			if (max != 1) return TrimStart(source.AsSpan(), pattern, comparisonType, max).ToString();
+
+			return source.IndexOf(pattern, comparisonType) == 0
 				? source.Substring(pattern.Length)
 				: source;
 		}
 
-		public static string TrimEnd(this string source, string pattern)
+		/// <summary>
+		/// Trims a matching string from the end of a sequence of characters.
+		/// </summary>
+		/// <param name="source">The source sequence of characters.</param>
+		/// <param name="pattern">The pattern to search for.</param>
+		/// <param name="comparisonType">The comparison type to use when searching.  Default is ordinal.</param>
+		/// <param name="max">The maximum number of times to remove the specified sequence from the end.  -1 (default) = all instances.</param>
+		/// <returns>The resultant trimmed string.</returns>
+		public static ReadOnlySpan<char> TrimEnd(this ReadOnlySpan<char> source,
+			string pattern,
+			StringComparison comparisonType = StringComparison.Ordinal,
+			int max = -1)
 		{
-			if (source is null)
-				throw new NullReferenceException();
+			if (pattern is null) throw new ArgumentNullException(nameof(pattern));
 			Contract.EndContractBlock();
 
-			if (pattern is null)
-				return source.TrimEnd();
-
-			if (pattern == string.Empty)
-				return source;
+			if (max == 0 || source.IsEmpty || pattern.Length == 0 || pattern.Length > source.Length) return source;
+			var pLen = pattern.Length;
+			var pSpan = pattern.AsSpan();
 
 			var expectedIndex = source.Length - pattern.Length;
-			var result = source.IndexOf(pattern, StringComparison.Ordinal);
-			return result >= 0 && result == expectedIndex
+			while (0 != max-- && source.LastIndexOf(pSpan, comparisonType) == expectedIndex)
+			{
+				source = source.Slice(pLen);
+				expectedIndex = source.Length - pattern.Length;
+				if (expectedIndex < 0) break;
+			}
+
+			return source;
+		}
+
+		/// <summary>
+		/// Trims a matching string from the end of a sequence of characters.
+		/// </summary>
+		/// <param name="source">The source sequence of characters.</param>
+		/// <param name="pattern">The pattern to search for.</param>
+		/// <param name="comparisonType">The comparison type to use when searching.  Default is ordinal.</param>
+		/// <param name="max">The maximum number of times to remove the specified sequence from the end.  -1 (default) = all instances.</param>
+		/// <returns>The resultant trimmed string.</returns>
+		public static string TrimEnd(this string source,
+			string pattern,
+			StringComparison comparisonType = StringComparison.Ordinal,
+			int max = -1)
+		{
+			if (source is null) throw new NullReferenceException();
+			if (pattern is null) throw new ArgumentNullException(nameof(pattern));
+			Contract.EndContractBlock();
+
+			if (max == 0 || source.Length == 0 || pattern.Length == 0 || pattern.Length > source.Length) return source;
+			if (max != 1) return TrimEnd(source.AsSpan(), pattern, comparisonType, max).ToString();
+
+			var expectedIndex = source.Length - pattern.Length;
+			var result = source.LastIndexOf(pattern, comparisonType);
+			return result == expectedIndex
 				? source.Substring(0, expectedIndex)
 				: source;
 		}
@@ -655,13 +725,14 @@ namespace Open.Text
 		/// <typeparam name="T">The generic type of the values provided.</typeparam>
 		/// <param name="format">The format string.</param>
 		/// <param name="values">The values to inject.</param>
+		/// <param name="cultureInfo">The optional culture info.  Default is invariant.</param>
 		/// <returns>The resultant string.</returns>
-		public static string Supplant<T>(this string format, T[] values)
+		public static string Supplant<T>(this string format, T[] values, CultureInfo? cultureInfo = default)
 			=> values is null ? format : values.Length switch
 			{
 				0 => format,
-				1 => string.Format(format, values[0]),
-				_ => string.Format(format, values as object[] ?? values.Cast<object>().ToArray()),
+				1 => string.Format(cultureInfo ?? CultureInfo.InvariantCulture, format, values[0]),
+				_ => string.Format(cultureInfo ?? CultureInfo.InvariantCulture, format, values as object[] ?? values.Cast<object>().ToArray()),
 			};
 
 	}
