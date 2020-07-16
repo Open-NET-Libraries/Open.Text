@@ -10,7 +10,7 @@
 
 Part of the "Open" set of libraries.
 </Description>
-		<Copyright>https://github.com/Open-NET-Libraries/Open.Text/blob/master/LICENSE.md</Copyright>
+		<Copyright>© electricessence (Oren F.) All rights reserved.</Copyright>
 		<PackageProjectUrl>https://github.com/Open-NET-Libraries/Open.Text</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/Open-NET-Libraries/Open.Text</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
@@ -38,7 +38,7 @@ Part of the "Open" set of libraries.
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Open.MemoryExtensions" Version="2.7.2" />
+    <PackageReference Include="Open.MemoryExtensions" Version="2.8.0" />
 		<PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.0.0">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
