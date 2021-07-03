@@ -20,7 +20,7 @@ namespace Open.Text
 		private const uint BYTE_RED = 1024;
 		private static readonly string[] _byte_labels = new[] { "KB", "MB", "GB", "TB", "PB" };
 		private static readonly string[] _number_labels = new[] { "K", "M", "B" };
-		public static readonly Regex VALID_ALPHA_NUMERIC_ONLY = new Regex(@"^\w+$");
+		public static readonly Regex VALID_ALPHA_NUMERIC_ONLY = new(@"^\w+$");
 
 		/// <summary>
 		/// Finds the first instance of a character and returns the set of characters up to that sequence.
@@ -576,7 +576,7 @@ namespace Open.Text
 			=> ToMetricString((double)number, decimalFormat, cultureInfo);
 		#endregion
 
-		public static readonly Regex WHITESPACE = new Regex(@"\s+");
+		public static readonly Regex WHITESPACE = new(@"\s+");
 
 		/// <summary>
 		/// Replaces any white-space with the specified string.
