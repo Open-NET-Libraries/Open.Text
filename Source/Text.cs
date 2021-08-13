@@ -10,6 +10,7 @@ using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 
 
@@ -735,5 +736,17 @@ namespace Open.Text
 				_ => string.Format(cultureInfo ?? CultureInfo.InvariantCulture, format, values as object[] ?? values.Cast<object>().ToArray()),
 			};
 
+		private static readonly Func<Capture, string> _textDelegate = (Func<Capture, string>)
+			typeof(Capture).GetProperty("Text", BindingFlags.Instance | BindingFlags.NonPublic)
+				.GetGetMethod(nonPublic: true)
+				.CreateDelegate(typeof(Func<Capture, string>));
+
+		/// <summary>
+		/// Returns a ReadOnlySpan of the capture without creating a new string.
+		/// </summary>
+		/// <remarks>This is a stop-gap until .NET 6 releases the .ValueSpan property.</remarks>
+		/// <param name="capture">The capture to get the span from.</param>
+		public static ReadOnlySpan<char> AsSpan(this Capture capture) =>
+			_textDelegate.Invoke(capture).AsSpan(capture.Index, capture.Length);
 	}
 }
