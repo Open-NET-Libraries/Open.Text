@@ -21,7 +21,8 @@ namespace Open.Text
 		private const uint BYTE_RED = 1024;
 		private static readonly string[] _byte_labels = new[] { "KB", "MB", "GB", "TB", "PB" };
 		private static readonly string[] _number_labels = new[] { "K", "M", "B" };
-		public static readonly Regex VALID_ALPHA_NUMERIC_ONLY = new(@"^\w+$");
+		public static readonly Regex VALID_ALPHA_NUMERIC_ONLY = new(@"^\w+$", RegexOptions.Compiled);
+		public static readonly Regex VALID_ALPHA_NUMERIC_ONLY_TRIM = new(@"^\s*\w+\s*$", RegexOptions.Compiled);
 
 		/// <summary>
 		/// Finds the first instance of a character and returns the set of characters up to that sequence.
@@ -36,7 +37,7 @@ namespace Open.Text
 			out int nextIndex,
 			int startIndex = 0)
 		{
-			if (source is null) throw new NullReferenceException();
+			if (source is null) throw new ArgumentNullException(nameof(source));
 			Contract.EndContractBlock();
 
 			var i = source.Length == 0 ? -1 : source.IndexOf(splitCharacter, startIndex);
@@ -66,7 +67,7 @@ namespace Open.Text
 			int startIndex = 0,
 			StringComparison comparisonType = StringComparison.Ordinal)
 		{
-			if (source is null) throw new NullReferenceException();
+			if (source is null) throw new ArgumentNullException(nameof(source));
 			if (splitSequence is null) throw new ArgumentNullException(nameof(splitSequence));
 			if (splitSequence.Length == 0)
 				throw new ArgumentException("Cannot split using empty sequence.", nameof(splitSequence));
@@ -93,7 +94,7 @@ namespace Open.Text
 		public static IEnumerable<string> SplitAsEnumerable(this string source,
 			char splitCharacter)
 		{
-			if (source is null) throw new NullReferenceException();
+			if (source is null) throw new ArgumentNullException(nameof(source));
 			Contract.EndContractBlock();
 
 			return source.Length == 0
@@ -123,7 +124,7 @@ namespace Open.Text
 			string splitSequence,
 			StringComparison comparisonType = StringComparison.Ordinal)
 		{
-			if (source is null) throw new NullReferenceException();
+			if (source is null) throw new ArgumentNullException(nameof(source));
 			if (splitSequence is null) throw new ArgumentNullException(nameof(splitSequence));
 			if (splitSequence.Length == 0)
 				throw new ArgumentException("Cannot split using empty sequence.", nameof(splitSequence));
@@ -155,7 +156,7 @@ namespace Open.Text
 		public static string? BeforeFirst(this string source, string search, StringComparison comparisonType = StringComparison.Ordinal)
 		{
 			if (source is null)
-				throw new NullReferenceException();
+				throw new ArgumentNullException(nameof(source));
 			Contract.EndContractBlock();
 
 			if (string.IsNullOrEmpty(search))
@@ -175,7 +176,7 @@ namespace Open.Text
 		public static string? AfterFirst(this string source, string search, StringComparison comparisonType = StringComparison.Ordinal)
 		{
 			if (source is null)
-				throw new NullReferenceException();
+				throw new ArgumentNullException(nameof(source));
 			Contract.EndContractBlock();
 
 			if (string.IsNullOrEmpty(search))
@@ -195,7 +196,7 @@ namespace Open.Text
 		public static string? BeforeLast(this string source, string search, StringComparison comparisonType = StringComparison.Ordinal)
 		{
 			if (source is null)
-				throw new NullReferenceException();
+				throw new ArgumentNullException(nameof(source));
 			Contract.EndContractBlock();
 
 			if (string.IsNullOrEmpty(search))
@@ -215,7 +216,7 @@ namespace Open.Text
 		public static string? AfterLast(this string source, string search, StringComparison comparisonType = StringComparison.Ordinal)
 		{
 			if (source is null)
-				throw new NullReferenceException();
+				throw new ArgumentNullException(nameof(source));
 			Contract.EndContractBlock();
 
 			if (string.IsNullOrEmpty(search))
@@ -223,6 +224,56 @@ namespace Open.Text
 
 			var i = source.LastIndexOf(search, comparisonType);
 			return i == -1 ? null : source.Substring(i + search.Length);
+		}
+
+		/// <inheritdoc cref="BeforeFirst(string, string, StringComparison)"/>
+		/// <returns>The source of the string before the search string.  Returns empty if search string is not found.</returns>
+		public static ReadOnlySpan<char> BeforeFirst(this in ReadOnlySpan<char> source,
+			in ReadOnlySpan<char> search, StringComparison comparisonType = StringComparison.Ordinal)
+		{
+			if (search.IsEmpty) return ReadOnlySpan<char>.Empty;
+			var i = source.IndexOf(search, comparisonType);
+			return i > 0
+				? source.Slice(0, i)
+				: ReadOnlySpan<char>.Empty;
+		}
+
+		/// <inheritdoc cref="AfterFirst(string, string, StringComparison)"/>
+		/// <returns>The source of the string after the search string.  Returns empty if search string is not found.</returns>
+		public static ReadOnlySpan<char> AfterFirst(this in ReadOnlySpan<char> source,
+			in ReadOnlySpan<char> search, StringComparison comparisonType = StringComparison.Ordinal)
+		{
+			if (search.IsEmpty) return ReadOnlySpan<char>.Empty;
+			var i = source.IndexOf(search, comparisonType);
+			var p = i + search.Length;
+			return (i == -1 || p >= source.Length)
+				? ReadOnlySpan<char>.Empty
+				: source.Slice(p);
+		}
+
+		/// <inheritdoc cref="BeforeLast(string, string, StringComparison)"/>
+		/// <returns>The source of the string before the search string.  Returns empty if search string is not found.</returns>
+		public static ReadOnlySpan<char> BeforeLast(this in ReadOnlySpan<char> source,
+			in ReadOnlySpan<char> search, StringComparison comparisonType = StringComparison.Ordinal)
+		{
+			if (search.IsEmpty) return ReadOnlySpan<char>.Empty;
+			var i = source.LastIndexOf(search, comparisonType);
+			return i > 0
+				? source.Slice(0, i)
+				: ReadOnlySpan<char>.Empty;
+		}
+
+		/// <inheritdoc cref="AfterLast(string, string, StringComparison)"/>
+		/// <returns>The source of the string after the search string.  Returns empty if search string is not found.</returns>
+		public static ReadOnlySpan<char> AfterLast(this in ReadOnlySpan<char> source,
+			in ReadOnlySpan<char> search, StringComparison comparisonType = StringComparison.Ordinal)
+		{
+			if (search.IsEmpty) return ReadOnlySpan<char>.Empty;
+			var i = source.LastIndexOf(search, comparisonType);
+			var p = i + search.Length;
+			return (i == -1 || p >= source.Length)
+				? ReadOnlySpan<char>.Empty
+				: source.Slice(p);
 		}
 
 		/// <summary>
@@ -292,71 +343,6 @@ namespace Open.Text
 			return next == -1 ? i : (n + next);
 		}
 
-		/// <summary>
-		/// Provides the substring before the search string.
-		/// </summary>
-		/// <param name="source">The source string to search in.</param>
-		/// <param name="search">The search string to look for.  If the search is null or empty this method returns null.</param>
-		/// <param name="comparisonType">The comparison type to use when searching.</param>
-		/// <returns>The source of the string before the search string.  Returns null if search string is not found.</returns>
-		public static ReadOnlySpan<char> BeforeFirst(this in ReadOnlySpan<char> source,
-			in ReadOnlySpan<char> search, StringComparison comparisonType = StringComparison.Ordinal)
-		{
-			var i = source.IndexOf(search, comparisonType);
-			return i > 0
-				? source.Slice(0, i)
-				: ReadOnlySpan<char>.Empty;
-		}
-
-		/// <summary>
-		/// Provides the substring after the search string.
-		/// </summary>
-		/// <param name="source">The source string to search in.</param>
-		/// <param name="search">The search string to look for.  If the search is null or empty this method returns null.</param>
-		/// <param name="comparisonType">The comparison type to use when searching.</param>
-		/// <returns>The source of the string after the search string.  Returns null if search string is not found.</returns>
-		public static ReadOnlySpan<char> AfterFirst(this in ReadOnlySpan<char> source,
-			in ReadOnlySpan<char> search, StringComparison comparisonType = StringComparison.Ordinal)
-		{
-			var i = source.IndexOf(search, comparisonType);
-			var p = i + search.Length;
-			return (i == -1 || p >= source.Length)
-				? ReadOnlySpan<char>.Empty
-				: source.Slice(p);
-		}
-
-		/// <summary>
-		/// Provides the substring before the search string.
-		/// </summary>
-		/// <param name="source">The source string to search in.</param>
-		/// <param name="search">The search string to look for.  If the search is null or empty this method returns null.</param>
-		/// <param name="comparisonType">The comparison type to use when searching.</param>
-		/// <returns>The source of the string before the search string.  Returns null if search string is not found.</returns>
-		public static ReadOnlySpan<char> BeforeLast(this in ReadOnlySpan<char> source,
-			in ReadOnlySpan<char> search, StringComparison comparisonType = StringComparison.Ordinal)
-		{
-			var i = source.LastIndexOf(search, comparisonType);
-			return i > 0
-				? source.Slice(0, i)
-				: ReadOnlySpan<char>.Empty;
-		}
-
-		/// <summary>
-		/// Provides the substring after the search string.
-		/// </summary>
-		/// <param name="source">The source string to search in.</param>
-		/// <param name="search">The search string to look for.  If the search is null or empty this method returns null.</param>
-		/// <param name="comparisonType">The comparison type to use when searching.</param>
-		/// <returns>The source of the string after the search string.  Returns null if search string is not found.</returns>
-		public static ReadOnlySpan<char> AfterLast(this in ReadOnlySpan<char> source,
-			in ReadOnlySpan<char> search, StringComparison comparisonType = StringComparison.Ordinal)
-		{
-			var i = source.LastIndexOf(search, comparisonType);
-			var p = i + search.Length;
-			return (i == -1 || p >= source.Length)
-				? ReadOnlySpan<char>.Empty
-				: source.Slice(p);
-		}
 
 		//static readonly Regex ToTitleCaseRegex = new Regex(@"\b(\[a-z]})");
 
@@ -368,7 +354,7 @@ namespace Open.Text
 		/// <returns>The new title-cased string.</returns>
 		public static string ToTitleCase(this string source, CultureInfo? cultureInfo = default)
 		{
-			if (source is null) throw new NullReferenceException();
+			if (source is null) throw new ArgumentNullException(nameof(source));
 			Contract.EndContractBlock();
 
 			return (cultureInfo ?? CultureInfo.InvariantCulture).TextInfo.ToTitleCase(source);
@@ -391,7 +377,7 @@ namespace Open.Text
 		/// <returns>The original string.</returns>
 		public static string AssertIsNotNullOrWhiteSpace(this string source)
 		{
-			if (source is null) throw new NullReferenceException();
+			if (source is null) throw new ArgumentNullException(nameof(source));
 			if (string.IsNullOrWhiteSpace(source)) throw new ArgumentException("Cannot be empty or white-space.", nameof(source));
 			Contract.EndContractBlock();
 
@@ -443,13 +429,27 @@ namespace Open.Text
 		/// <param name="source">The value to be formatted.</param>
 		/// <param name="trim">Will be trimmed if true.</param>
 		public static bool IsAlphaNumeric(this string source, bool trim = false)
-			=> !string.IsNullOrWhiteSpace(source) && VALID_ALPHA_NUMERIC_ONLY.IsMatch(trim ? source.Trim() : source);
+			=> !string.IsNullOrWhiteSpace(source)
+			&& (trim ? VALID_ALPHA_NUMERIC_ONLY_TRIM : VALID_ALPHA_NUMERIC_ONLY).IsMatch(source);
 
 		#region Regex helper methods.
+		private static readonly Func<Capture, string> _textDelegate = (Func<Capture, string>)
+			typeof(Capture).GetProperty("Text", BindingFlags.Instance | BindingFlags.NonPublic)
+				.GetGetMethod(nonPublic: true)
+				.CreateDelegate(typeof(Func<Capture, string>));
+
+		/// <summary>
+		/// Returns a ReadOnlySpan of the capture without creating a new string.
+		/// </summary>
+		/// <remarks>This is a stop-gap until .NET 6 releases the .ValueSpan property.</remarks>
+		/// <param name="capture">The capture to get the span from.</param>
+		public static ReadOnlySpan<char> AsSpan(this Capture capture) =>
+			_textDelegate.Invoke(capture).AsSpan(capture.Index, capture.Length);
+
 		public static string? GetValue(this GroupCollection groups, string groupName, bool throwIfInvalid = false)
 		{
 			if (groups is null)
-				throw new NullReferenceException();
+				throw new ArgumentNullException(nameof(groups));
 			if (groupName is null)
 				throw new ArgumentNullException(nameof(groupName));
 			Contract.EndContractBlock();
@@ -463,6 +463,25 @@ namespace Open.Text
 			}
 
 			return group.Success ? group.Value : null;
+		}
+
+		public static ReadOnlySpan<char> GetValueSpan(this GroupCollection groups, string groupName, bool throwIfInvalid = false)
+		{
+			if (groups is null)
+				throw new ArgumentNullException(nameof(groups));
+			if (groupName is null)
+				throw new ArgumentNullException(nameof(groupName));
+			Contract.EndContractBlock();
+
+			var group = groups[groupName];
+			if (group is null)
+			{
+				if (throwIfInvalid)
+					throw new ArgumentException("Group not found.", nameof(groupName));
+				return null;
+			}
+
+			return group.Success ? group.AsSpan() : ReadOnlySpan<char>.Empty;
 		}
 		#endregion
 
@@ -577,7 +596,7 @@ namespace Open.Text
 			=> ToMetricString((double)number, decimalFormat, cultureInfo);
 		#endregion
 
-		public static readonly Regex WHITESPACE = new(@"\s+");
+		public static readonly Regex WHITESPACE = new(@"\s+", RegexOptions.Compiled);
 
 		/// <summary>
 		/// Replaces any white-space with the specified string.
@@ -588,7 +607,7 @@ namespace Open.Text
 		/// <returns>The resultant string.</returns>
 		public static string ReplaceWhiteSpace(this string source, string replace = " ")
 		{
-			if (source is null) throw new NullReferenceException();
+			if (source is null) throw new ArgumentNullException(nameof(source));
 			if (replace is null) throw new ArgumentNullException(nameof(replace));
 			Contract.EndContractBlock();
 
@@ -637,7 +656,7 @@ namespace Open.Text
 			StringComparison comparisonType = StringComparison.Ordinal,
 			int max = -1)
 		{
-			if (source is null) throw new NullReferenceException();
+			if (source is null) throw new ArgumentNullException(nameof(source));
 			if (pattern is null) throw new ArgumentNullException(nameof(pattern));
 			Contract.EndContractBlock();
 
@@ -693,7 +712,7 @@ namespace Open.Text
 			StringComparison comparisonType = StringComparison.Ordinal,
 			int max = -1)
 		{
-			if (source is null) throw new NullReferenceException();
+			if (source is null) throw new ArgumentNullException(nameof(source));
 			if (pattern is null) throw new ArgumentNullException(nameof(pattern));
 			Contract.EndContractBlock();
 
@@ -713,7 +732,7 @@ namespace Open.Text
 		/// </summary>
 		public static void WriteLineNoTabs(this TextWriter writer, string? s = null)
 		{
-			if (writer is null) throw new NullReferenceException();
+			if (writer is null) throw new ArgumentNullException(nameof(writer));
 			Contract.EndContractBlock();
 
 			if (s != null) writer.Write(s);
@@ -736,17 +755,104 @@ namespace Open.Text
 				_ => string.Format(cultureInfo ?? CultureInfo.InvariantCulture, format, values as object[] ?? values.Cast<object>().ToArray()),
 			};
 
-		private static readonly Func<Capture, string> _textDelegate = (Func<Capture, string>)
-			typeof(Capture).GetProperty("Text", BindingFlags.Instance | BindingFlags.NonPublic)
-				.GetGetMethod(nonPublic: true)
-				.CreateDelegate(typeof(Func<Capture, string>));
+		/// <summary>
+		/// Optimized equals for comparing as span vs a string.
+		/// </summary>
+		/// <param name="source">The source span.</param>
+		/// <param name="other">The string to compare to.</param>
+		/// <param name="stringComparison">The string comparison type.</param>
+		/// <returns>True if the are contents equal.</returns>
+		public static bool Equals(this in ReadOnlySpan<char> source, string? other, StringComparison stringComparison)
+		{
+			if (other is null) return false;
+			var len = source.Length;
+			if (len != other.Length) return false;
+			if (len == 0) return true;
+			if (stringComparison == StringComparison.Ordinal && len == 1) return source[0] == other[0];
+			return source.Equals(other.AsSpan(), stringComparison);
+		}
 
 		/// <summary>
-		/// Returns a ReadOnlySpan of the capture without creating a new string.
+		/// Optimized equals for comparing as span vs a string.
 		/// </summary>
-		/// <remarks>This is a stop-gap until .NET 6 releases the .ValueSpan property.</remarks>
-		/// <param name="capture">The capture to get the span from.</param>
-		public static ReadOnlySpan<char> AsSpan(this Capture capture) =>
-			_textDelegate.Invoke(capture).AsSpan(capture.Index, capture.Length);
+		/// <param name="source">The source span.</param>
+		/// <param name="other">The string to compare to.</param>
+		/// <param name="stringComparison">The string comparison type.</param>
+		/// <returns>True if the are contents equal.</returns>
+		public static bool Equals(this in Span<char> source, string? other, StringComparison stringComparison)
+		{
+			if (other is null) return false;
+			var len = source.Length;
+			if (len != other.Length) return false;
+			if (len == 0) return true;
+			if (stringComparison == StringComparison.Ordinal && len == 1) return source[0] == other[0];
+			return MemoryExtensions.Equals(source, other.AsSpan(), stringComparison);
+		}
+
+		/// <summary>
+		/// Optimized equals for comparing spans.
+		/// </summary>
+		/// <param name="source">The source span.</param>
+		/// <param name="other">The span to compare to.</param>
+		/// <param name="stringComparison">The string comparison type.</param>
+		/// <returns>True if the are contents equal.</returns>
+		public static bool Equals(this in Span<char> source, in Span<char> other, StringComparison stringComparison)
+		{
+			var len = source.Length;
+			if (len != other.Length) return false;
+			if (len == 0) return true;
+			if (stringComparison == StringComparison.Ordinal && len == 1) return source[0] == other[0];
+			return MemoryExtensions.Equals(source, other, stringComparison);
+		}
+
+		/// <summary>
+		/// Optimized equals for comparing spans.
+		/// </summary>
+		/// <param name="source">The source span.</param>
+		/// <param name="other">The span to compare to.</param>
+		/// <param name="stringComparison">The string comparison type.</param>
+		/// <returns>True if the are contents equal.</returns>
+		public static bool Equals(this in Span<char> source, in ReadOnlySpan<char> other, StringComparison stringComparison)
+		{
+			var len = source.Length;
+			if (len != other.Length) return false;
+			if (len == 0) return true;
+			if (stringComparison == StringComparison.Ordinal && len == 1) return source[0] == other[0];
+			return MemoryExtensions.Equals(source, other, stringComparison);
+		}
+
+		/// <summary>
+		/// Optimized equals for comparing as string to a span.
+		/// </summary>
+		/// <param name="source">The source string.</param>
+		/// <param name="other">The span to compare to.</param>
+		/// <param name="stringComparison">The string comparison type.</param>
+		/// <returns>True if the are contents equal.</returns>
+		public static bool Equals(this string source, in ReadOnlySpan<char> other, StringComparison stringComparison)
+		{
+			if (source is null)	throw new ArgumentNullException(nameof(source));
+			var len = source.Length;
+			if (len != other.Length) return false;
+			if (len == 0) return true;
+			if (stringComparison == StringComparison.Ordinal && len == 1) return source[0] == other[0];
+			return source.AsSpan().Equals(other, stringComparison);
+		}
+
+		/// <summary>
+		/// Optimized equals for comparing as string to a span.
+		/// </summary>
+		/// <param name="source">The source string.</param>
+		/// <param name="other">The span to compare to.</param>
+		/// <param name="stringComparison">The string comparison type.</param>
+		/// <returns>True if the are contents equal.</returns>
+		public static bool Equals(this string source, in Span<char> other, StringComparison stringComparison)
+		{
+			if (source is null) throw new ArgumentNullException(nameof(source));
+			var len = source.Length;
+			if (len != other.Length) return false;
+			if (len == 0) return true;
+			if (stringComparison == StringComparison.Ordinal && len == 1) return source[0] == other[0];
+			return source.AsSpan().Equals(other, stringComparison);
+		}
 	}
 }

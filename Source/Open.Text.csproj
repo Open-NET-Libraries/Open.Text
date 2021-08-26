@@ -16,7 +16,7 @@ Part of the "Open" set of libraries.
 		<RepositoryUrl>https://github.com/Open-NET-Libraries/Open.Text</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<PackageTags>dotnet, dotnetcore, string, text, format, stringbuilder, extensions</PackageTags>
-		<Version>2.3.3</Version>
+		<Version>2.3.4</Version>
 		<PackageReleaseNotes></PackageReleaseNotes>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
