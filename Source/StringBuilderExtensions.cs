@@ -79,7 +79,7 @@ namespace Open.Text
 		/// <param name="source">The source span.</param>
 		/// <param name="separator">The separator character.</param>
 		/// <returns>The resultant StringBuilder.</returns>
-		public static StringBuilder ToStringBuilder<T>(this in ReadOnlySpan<T> source, in char separator)
+		public static StringBuilder ToStringBuilder<T>(this in ReadOnlySpan<T> source, char separator)
 		{
 			var len = source.Length;
 			if (len < 2) return ToStringBuilder(source);
@@ -129,7 +129,7 @@ namespace Open.Text
 		/// <param name="source">The source enumerable.</param>
 		/// <param name="separator">The separator character.</param>
 		/// <returns>The resultant StringBuilder.</returns>
-		public static StringBuilder ToStringBuilder<T>(this IEnumerable<T> source, in char separator)
+		public static StringBuilder ToStringBuilder<T>(this IEnumerable<T> source, char separator)
 		{
 			if (source is null) throw new NullReferenceException();
 			Contract.EndContractBlock();
@@ -174,7 +174,7 @@ namespace Open.Text
 		/// <summary>
 		/// Shortcut for adding an array of values to a StringBuilder.
 		/// </summary>
-		public static StringBuilder AppendAll<T>(this StringBuilder target, IEnumerable<T> values, in char separator)
+		public static StringBuilder AppendAll<T>(this StringBuilder target, IEnumerable<T> values, char separator)
 		{
 			if (target is null)
 				throw new NullReferenceException();
@@ -182,7 +182,7 @@ namespace Open.Text
 
 			if (values != null)
 				foreach (var value in values)
-					target.AppendWithSeparator(in separator, value);
+					target.AppendWithSeparator(separator, value);
 			return target;
 		}
 
@@ -208,7 +208,7 @@ namespace Open.Text
 		/// <summary>
 		/// Appends values to StringBuilder prefixing the provided separator.
 		/// </summary>
-		public static StringBuilder AppendWithSeparator<T>(this StringBuilder target, in char separator, params T[] values)
+		public static StringBuilder AppendWithSeparator<T>(this StringBuilder target, char separator, params T[] values)
 		{
 			if (target is null)
 				throw new NullReferenceException();
