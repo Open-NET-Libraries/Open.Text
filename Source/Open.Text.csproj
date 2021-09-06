@@ -7,16 +7,17 @@
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Authors>electricessence</Authors>
-		<Description>A set of useful classes for working with strings and formatting values.
+		<Description>
+			A set of useful extensions for working with strings, spans, and value formatting.
 
-Part of the "Open" set of libraries.
+			Part of the "Open" set of libraries.
 		</Description>
 		<Copyright>© electricessence (Oren F.) All rights reserved.</Copyright>
 		<PackageProjectUrl>https://github.com/Open-NET-Libraries/Open.Text</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/Open-NET-Libraries/Open.Text</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<PackageTags>dotnet, dotnetcore, string, text, format, stringbuilder, extensions</PackageTags>
-		<Version>3.0.0</Version>
+		<PackageTags>dotnet, dotnetcore, string, span, readonlyspan, text, format, split, trim, first, last, preceding, following, stringbuilder, extensions</PackageTags>
+		<Version>3.0.1</Version>
 		<PackageReleaseNotes></PackageReleaseNotes>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -39,7 +40,6 @@ Part of the "Open" set of libraries.
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Open.MemoryExtensions" Version="2.8.0" />
 		<PackageReference Include="System.Collections.Immutable" Version="5.0.0" />
 	</ItemGroup>
 

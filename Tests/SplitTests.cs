@@ -82,7 +82,7 @@ namespace Open.Text.Tests
 		}
 
 		[Theory]
-		[InlineData("Hello","ll", "He,o")]
+		[InlineData("Hello", "ll", "He,o")]
 		[InlineData("HelLo", "Ll", "He,o")]
 		[InlineData("Hello", "LL", "He,o")]
 		[InlineData("Hello", "l", "He,o", StringSplitOptions.RemoveEmptyEntries)]
@@ -90,7 +90,7 @@ namespace Open.Text.Tests
 		public static void SplitIgnoreCase(string sequence, string split, string expected, StringSplitOptions options = StringSplitOptions.None)
 		{
 			var segments = expected.Split(',');
-			Assert.Equal(segments, sequence.SplitToEnumerable(split,  options, StringComparison.OrdinalIgnoreCase));
+			Assert.Equal(segments, sequence.SplitToEnumerable(split, options, StringComparison.OrdinalIgnoreCase));
 			Assert.Equal(segments, sequence.SplitAsMemory(split, options, StringComparison.OrdinalIgnoreCase).Select(m => m.Span.ToString()));
 			var span = sequence.AsSpan();
 			Assert.Equal(segments, span.Split(split, options, StringComparison.OrdinalIgnoreCase));

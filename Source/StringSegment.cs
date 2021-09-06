@@ -89,7 +89,7 @@ namespace Open.Text
 		/// </summary>
 		public bool Equals(StringSegment other)
 			=> Index == other.Index & Length == other.Length && Source == other.Source;
-		
+
 		/// <inheritdoc />
 		public override bool Equals(object? obj)
 			=> obj is StringSegment segment && Equals(segment);

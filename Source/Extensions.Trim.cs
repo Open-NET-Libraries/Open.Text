@@ -98,7 +98,7 @@ namespace Open.Text
 			if (max == 0 || source.Length == 0)
 				return source;
 
-			var i = pattern.RightToLeft ? RightToLeft() : LeftToRight(); 
+			var i = pattern.RightToLeft ? RightToLeft() : LeftToRight();
 			return i == 0 ? source : source.Substring(i);
 
 			int RightToLeft()
@@ -192,7 +192,7 @@ namespace Open.Text
 			Contract.EndContractBlock();
 
 			if (max == 0 || source.IsEmpty || pattern.Length == 0 || pattern.Length > source.Length) return source;
-			
+
 			return TrimEndPatternCore(source, in pattern, comparisonType, max);
 		}
 

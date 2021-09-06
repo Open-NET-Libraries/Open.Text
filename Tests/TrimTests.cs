@@ -91,7 +91,7 @@ namespace Open.Text.Tests
 		public static void TrimStartPatternRegex()
 		{
 			Assert.Equal("", "".TrimStartPattern(new Regex("[a-z]")));
-			Assert.Equal("xyzxyzABCxyz", "xyzxyzABCxyz".TrimStartPattern(new Regex("[a-z]"), 0)); 
+			Assert.Equal("xyzxyzABCxyz", "xyzxyzABCxyz".TrimStartPattern(new Regex("[a-z]"), 0));
 			Assert.Equal("ABCxyz", "xyzxyzABCxyz".TrimStartPattern(new Regex("[a-z]")));
 			Assert.Equal("ABCxyz", "xyzxyzABCxyz".TrimStartPattern(new Regex("[a-z]+")));
 			Assert.Equal("ABCxyz", "xyzxyzABCxyz".TrimStartPattern(new Regex("[a-z]", RegexOptions.RightToLeft)));

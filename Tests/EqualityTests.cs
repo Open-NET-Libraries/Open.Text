@@ -21,7 +21,7 @@ namespace Open.Text.Tests
 		{
 			var roSpan = value.AsSpan();
 			var span = roSpan.ToArray().AsSpan();
-			Assert.True(roSpan.Equals(value,comparison));
+			Assert.True(roSpan.Equals(value, comparison));
 			Assert.True(value.Equals(roSpan, comparison));
 			Assert.True(value.Equals(roSpan.ToArray().AsSpan(), comparison));
 			Assert.True(span.Equals(value, comparison));
