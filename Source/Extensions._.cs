@@ -3,9 +3,7 @@
  * Licensing: MIT
  */
 
-using Open.Memory;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.IO;
@@ -23,169 +21,6 @@ namespace Open.Text
 		private static readonly string[] _number_labels = new[] { "K", "M", "B" };
 		public static readonly Regex VALID_ALPHA_NUMERIC_ONLY = new(@"^\w+$", RegexOptions.Compiled);
 		public static readonly Regex VALID_ALPHA_NUMERIC_ONLY_TRIM = new(@"^\s*\w+\s*$", RegexOptions.Compiled);
-
-		/// <summary>
-		/// Provides the substring before the search string.
-		/// </summary>
-		/// <param name="source">The source string to search in.</param>
-		/// <param name="search">The search string to look for.  If the search is null or empty this method returns null.</param>
-		/// <param name="comparisonType">The comparison type to use when searching.</param>
-		/// <returns>The source of the string before the search string.  Returns null if search string is not found.</returns>
-		public static string? BeforeFirst(this string source, string search, StringComparison comparisonType = StringComparison.Ordinal)
-		{
-			if (source is null)
-				throw new ArgumentNullException(nameof(source));
-			Contract.EndContractBlock();
-
-			if (string.IsNullOrEmpty(search))
-				return null;
-
-			var i = source.IndexOf(search, comparisonType);
-			return i == -1 ? null : source.Substring(0, i);
-		}
-
-		/// <summary>
-		/// Provides the substring after the search string.
-		/// </summary>
-		/// <param name="source">The source string to search in.</param>
-		/// <param name="search">The search string to look for.  If the search is null or empty this method returns null.</param>
-		/// <param name="comparisonType">The comparison type to use when searching.</param>
-		/// <returns>The source of the string after the search string.  Returns null if search string is not found.</returns>
-		public static string? AfterFirst(this string source, string search, StringComparison comparisonType = StringComparison.Ordinal)
-		{
-			if (source is null)
-				throw new ArgumentNullException(nameof(source));
-			Contract.EndContractBlock();
-
-			if (string.IsNullOrEmpty(search))
-				return null;
-
-			var i = source.IndexOf(search, comparisonType);
-			return i == -1 ? null : source.Substring(i + search.Length);
-		}
-
-		/// <summary>
-		/// Provides the substring before the search string.
-		/// </summary>
-		/// <param name="source">The source string to search in.</param>
-		/// <param name="search">The search string to look for.  If the search is null or empty this method returns null.</param>
-		/// <param name="comparisonType">The comparison type to use when searching.</param>
-		/// <returns>The source of the string before the search string.  Returns null if search string is not found.</returns>
-		public static string? BeforeLast(this string source, string search, StringComparison comparisonType = StringComparison.Ordinal)
-		{
-			if (source is null)
-				throw new ArgumentNullException(nameof(source));
-			Contract.EndContractBlock();
-
-			if (string.IsNullOrEmpty(search))
-				return null;
-
-			var i = source.LastIndexOf(search, comparisonType);
-			return i == -1 ? null : source.Substring(0, i);
-		}
-
-		/// <summary>
-		/// Provides the substring after the search string.
-		/// </summary>
-		/// <param name="source">The source string to search in.</param>
-		/// <param name="search">The search string to look for.  If the search is null or empty this method returns null.</param>
-		/// <param name="comparisonType">The comparison type to use when searching.</param>
-		/// <returns>The source of the string after the search string.  Returns null if search string is not found.</returns>
-		public static string? AfterLast(this string source, string search, StringComparison comparisonType = StringComparison.Ordinal)
-		{
-			if (source is null)
-				throw new ArgumentNullException(nameof(source));
-			Contract.EndContractBlock();
-
-			if (string.IsNullOrEmpty(search))
-				return null;
-
-			var i = source.LastIndexOf(search, comparisonType);
-			return i == -1 ? null : source.Substring(i + search.Length);
-		}
-
-		/// <inheritdoc cref="BeforeFirst(string, string, StringComparison)"/>
-		/// <returns>The source of the string before the search string.  Returns empty if search string is not found.</returns>
-		public static ReadOnlySpan<char> BeforeFirst(this in ReadOnlySpan<char> source,
-			in ReadOnlySpan<char> search, StringComparison comparisonType = StringComparison.Ordinal)
-		{
-			if (search.IsEmpty) return ReadOnlySpan<char>.Empty;
-			var i = source.IndexOf(search, comparisonType);
-			return i > 0
-				? source.Slice(0, i)
-				: ReadOnlySpan<char>.Empty;
-		}
-
-		/// <inheritdoc cref="AfterFirst(string, string, StringComparison)"/>
-		/// <returns>The source of the string after the search string.  Returns empty if search string is not found.</returns>
-		public static ReadOnlySpan<char> AfterFirst(this in ReadOnlySpan<char> source,
-			in ReadOnlySpan<char> search, StringComparison comparisonType = StringComparison.Ordinal)
-		{
-			if (search.IsEmpty) return ReadOnlySpan<char>.Empty;
-			var i = source.IndexOf(search, comparisonType);
-			var p = i + search.Length;
-			return (i == -1 || p >= source.Length)
-				? ReadOnlySpan<char>.Empty
-				: source.Slice(p);
-		}
-
-		/// <inheritdoc cref="BeforeLast(string, string, StringComparison)"/>
-		/// <returns>The source of the string before the search string.  Returns empty if search string is not found.</returns>
-		public static ReadOnlySpan<char> BeforeLast(this in ReadOnlySpan<char> source,
-			in ReadOnlySpan<char> search, StringComparison comparisonType = StringComparison.Ordinal)
-		{
-			if (search.IsEmpty) return ReadOnlySpan<char>.Empty;
-			var i = source.LastIndexOf(search, comparisonType);
-			return i > 0
-				? source.Slice(0, i)
-				: ReadOnlySpan<char>.Empty;
-		}
-
-		/// <inheritdoc cref="AfterLast(string, string, StringComparison)"/>
-		/// <returns>The source of the string after the search string.  Returns empty if search string is not found.</returns>
-		public static ReadOnlySpan<char> AfterLast(this in ReadOnlySpan<char> source,
-			in ReadOnlySpan<char> search, StringComparison comparisonType = StringComparison.Ordinal)
-		{
-			if (search.IsEmpty) return ReadOnlySpan<char>.Empty;
-			var i = source.LastIndexOf(search, comparisonType);
-			var p = i + search.Length;
-			return (i == -1 || p >= source.Length)
-				? ReadOnlySpan<char>.Empty
-				: source.Slice(p);
-		}
-
-		/// <summary>
-		/// Splits a sequence of characters into strings using the character sequence provided.
-		/// </summary>
-		/// <param name="source">The source string to split up.</param>
-		/// <param name="characters">The sequence to split by.</param>
-		/// <param name="comparisonType">The optional comparsion type.</param>
-		/// <returns>The resultant list of string segments.</returns>
-		public static List<string> Split(this in ReadOnlySpan<char> source,
-			in ReadOnlySpan<char> characters, StringComparison comparisonType = StringComparison.Ordinal)
-		{
-			var result = new List<string>();
-			var item = source;
-			while (item.Length != 0)
-				result.Add(item.FirstSplit(in characters, out item, comparisonType).ToString());
-			return result;
-		}
-
-		/// <summary>
-		/// Splits a sequence of characters into strings using the character provided.
-		/// </summary>
-		/// <param name="source">The source string to split up.</param>
-		/// <param name="characters">The character to split by.</param>
-		/// <returns>The resultant list of string segments.</returns>
-		public static List<string> Split(this in ReadOnlySpan<char> source,
-			in char character)
-		{
-			var result = new List<string>();
-			var item = source;
-			while (item.Length != 0)
-				result.Add(item.FirstSplit(in character, out item).ToString());
-			return result;
-		}
 
 		/// <summary>
 		/// Provides the substring before the search string.
@@ -221,9 +56,6 @@ namespace Open.Text
 			return next == -1 ? i : (n + next);
 		}
 
-
-		//static readonly Regex ToTitleCaseRegex = new Regex(@"\b(\[a-z]})");
-
 		/// <summary>
 		/// Converts a string to title-case.
 		/// </summary>
@@ -253,9 +85,9 @@ namespace Open.Text
 		/// <exception cref="ArgumentException">If the source is empty or white-space.</exception>
 		/// <param name="source">The source string to validate.</param>
 		/// <returns>The original string.</returns>
-		public static string AssertIsNotNullOrWhiteSpace(this string source)
+		public static string AssertIsNotNullOrWhiteSpace(this string? source)
 		{
-			if (source is null) throw new ArgumentNullException(nameof(source));
+			if (source is null) throw new NullReferenceException(nameof(source));
 			if (string.IsNullOrWhiteSpace(source)) throw new ArgumentException("Cannot be empty or white-space.", nameof(source));
 			Contract.EndContractBlock();
 
@@ -265,7 +97,7 @@ namespace Open.Text
 		/// <summary>
 		/// Shortcut for String.IsNullOrWhiteSpace(source).
 		/// </summary>
-		public static bool IsNullOrWhiteSpace(this string source)
+		public static bool IsNullOrWhiteSpace(this string? source)
 			=> string.IsNullOrWhiteSpace(source);
 
 		/// <summary>
@@ -273,10 +105,9 @@ namespace Open.Text
 		/// </summary>
 		/// <param name="value">The value to be trimmed.</param>
 		/// <param name="trim">True will trim whitespace from valid response.</param>
-		public static string? ToNullIfWhiteSpace(this string value, bool trim = false)
+		public static string? ToNullIfWhiteSpace(this string? value, bool trim = false)
 			=> string.IsNullOrWhiteSpace(value) ? null
-				: (trim ? value.Trim() : value);
-
+				: (trim ? value!.Trim() : value);
 
 		/// <summary>
 		/// Shortcut for returning a formatted string if non-null, non-whitespace action exists.
@@ -521,6 +352,5 @@ namespace Open.Text
 				1 => string.Format(cultureInfo ?? CultureInfo.InvariantCulture, format, values[0]),
 				_ => string.Format(cultureInfo ?? CultureInfo.InvariantCulture, format, values as object[] ?? values.Cast<object>().ToArray()),
 			};
-
 	}
 }

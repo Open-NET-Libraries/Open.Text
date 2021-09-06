@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -144,7 +145,7 @@ namespace Open.Text
 			}
 
 			var i = source.IndexOf(splitSequence, comparisonType);
-			return FirstSplitSpan(source, i, 1, out nextIndex);
+			return FirstSplitSpan(source, i, splitSequence.Length, out nextIndex);
 		}
 
 #pragma warning disable CS8524 // The switch expression does not handle some values of its input type (it is not exhaustive) involving an unnamed enum value.
@@ -198,19 +199,18 @@ namespace Open.Text
 			}
 		}
 
-
 		/// <summary>
 		/// Enumerates a string by segments that are separated by the split character.
 		/// </summary>
 		/// <param name="source">The source characters to look through.</param>
 		/// <param name="splitSequence">The sequence to find.</param>
-		/// <param name="comparisonType">The string comparison type to use.</param>
 		/// <param name="options">Can specify to omit empty entries.</param>
+		/// <param name="comparisonType">The string comparison type to use.</param>
 		/// <returns>The portion of the source up to and excluding the sequence searched for.</returns>
 		public static IEnumerable<string> SplitToEnumerable(this string source,
 			string splitSequence,
-			StringComparison comparisonType = StringComparison.Ordinal,
-			StringSplitOptions options = StringSplitOptions.None)
+			StringSplitOptions options = StringSplitOptions.None,
+			StringComparison comparisonType = StringComparison.Ordinal)
 		{
 			if (source is null) throw new ArgumentNullException(nameof(source));
 			if (splitSequence is null) throw new ArgumentNullException(nameof(splitSequence));
@@ -301,8 +301,8 @@ namespace Open.Text
 		/// <inheritdoc cref="SplitToEnumerable(string, string, StringComparison, StringSplitOptions)"/>
 		public static IEnumerable<ReadOnlyMemory<char>> SplitAsMemory(this string source,
 			string splitSequence,
-			StringComparison comparisonType = StringComparison.Ordinal,
-			StringSplitOptions options = StringSplitOptions.None)
+			StringSplitOptions options = StringSplitOptions.None,
+			StringComparison comparisonType = StringComparison.Ordinal)
 		{
 			if (source is null) throw new ArgumentNullException(nameof(source));
 			if (splitSequence is null) throw new ArgumentNullException(nameof(splitSequence));
@@ -324,9 +324,10 @@ namespace Open.Text
 			IEnumerable<ReadOnlyMemory<char>> SplitAsMemoryCore()
 			{
 				var startIndex = 0;
+				var splitLen = splitSequence.Length;
 				do
 				{
-					yield return FirstSplitMemory(source, startIndex, source.IndexOf(splitSequence, startIndex, comparisonType), 1, out var nextIndex);
+					yield return FirstSplitMemory(source, startIndex, source.IndexOf(splitSequence, startIndex, comparisonType), splitLen, out var nextIndex);
 					startIndex = nextIndex;
 				}
 				while (startIndex != -1);
@@ -335,16 +336,113 @@ namespace Open.Text
 			IEnumerable<ReadOnlyMemory<char>> SplitAsMemoryOmitEmpty()
 			{
 				var startIndex = 0;
+				var splitLen = splitSequence.Length;
 				do
 				{
-					var result = FirstSplitMemory(source, startIndex, source.IndexOf(splitSequence, startIndex, comparisonType), 1, out var nextIndex);
+					var result = FirstSplitMemory(source, startIndex, source.IndexOf(splitSequence, startIndex, comparisonType), splitLen, out var nextIndex);
 					if (result.Length != 0) yield return result;
 					startIndex = nextIndex;
 				}
 				while (startIndex != -1);
 			}
 		}
+
 #pragma warning restore CS8524 // The switch expression does not handle some values of its input type (it is not exhaustive) involving an unnamed enum value.
 
+		static readonly ImmutableArray<string> SingleEmpty = ImmutableArray.Create(string.Empty);
+
+		/// <summary>
+		/// Splits a sequence of characters into strings using the character provided.
+		/// </summary>
+		/// <param name="source">The source string to split up.</param>
+		/// <param name="splitCharacter">The character to split by.</param>
+		/// <param name="options">Can specify to omit empty entries.</param>
+		/// <returns>The resultant list of string segments.</returns>
+		public static IReadOnlyList<string> Split(this ReadOnlySpan<char> source,
+			char splitCharacter,
+			StringSplitOptions options = StringSplitOptions.None)
+		{
+			switch (options)
+			{
+				case StringSplitOptions.None when source.Length == 0:
+					return SingleEmpty;
+
+				case StringSplitOptions.RemoveEmptyEntries when source.Length == 0:
+					return ImmutableArray<string>.Empty;
+
+				case StringSplitOptions.RemoveEmptyEntries:
+				{
+					Debug.Assert(!source.IsEmpty);
+					var list = new List<string>();
+
+				loop:
+					var result = source.FirstSplit(splitCharacter, out var nextIndex);
+					if (!result.IsEmpty) list.Add(result.ToString());
+					if (nextIndex == -1) return list;
+					source = source.Slice(nextIndex);
+					goto loop;
+				}
+
+				default:
+				{
+					Debug.Assert(!source.IsEmpty);
+					var list = new List<string>();
+				loop:
+					var result = source.FirstSplit(splitCharacter, out var nextIndex);
+					list.Add(result.IsEmpty ? string.Empty : result.ToString());
+					if (nextIndex == -1) return list;
+					source = source.Slice(nextIndex);
+					goto loop;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Splits a sequence of characters into strings using the character sequence provided.
+		/// </summary>
+		/// <param name="source">The source string to split up.</param>
+		/// <param name="splitSequence">The sequence to split by.</param>
+		/// <param name="options">Can specify to omit empty entries.</param>
+		/// <param name="comparisonType">The optional comparsion type.</param>
+		/// <returns>The resultant list of string segments.</returns>
+		public static IReadOnlyList<string> Split(this ReadOnlySpan<char> source,
+			in ReadOnlySpan<char> splitSequence,
+			StringSplitOptions options = StringSplitOptions.None,
+			StringComparison comparisonType = StringComparison.Ordinal)
+		{
+			switch (options)
+			{
+				case StringSplitOptions.None when source.IsEmpty:
+					return SingleEmpty;
+
+				case StringSplitOptions.RemoveEmptyEntries when source.IsEmpty:
+					return ImmutableArray<string>.Empty;
+
+				case StringSplitOptions.RemoveEmptyEntries:
+				{
+					Debug.Assert(!source.IsEmpty);
+					var list = new List<string>();
+
+				loop:
+					var result = source.FirstSplit(splitSequence, out var nextIndex, comparisonType);
+					if (!result.IsEmpty) list.Add(result.ToString());
+					if (nextIndex == -1) return list;
+					source = source.Slice(nextIndex);
+					goto loop;
+				}
+
+				default:
+				{
+					Debug.Assert(!source.IsEmpty);
+					var list = new List<string>();
+				loop:
+					var result = source.FirstSplit(splitSequence, out var nextIndex, comparisonType);
+					list.Add(result.IsEmpty ? string.Empty : result.ToString());
+					if (nextIndex == -1) return list;
+					source = source.Slice(nextIndex);
+					goto loop;
+				}
+			}
+		}
 	}
 }

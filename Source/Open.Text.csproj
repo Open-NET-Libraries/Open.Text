@@ -16,7 +16,7 @@ Part of the "Open" set of libraries.
 		<RepositoryUrl>https://github.com/Open-NET-Libraries/Open.Text</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<PackageTags>dotnet, dotnetcore, string, text, format, stringbuilder, extensions</PackageTags>
-		<Version>2.3.4</Version>
+		<Version>3.0.0</Version>
 		<PackageReleaseNotes></PackageReleaseNotes>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -40,6 +40,7 @@ Part of the "Open" set of libraries.
 
 	<ItemGroup>
 		<PackageReference Include="Open.MemoryExtensions" Version="2.8.0" />
+		<PackageReference Include="System.Collections.Immutable" Version="5.0.0" />
 	</ItemGroup>
 
 </Project>
