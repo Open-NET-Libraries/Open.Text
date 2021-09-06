@@ -56,5 +56,17 @@ namespace Open.Text.Tests
 			if (expected is null) Assert.False(last.IsValid);
 			else Assert.Equal(expected, last.Following().ToString());
 		}
+
+		[Fact]
+		public static void Offsets()
+		{
+			var segment = "Hello well how are you".First("well how");
+			Assert.Equal("well", segment.OffsetLength(-4).ToString());
+			Assert.Equal("how", segment.OffsetIndex(+5).ToString());
+			Assert.Equal("well how are", segment.OffsetLength(+4).ToString());
+			Assert.Equal("Hello well how", segment.OffsetIndex(-6).ToString());
+			Assert.Throws<ArgumentOutOfRangeException>(() => segment.OffsetIndex(-7));
+			Assert.Throws<ArgumentOutOfRangeException>(() => segment.OffsetLength(9));
+		}
 	}
 }

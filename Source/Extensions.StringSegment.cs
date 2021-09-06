@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
+using System.Text.RegularExpressions;
 
 namespace Open.Text
 {
@@ -44,6 +45,26 @@ namespace Open.Text
 			return i == -1 ? default : StringSegment.Create(source, i, search.Length);
 		}
 
+		/// <summary>
+		/// Finds the first instance of a pattern and returns a StringSegment for subsequent use.
+		/// </summary>
+		/// <param name="source">The source string to search.</param>
+		/// <param name="pattern">The pattern to look for.</param>
+		/// <returns>
+		/// The segment representing the found string.
+		/// If not found, the StringSegment.IsValid property will be false.
+		/// </returns>
+		/// <remarks>If the pattern is right-to-left, then it will return the first segment from the right.</remarks>
+		public static StringSegment First(this string source, Regex pattern)
+		{
+			if (source is null) throw new ArgumentNullException(nameof(source));
+			if (pattern is null) throw new ArgumentNullException(nameof(pattern));
+			Contract.EndContractBlock();
+
+			var match = pattern.Match(source);
+			return match.Success ? StringSegment.Create(source, match.Index, match.Length) : default;
+		}
+
 		/// <inheritdoc cref="First(string, string, StringComparison)" />
 		public static StringSegment First(this StringSegment source, in ReadOnlySpan<char> search, StringComparison comparisonType = StringComparison.Ordinal)
 		{
@@ -81,6 +102,23 @@ namespace Open.Text
 
 			var i = source.LastIndexOf(search, comparisonType);
 			return i == -1 ? default : StringSegment.Create(source, i, search.Length);
+		}
+
+		/// <inheritdoc cref="First(string, Regex)"/>
+		/// <summary>
+		/// Finds the last instance of a pattern and returns a StringSegment for subsequent use.
+		/// </summary>
+		/// <remarks>If the pattern is right-to-left, then it will return the last segment from the right (first segment from the left).</remarks>
+		public static StringSegment Last(this string source, Regex pattern)
+		{
+			if (source is null) throw new ArgumentNullException(nameof(source));
+			if (pattern is null) throw new ArgumentNullException(nameof(pattern));
+			Contract.EndContractBlock();
+
+			var matches = pattern.Matches(source);
+			if (matches.Count == 0) return default;
+			var match = matches[matches.Count - 1];
+			return StringSegment.Create(source, match.Index, match.Length);
 		}
 
 		/// <inheritdoc cref="Last(string, string, StringComparison)" />

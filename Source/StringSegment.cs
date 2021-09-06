@@ -85,6 +85,50 @@ namespace Open.Text
 		}
 
 		/// <summary>
+		/// Creates a StringSegment that starts offset by the value provided.
+		/// </summary>
+		/// <param name="offset">The value (positive or negative) to move the index by and adjust the length.</param>
+		public StringSegment OffsetIndex(int offset)
+		{
+			if (!IsValid) return default;
+			var newIndex = Index + offset;
+			if (newIndex < 0) throw new ArgumentOutOfRangeException(nameof(offset), offset, "Cannot index less than the start of the string.");
+			if (offset>Length) throw new ArgumentOutOfRangeException(nameof(offset), offset, "Cannot index greater than the length of the segment.");
+			return new(Source, newIndex, Length - offset);
+		}
+
+		/// <summary>
+		/// Creates a StringSegment modifies the length by the value provided.
+		/// </summary>
+		/// <param name="offset">The value (positive or negative) to adjust the length.</param>
+		public StringSegment OffsetLength(int offset)
+		{
+			if (!IsValid) return default;
+			var newLength = Length + offset;
+			if (newLength < 0) throw new ArgumentOutOfRangeException(nameof(offset), offset, "Cannot shrink less than the start of the string.");
+			if (Index + newLength > Source.Length) throw new ArgumentOutOfRangeException(nameof(offset), offset, "Cannot expand greater than the length of the source.");
+			return new(Source, Index, newLength);
+		}
+
+		/// <summary>
+		/// Creates a StringSegment that starts offset by the value provided and extends by the length provided.
+		/// </summary>
+		/// <param name="offset">The value (positive or negative) to move the index by.</param>
+		/// <param name="length">The length desired.</param>
+		/// <param name="ignoreLengthBoundary">
+		///	If true, the length can exceed the segment length but not past the full length of the source string.
+		///	If false (default), an ArgumentOutOfRangeException will be thrown if the expected length exeeds the segment.
+		///	</param>
+		public StringSegment Slice(int offset, int length)
+		{
+			if (!IsValid) return default;
+			var newIndex = Index + offset;
+			if (Index + offset < 0) throw new ArgumentOutOfRangeException(nameof(offset), offset, "Cannot index less than the start of the string.");
+			if (offset > Length) throw new ArgumentOutOfRangeException(nameof(offset), offset, "Cannot index greater than the length of the segment.");
+			return new(Source, newIndex, Length - offset);
+		}
+
+		/// <summary>
 		/// Returns true if the other string segment values match.
 		/// </summary>
 		public bool Equals(StringSegment other)
