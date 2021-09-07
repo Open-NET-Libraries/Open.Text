@@ -12,8 +12,6 @@ namespace Open.Text
 {
 	public static class StringBuilderExtensions
 	{
-		private const string ParametersMissing = "Parameters missing.";
-
 		/// <summary>
 		/// Adds every entry to a StringBuilder.
 		/// </summary>
@@ -39,7 +37,7 @@ namespace Open.Text
 		/// <returns>The resultant StringBuilder.</returns>
 		public static StringBuilder ToStringBuilder<T>(this IEnumerable<T> source)
 		{
-			if (source is null) throw new NullReferenceException();
+			if (source is null) throw new ArgumentNullException(nameof(source));
 			var sb = new StringBuilder();
 			foreach (var s in source)
 				sb.Append(s);
@@ -105,21 +103,10 @@ namespace Open.Text
 		/// <returns>The resultant StringBuilder.</returns>
 		public static StringBuilder ToStringBuilder<T>(this IEnumerable<T> source, string separator)
 		{
-			if (source is null) throw new NullReferenceException();
+			if (source is null) throw new ArgumentNullException(nameof(source));
 			Contract.EndContractBlock();
 
-			if (string.IsNullOrEmpty(separator))
-				return ToStringBuilder(source);
-
-			var first = true;
-			var sb = new StringBuilder();
-			foreach (var s in source)
-			{
-				if (first) first = false;
-				else sb.Append(separator);
-				sb.Append(s);
-			}
-			return sb;
+			return new StringBuilder().AppendAll(source, separator);
 		}
 
 		/// <summary>
@@ -131,43 +118,47 @@ namespace Open.Text
 		/// <returns>The resultant StringBuilder.</returns>
 		public static StringBuilder ToStringBuilder<T>(this IEnumerable<T> source, char separator)
 		{
-			if (source is null) throw new NullReferenceException();
+			if (source is null) throw new ArgumentNullException(nameof(source));
 			Contract.EndContractBlock();
 
-			var sb = new StringBuilder();
-			var first = true;
-			foreach (var s in source)
-			{
-				if (first) first = false;
-				else sb.Append(separator);
-				sb.Append(s);
-			}
-			return sb;
+			return new StringBuilder().AppendAll(source, separator);
 		}
-
 
 		/// <summary>
 		/// Shortcut for adding an array of values to a StringBuilder.
 		/// </summary>
-		public static StringBuilder AppendAll<T>(this StringBuilder target, IEnumerable<T> values, string? separator = null)
+		public static StringBuilder AppendAll<T>(this StringBuilder target, IEnumerable<T> values)
 		{
 			if (target is null)
-				throw new NullReferenceException();
+				throw new ArgumentNullException(nameof(values));
 			Contract.EndContractBlock();
 
-			if (values != null)
-			{
-				if (string.IsNullOrEmpty(separator))
-				{
-					foreach (var value in values)
-						target.Append(value);
-				}
-				else
-				{
-					foreach (var value in values)
-						target.AppendWithSeparator(separator!, value);
-				}
-			}
+			if (values == null) return target;
+			foreach (var value in values)
+				target.Append(value);
+			return target;
+		}
+
+		/// <summary>
+		/// Shortcut for adding an array of values to a StringBuilder.
+		/// </summary>
+		public static StringBuilder AppendAll<T>(this StringBuilder target, IEnumerable<T> values, string separator)
+		{
+			if (target is null)
+				throw new ArgumentNullException(nameof(values));
+			Contract.EndContractBlock();
+
+			if (values == null) return target;
+
+			if (string.IsNullOrEmpty(separator))
+				return target.AppendAll(values);
+
+			using var e = values.GetEnumerator();
+			if (!e.MoveNext()) return target;
+			if (target.Length != 0) target.Append(separator);
+			target.Append(e.Current);
+			while (e.MoveNext()) target.Append(separator).Append(e.Current);
+
 			return target;
 		}
 
@@ -177,48 +168,120 @@ namespace Open.Text
 		public static StringBuilder AppendAll<T>(this StringBuilder target, IEnumerable<T> values, char separator)
 		{
 			if (target is null)
-				throw new NullReferenceException();
+				throw new ArgumentNullException(nameof(values));
 			Contract.EndContractBlock();
 
-			if (values != null)
-				foreach (var value in values)
-					target.AppendWithSeparator(separator, value);
-			return target;
-		}
+			if (values == null) return target;
 
+			using var e = values.GetEnumerator();
+			if (!e.MoveNext()) return target;
+			if(target.Length!=0) target.Append(separator);
+			target.Append(e.Current);
+			while(e.MoveNext())	target.Append(separator).Append(e.Current);
 
-		/// <summary>
-		/// Appends values to StringBuilder prefixing the provided separator.
-		/// </summary>
-		public static StringBuilder AppendWithSeparator<T>(this StringBuilder target, string separator, params T[] values)
-		{
-			if (target is null)
-				throw new NullReferenceException();
-			if (values is null || values.Length == 0)
-				throw new ArgumentException(ParametersMissing);
-			Contract.EndContractBlock();
-
-			if (!string.IsNullOrEmpty(separator) && target.Length != 0)
-				target.Append(separator);
-
-			target.AppendAll(values);
 			return target;
 		}
 
 		/// <summary>
-		/// Appends values to StringBuilder prefixing the provided separator.
+		/// Shortcut for adding an array of values to a StringBuilder.
 		/// </summary>
-		public static StringBuilder AppendWithSeparator<T>(this StringBuilder target, char separator, params T[] values)
+		public static StringBuilder AppendAll<T>(this StringBuilder target, in ReadOnlySpan<T> values)
 		{
 			if (target is null)
-				throw new NullReferenceException();
-			if (values is null || values.Length == 0)
-				throw new ArgumentException(ParametersMissing);
+				throw new ArgumentNullException(nameof(values));
+			Contract.EndContractBlock();
+
+			if (values == null) return target;
+			foreach (var value in values)
+				target.Append(value);
+			return target;
+		}
+
+		/// <summary>
+		/// Shortcut for adding an array of values to a StringBuilder.
+		/// </summary>
+		public static StringBuilder AppendAll<T>(this StringBuilder target, in ReadOnlySpan<T> values, string separator)
+		{
+			if (target is null)
+				throw new ArgumentNullException(nameof(values));
+			Contract.EndContractBlock();
+
+			if (values == null) return target;
+
+			if (string.IsNullOrEmpty(separator))
+				return target.AppendAll(values);
+
+			var e = values.GetEnumerator();
+			if (!e.MoveNext()) return target;
+			if (target.Length != 0) target.Append(separator);
+			target.Append(e.Current);
+			while (e.MoveNext()) target.Append(separator).Append(e.Current);
+
+			return target;
+		}
+
+		/// <summary>
+		/// Shortcut for adding an array of values to a StringBuilder.
+		/// </summary>
+		public static StringBuilder AppendAll<T>(this StringBuilder target, in ReadOnlySpan<T> values, char separator)
+		{
+			if (target is null)
+				throw new ArgumentNullException(nameof(values));
+			Contract.EndContractBlock();
+
+			if (values == null) return target;
+
+			var e = values.GetEnumerator();
+			if (!e.MoveNext()) return target;
+			if (target.Length != 0) target.Append(separator);
+			target.Append(e.Current);
+			while (e.MoveNext()) target.Append(separator).Append(e.Current);
+
+			return target;
+		}
+
+		/// <summary>
+		/// Appends values to StringBuilder prefixing the provided separator.
+		/// </summary>
+		public static StringBuilder AppendWithSeparator<T>(this StringBuilder target, string separator, T value, params T[] values)
+		{
+			if (target is null)
+				throw new ArgumentNullException(nameof(values));
+			Contract.EndContractBlock();
+
+			if (string.IsNullOrEmpty(separator))
+			{
+				target.Append(value);
+				foreach (var v in values)
+					target.Append(v);
+			}
+			else
+			{
+
+				if (target.Length != 0)
+					target.Append(separator);
+				target.Append(value);
+				foreach (var v in values)
+					target.Append(separator).Append(v);
+			}
+
+			return target;
+		}
+
+		/// <summary>
+		/// Appends values to StringBuilder prefixing the provided separator.
+		/// </summary>
+		public static StringBuilder AppendWithSeparator<T>(this StringBuilder target, char separator, T value, params T[] values)
+		{
+			if (target is null)
+				throw new ArgumentNullException(nameof(values));
 			Contract.EndContractBlock();
 
 			if (target.Length != 0)
 				target.Append(separator);
-			target.AppendAll(values);
+			target.Append(value);
+			foreach (var v in values)
+				target.AppendWithSeparator(separator, v);
 
 			return target;
 		}

@@ -76,7 +76,7 @@ namespace Open.Text
 		/// <param name="values">The set of values to validate.</param>
 		/// <returns>True if any of the provided values is is null, empty or white-space only. Otherwise false.</returns>
 		public static bool IsAnyNullOrWhiteSpace(params string[] values)
-			=> values != null && values.Length != 0 && values.Any(string.IsNullOrWhiteSpace);
+			=> values != null && values.Length != 0 && values.Any(v => string.IsNullOrWhiteSpace(v));
 
 		/// <summary>
 		/// Throws if null, empty or white-space only.
@@ -224,7 +224,7 @@ namespace Open.Text
 		/// Shortcut for formating to a percent.
 		/// </summary>
 		public static string ToPercentString(this int value, int range, int decimals = 0, CultureInfo? cultureInfo = default)
-			=> ((double)value / range).ToString("p" + decimals, cultureInfo);
+			=> ((double)value / range).ToString($"p{decimals}", cultureInfo);
 
 
 		/// <summary>

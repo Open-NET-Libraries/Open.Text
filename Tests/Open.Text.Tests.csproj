@@ -4,6 +4,7 @@
     <TargetFramework>net5.0</TargetFramework>
 		<Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
+	<EnableNETAnalyzers>false</EnableNETAnalyzers>
   </PropertyGroup>
 
   <ItemGroup>
