@@ -16,8 +16,8 @@
 		<PackageProjectUrl>https://github.com/Open-NET-Libraries/Open.Text</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/Open-NET-Libraries/Open.Text</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<PackageTags>dotnet, dotnetcore, string, span, readonlyspan, text, format, split, trim, first, last, preceding, following, stringbuilder, extensions</PackageTags>
-		<Version>3.1.1</Version>
+		<PackageTags>dotnet, dotnetcore, string, span, readonlyspan, text, format, split, trim, equals, trimmed equals, first, last, preceding, following, stringbuilder, extensions</PackageTags>
+		<Version>3.2.0</Version>
 		<PackageReleaseNotes></PackageReleaseNotes>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
