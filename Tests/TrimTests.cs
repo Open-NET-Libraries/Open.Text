@@ -109,5 +109,14 @@ namespace Open.Text.Tests
 			Assert.Equal("xyzABC", "xyzABCxyzxyz".TrimEndPattern(new Regex("[a-z]+")));
 		}
 
+		[Fact]
+		public static void TrimmedEquals()
+		{
+			Assert.True(string.Empty.TrimmedEquals(string.Empty));
+			Assert.True(" ".TrimmedEquals(string.Empty));
+			Assert.False("AB ".TrimmedEquals("ABC"));
+			Assert.False("A ".TrimmedEquals("ABC"));
+		}
+
 	}
 }

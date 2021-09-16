@@ -34,6 +34,15 @@ namespace Open.Text
 			return new(source, 0, source.Length);
 		}
 
+		public StringSegment SourceSegment
+		{
+			get
+			{
+				if (!IsValid || Index == 0 && Length == Source.Length) return this;
+				return Create(Source);
+			}
+		}
+
 		public bool IsValid => Source is not null;
 
 		public string Source { get; }
@@ -93,7 +102,7 @@ namespace Open.Text
 			if (!IsValid) return default;
 			var newIndex = Index + offset;
 			if (newIndex < 0) throw new ArgumentOutOfRangeException(nameof(offset), offset, "Cannot index less than the start of the string.");
-			if (offset>Length) throw new ArgumentOutOfRangeException(nameof(offset), offset, "Cannot index greater than the length of the segment.");
+			if (offset > Length) throw new ArgumentOutOfRangeException(nameof(offset), offset, "Cannot index greater than the length of the segment.");
 			return new(Source, newIndex, Length - offset);
 		}
 
@@ -119,13 +128,33 @@ namespace Open.Text
 		///	If true, the length can exceed the segment length but not past the full length of the source string.
 		///	If false (default), an ArgumentOutOfRangeException will be thrown if the expected length exeeds the segment.
 		///	</param>
-		public StringSegment Slice(int offset, int length)
+		public StringSegment Slice(int offset, int length, bool ignoreLengthBoundary = false)
 		{
 			if (!IsValid) return default;
 			var newIndex = Index + offset;
-			if (Index + offset < 0) throw new ArgumentOutOfRangeException(nameof(offset), offset, "Cannot index less than the start of the string.");
-			if (offset > Length) throw new ArgumentOutOfRangeException(nameof(offset), offset, "Cannot index greater than the length of the segment.");
-			return new(Source, newIndex, Length - offset);
+			if (newIndex < 0) throw new ArgumentOutOfRangeException(nameof(offset), offset, "Cannot index less than the start of the string.");
+			var newEnd = newIndex + length;
+			if (ignoreLengthBoundary)
+			{
+				var end = Source.Length;
+				if (newEnd > end)
+				{
+					if (newIndex > end) throw new ArgumentOutOfRangeException(nameof(offset), offset, "Index is greater than the end of the source string.");
+					throw new ArgumentOutOfRangeException(nameof(length), length, "Desired length will extend greater than the end of the source string.");
+				}
+				return new(Source, newIndex, end);
+			}
+			else
+			{
+				var end = Index + Length;
+				if (newEnd > end)
+				{
+					if (newIndex > end) throw new ArgumentOutOfRangeException(nameof(offset), offset, "Index is greater than the length of the segment.");
+					throw new ArgumentOutOfRangeException(nameof(length), length, "Desired length will extend greater than the length of the segment.");
+				}
+				return new(Source, newIndex, end);
+			}
+
 		}
 
 		/// <summary>

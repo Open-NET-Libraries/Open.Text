@@ -5,11 +5,21 @@ namespace Open.Text.Tests
 {
 	public class EqualityTests
 	{
+		static readonly ReadOnlyMemory<char> Chars = new[] { ' ', '\t' };
 		[Fact]
 		public void NullReference()
 		{
-			Assert.Throws<ArgumentNullException>(() => default(string)!.Equals(ReadOnlySpan<char>.Empty, StringComparison.Ordinal));
-			Assert.Throws<ArgumentNullException>(() => default(string)!.Equals(ReadOnlySpan<char>.Empty.ToArray().AsSpan(), StringComparison.Ordinal));
+			Assert.False(default(string).Equals(ReadOnlySpan<char>.Empty, StringComparison.Ordinal));
+			Assert.False(default(string).Equals(ReadOnlySpan<char>.Empty.ToArray().AsSpan(), StringComparison.Ordinal));
+			Assert.False(default(string).TrimmedEquals(ReadOnlySpan<char>.Empty, StringComparison.Ordinal));
+			Assert.False(default(string).TrimmedEquals(ReadOnlySpan<char>.Empty, ' ', StringComparison.Ordinal));
+			Assert.False(default(string).TrimmedEquals(ReadOnlySpan<char>.Empty, Chars.Span, StringComparison.Ordinal));
+			Assert.True(default(string).TrimmedEquals(default, StringComparison.Ordinal));
+			Assert.True(default(string).TrimmedEquals(default, ' ', StringComparison.Ordinal));
+			Assert.True(default(string).TrimmedEquals(default, Chars.Span, StringComparison.Ordinal));
+			Assert.False(string.Empty.TrimmedEquals(default, StringComparison.Ordinal));
+			Assert.False(string.Empty.TrimmedEquals(default, ' ', StringComparison.Ordinal));
+			Assert.False(string.Empty.TrimmedEquals(default, Chars.Span, StringComparison.Ordinal));
 		}
 
 		[Theory]
@@ -22,6 +32,12 @@ namespace Open.Text.Tests
 			var roSpan = value.AsSpan();
 			var span = roSpan.ToArray().AsSpan();
 			Assert.True(roSpan.Equals(value, comparison));
+			Assert.True(value.TrimmedEquals(value, comparison));
+			Assert.True(value.TrimmedEquals(roSpan, comparison));
+			Assert.True(value.TrimmedEquals(value, ' ', comparison));
+			Assert.True(value.TrimmedEquals(roSpan, ' ', comparison));
+			Assert.True(value.TrimmedEquals(value, Chars.Span, comparison));
+			Assert.True(value.TrimmedEquals(roSpan, Chars.Span, comparison));
 			Assert.True(value.Equals(roSpan, comparison));
 			Assert.True(value.Equals(roSpan.ToArray().AsSpan(), comparison));
 			Assert.True(span.Equals(value, comparison));
@@ -38,6 +54,7 @@ namespace Open.Text.Tests
 		[InlineData("y", " y")]
 		[InlineData("y", "Y")]
 		[InlineData("hello", "hell")]
+		[InlineData("hell", "hello")]
 		public void NotEqualsSpan(string value, string? other, StringComparison comparison = StringComparison.Ordinal)
 		{
 			var roSpan = value.AsSpan();
@@ -52,8 +69,52 @@ namespace Open.Text.Tests
 				var oSpan = oRoSpan.ToArray().AsSpan();
 				Assert.False(value.Equals(oSpan, comparison));
 				Assert.False(span.Equals(oSpan, comparison));
+				Assert.False(value.TrimmedEquals(other, comparison));
+				Assert.False(value.TrimmedEquals(other, ' ', comparison));
+				Assert.False(value.TrimmedEquals(other, Chars.Span, comparison));
+				Assert.False(value.TrimmedEquals(oRoSpan, comparison));
+				Assert.False(value.TrimmedEquals(oRoSpan, ' ', comparison));
+				Assert.False(value.TrimmedEquals(oRoSpan, Chars.Span, comparison));
 			}
 			Assert.False(span.Equals(other, comparison));
 		}
+
+		[Theory]
+		[InlineData(" ", "")]
+		[InlineData("y ", "y")]
+		[InlineData(" y ", "Y", StringComparison.OrdinalIgnoreCase)]
+		[InlineData(" hello   ", "hello")]
+		[InlineData(" hello   ", "Hello", StringComparison.OrdinalIgnoreCase)]
+		public void TrimmedEquals(string? value, string? other, StringComparison comparison = StringComparison.Ordinal)
+		{
+			Assert.True(value.TrimmedEquals(other, comparison));
+			Assert.True(value.TrimmedEquals(other.AsSpan(), comparison));
+		}
+
+		[Theory]
+		[InlineData(" ", "")]
+		[InlineData("y ", "y")]
+		[InlineData(" y ", "Y", StringComparison.OrdinalIgnoreCase)]
+		[InlineData(" hello   ", "hello")]
+		[InlineData(" hello   ", "Hello", StringComparison.OrdinalIgnoreCase)]
+		public void TrimmedEqualsChar(string? value, string? other, StringComparison comparison = StringComparison.Ordinal)
+		{
+			Assert.True(value.TrimmedEquals(other, ' ', comparison));
+			Assert.True(value.TrimmedEquals(other.AsSpan(), ' ', comparison));
+		}
+
+
+		[Theory]
+		[InlineData(" ", "")]
+		[InlineData("y ", "y")]
+		[InlineData("	 y ", "Y", StringComparison.OrdinalIgnoreCase)]
+		[InlineData("	 hello   ", "hello")]
+		[InlineData("	hello   ", "Hello", StringComparison.OrdinalIgnoreCase)]
+		public void TrimmedEqualsChars(string? value, string? other, StringComparison comparison = StringComparison.Ordinal)
+		{
+			Assert.True(value.TrimmedEquals(other, Chars.Span, comparison));
+			Assert.True(value.TrimmedEquals(other.AsSpan(), Chars.Span, comparison));
+		}
+
 	}
 }

@@ -29,6 +29,18 @@ namespace Open.Text
 			return sb;
 		}
 
+		/// <inheritdoc cref="ToStringBuilder{T}(in ReadOnlySpan{T})">
+		public static StringBuilder ToStringBuilder<T>(this in Span<T> source)
+		{
+			var len = source.Length;
+			var sb = new StringBuilder(len);
+
+			for (var i = 0; i < len; i++)
+				sb.Append(source[i]);
+
+			return sb;
+		}
+
 		/// <summary>
 		/// Adds every entry to a StringBuilder.
 		/// </summary>
@@ -52,7 +64,27 @@ namespace Open.Text
 		/// <param name="source">The source span.</param>
 		/// <param name="separator">The separator sequence.</param>
 		/// <returns>The resultant StringBuilder.</returns>
-		public static StringBuilder ToStringBuilder<T>(this in ReadOnlySpan<T> source, string separator)
+		public static StringBuilder ToStringBuilder<T>(this in ReadOnlySpan<T> source, string? separator)
+		{
+			var len = source.Length;
+			if (len < 2 || string.IsNullOrEmpty(separator))
+				return ToStringBuilder(source);
+
+			var sb = new StringBuilder(2 * len - 1);
+
+			sb.Append(source[0]);
+			for (var i = 1; i < len; i++)
+			{
+				sb.Append(separator);
+				sb.Append(source[i]);
+			}
+
+			return sb;
+		}
+
+
+		/// <inheritdoc cref="ToStringBuilder{T}(in ReadOnlySpan{T}, string)">
+		public static StringBuilder ToStringBuilder<T>(this in Span<T> source, string? separator)
 		{
 			var len = source.Length;
 			if (len < 2 || string.IsNullOrEmpty(separator))
@@ -94,6 +126,24 @@ namespace Open.Text
 			return sb;
 		}
 
+		/// <inheritdoc cref="ToStringBuilder{T}(in ReadOnlySpan{T}, char)">
+		public static StringBuilder ToStringBuilder<T>(this in Span<T> source, char separator)
+		{
+			var len = source.Length;
+			if (len < 2) return ToStringBuilder(source);
+
+			var sb = new StringBuilder(2 * len - 1);
+
+			sb.Append(source[0]);
+			for (var i = 1; i < len; i++)
+			{
+				sb.Append(separator);
+				sb.Append(source[i]);
+			}
+
+			return sb;
+		}
+
 		/// <summary>
 		/// Adds every entry to a StringBuilder separated by the specified sequence.
 		/// </summary>
@@ -101,7 +151,7 @@ namespace Open.Text
 		/// <param name="source">The source enumerable.</param>
 		/// <param name="separator">The separator sequence.</param>
 		/// <returns>The resultant StringBuilder.</returns>
-		public static StringBuilder ToStringBuilder<T>(this IEnumerable<T> source, string separator)
+		public static StringBuilder ToStringBuilder<T>(this IEnumerable<T> source, string? separator)
 		{
 			if (source is null) throw new ArgumentNullException(nameof(source));
 			Contract.EndContractBlock();
@@ -127,7 +177,7 @@ namespace Open.Text
 		/// <summary>
 		/// Shortcut for adding an array of values to a StringBuilder.
 		/// </summary>
-		public static StringBuilder AppendAll<T>(this StringBuilder target, IEnumerable<T> values)
+		public static StringBuilder AppendAll<T>(this StringBuilder target, IEnumerable<T>? values)
 		{
 			if (target is null)
 				throw new ArgumentNullException(nameof(values));
@@ -142,7 +192,7 @@ namespace Open.Text
 		/// <summary>
 		/// Shortcut for adding an array of values to a StringBuilder.
 		/// </summary>
-		public static StringBuilder AppendAll<T>(this StringBuilder target, IEnumerable<T> values, string separator)
+		public static StringBuilder AppendAll<T>(this StringBuilder target, IEnumerable<T>? values, string? separator)
 		{
 			if (target is null)
 				throw new ArgumentNullException(nameof(values));
@@ -165,7 +215,7 @@ namespace Open.Text
 		/// <summary>
 		/// Shortcut for adding an array of values to a StringBuilder.
 		/// </summary>
-		public static StringBuilder AppendAll<T>(this StringBuilder target, IEnumerable<T> values, char separator)
+		public static StringBuilder AppendAll<T>(this StringBuilder target, IEnumerable<T>? values, char separator)
 		{
 			if (target is null)
 				throw new ArgumentNullException(nameof(values));
@@ -191,7 +241,6 @@ namespace Open.Text
 				throw new ArgumentNullException(nameof(values));
 			Contract.EndContractBlock();
 
-			if (values == null) return target;
 			foreach (var value in values)
 				target.Append(value);
 			return target;
@@ -200,13 +249,11 @@ namespace Open.Text
 		/// <summary>
 		/// Shortcut for adding an array of values to a StringBuilder.
 		/// </summary>
-		public static StringBuilder AppendAll<T>(this StringBuilder target, in ReadOnlySpan<T> values, string separator)
+		public static StringBuilder AppendAll<T>(this StringBuilder target, in ReadOnlySpan<T> values, string? separator)
 		{
 			if (target is null)
 				throw new ArgumentNullException(nameof(values));
 			Contract.EndContractBlock();
-
-			if (values == null) return target;
 
 			if (string.IsNullOrEmpty(separator))
 				return target.AppendAll(values);
@@ -229,8 +276,6 @@ namespace Open.Text
 				throw new ArgumentNullException(nameof(values));
 			Contract.EndContractBlock();
 
-			if (values == null) return target;
-
 			var e = values.GetEnumerator();
 			if (!e.MoveNext()) return target;
 			if (target.Length != 0) target.Append(separator);
@@ -243,7 +288,7 @@ namespace Open.Text
 		/// <summary>
 		/// Appends values to StringBuilder prefixing the provided separator.
 		/// </summary>
-		public static StringBuilder AppendWithSeparator<T>(this StringBuilder target, string separator, T value, params T[] values)
+		public static StringBuilder AppendWithSeparator(this StringBuilder target, string? separator, object value, params object[] values)
 		{
 			if (target is null)
 				throw new ArgumentNullException(nameof(values));
@@ -271,7 +316,7 @@ namespace Open.Text
 		/// <summary>
 		/// Appends values to StringBuilder prefixing the provided separator.
 		/// </summary>
-		public static StringBuilder AppendWithSeparator<T>(this StringBuilder target, char separator, T value, params T[] values)
+		public static StringBuilder AppendWithSeparator(this StringBuilder target, char separator, object value, params object[] values)
 		{
 			if (target is null)
 				throw new ArgumentNullException(nameof(values));
@@ -281,7 +326,7 @@ namespace Open.Text
 				target.Append(separator);
 			target.Append(value);
 			foreach (var v in values)
-				target.AppendWithSeparator(separator, v);
+				target.Append(separator).Append(v);
 
 			return target;
 		}
