@@ -61,36 +61,38 @@ namespace Open.Text
 		/// <summary>
 		/// Gets the string segment that precedes this one.
 		/// </summary>
-		public StringSegment Preceding()
-			=> IsValid ? Create(Source, 0, Index) : default;
+		/// <param name="includeSegment">When true, will include this segment.</param>
+		public StringSegment Preceding(bool includeSegment = false)
+			=> IsValid ? Create(Source, 0, includeSegment ? (Index + Length) : Index) : default;
 
 		/// <summary>
 		/// Gets the string segment that follows this one.
 		/// </summary>
-		public StringSegment Following()
-			=> IsValid ? Create(Source, Index + Length) : default;
+		/// <param name="includeSegment">When true, will include this segment.</param>
+		public StringSegment Following(bool includeSegment = false)
+			=> IsValid ? Create(Source, includeSegment ? Index : (Index + Length)) : default;
 
 		/// <inheritdoc cref="Preceding"/>
 		/// <param name="maxCharacters">The max number of characters to get.</param>
-		public StringSegment Preceding(int maxCharacters)
+		public StringSegment Preceding(int maxCharacters, bool includeSegment = false)
 		{
 			if (maxCharacters < 0) throw new ArgumentOutOfRangeException(nameof(maxCharacters), maxCharacters, "Must be at least zero.");
 			if (!IsValid) return default;
-			if (maxCharacters == 0) return new(Source, Index, 0);
+			if (maxCharacters == 0) return includeSegment ? this : new(Source, Index, 0);
 			var start = Math.Max(0, Index - maxCharacters);
-			return new(Source, start, Index - start);
+			return new(Source, start, includeSegment ? (Index - start + Length) : (Index - start));
 		}
 
 		/// <inheritdoc cref="Following"/>
 		/// <param name="maxCharacters">The max number of characters to get.</param>
-		public StringSegment Following(int maxCharacters)
+		public StringSegment Following(int maxCharacters, bool includeSegment = false)
 		{
 			if (maxCharacters < 0) throw new ArgumentOutOfRangeException(nameof(maxCharacters), maxCharacters, "Must be at least zero.");
 			if (!IsValid) return default;
-			var start = Index + Length;
-			if (maxCharacters == 0) return new(Source, start, 0);
-			var len = Source.Length;
-			return new(Source, start, Math.Min(maxCharacters, len - start));
+			var start = includeSegment ? Index : (Index + Length);
+			if (maxCharacters == 0) return includeSegment ? this : new(Source, start, 0);
+			var len = Math.Min(includeSegment ? (maxCharacters + Length) : maxCharacters, Source.Length - start);
+			return new(Source, start, len);
 		}
 
 		/// <summary>
@@ -130,7 +132,11 @@ namespace Open.Text
 		///	</param>
 		public StringSegment Slice(int offset, int length, bool ignoreLengthBoundary = false)
 		{
-			if (!IsValid) return default;
+			if (!IsValid)
+			{
+				if (offset == 0 && length == 0) return this;
+				throw new InvalidOperationException("Cannot slice a null value.");
+			}
 			var newIndex = Index + offset;
 			if (newIndex < 0) throw new ArgumentOutOfRangeException(nameof(offset), offset, "Cannot index less than the start of the string.");
 			var newEnd = newIndex + length;
@@ -142,7 +148,7 @@ namespace Open.Text
 					if (newIndex > end) throw new ArgumentOutOfRangeException(nameof(offset), offset, "Index is greater than the end of the source string.");
 					throw new ArgumentOutOfRangeException(nameof(length), length, "Desired length will extend greater than the end of the source string.");
 				}
-				return new(Source, newIndex, end);
+				return new(Source, newIndex, length);
 			}
 			else
 			{
@@ -152,7 +158,7 @@ namespace Open.Text
 					if (newIndex > end) throw new ArgumentOutOfRangeException(nameof(offset), offset, "Index is greater than the length of the segment.");
 					throw new ArgumentOutOfRangeException(nameof(length), length, "Desired length will extend greater than the length of the segment.");
 				}
-				return new(Source, newIndex, end);
+				return new(Source, newIndex, length);
 			}
 
 		}
@@ -162,6 +168,21 @@ namespace Open.Text
 		/// </summary>
 		public bool Equals(StringSegment other)
 			=> Index == other.Index & Length == other.Length && Source == other.Source;
+
+
+		/// <inheritdoc cref="string.Equals(string, StringComparison)">
+		public bool Equals(string? other, StringComparison stringComparison = StringComparison.Ordinal)
+		{
+			if (other is null) return !IsValid;
+			if (other.Length != Length) return false;
+			return AsSpan().Equals(other, stringComparison);
+		}
+
+		public bool Equals(in ReadOnlySpan<char> other, StringComparison stringComparison = StringComparison.Ordinal)
+		{
+			if (other.Length != Length) return false;
+			return AsSpan().Equals(other, stringComparison);
+		}
 
 		/// <inheritdoc />
 		public override bool Equals(object? obj)

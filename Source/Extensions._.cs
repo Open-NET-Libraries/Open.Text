@@ -333,7 +333,7 @@ namespace Open.Text
 			if (writer is null) throw new ArgumentNullException(nameof(writer));
 			Contract.EndContractBlock();
 
-			if (s != null) writer.Write(s);
+			if (s is not null) writer.Write(s);
 			writer.Write(NEWLINE);
 		}
 
@@ -345,7 +345,7 @@ namespace Open.Text
 		/// <param name="values">The values to inject.</param>
 		/// <param name="cultureInfo">The optional culture info.  Default is invariant.</param>
 		/// <returns>The resultant string.</returns>
-		public static string Supplant<T>(this string format, T[] values, CultureInfo? cultureInfo = default)
+		public static string Supplant<T>(this string format, T[]? values, CultureInfo? cultureInfo = default)
 			=> values is null ? format : values.Length switch
 			{
 				0 => format,
