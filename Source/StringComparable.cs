@@ -35,6 +35,10 @@ namespace Open.Text
 			};
 		}
 
+#if NETSTANDARD2_1_OR_GREATER
+		public override int GetHashCode()
+			=> HashCode.Combine(Source, Type);
+#else
 		public override int GetHashCode()
 		{
 			int hashCode = 141257509;
@@ -42,9 +46,10 @@ namespace Open.Text
 			hashCode = hashCode * -1521134295 + Type.GetHashCode();
 			return hashCode;
 		}
+#endif
 
-		public static bool operator ==(StringComparable a, StringComparable? b) => a.Equals(b);
-		public static bool operator !=(StringComparable a, StringComparable? b) => !a.Equals(b);
+		public static bool operator ==(StringComparable a, StringComparable b) => a.Equals(b);
+		public static bool operator !=(StringComparable a, StringComparable b) => !a.Equals(b);
 
 		public static bool operator ==(StringComparable a, string? b) => a.Equals(b);
 		public static bool operator !=(StringComparable a, string? b) => !a.Equals(b);
