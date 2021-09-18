@@ -31,6 +31,7 @@ namespace Open.Text.Tests
 		{
 			var roSpan = value.AsSpan();
 			var span = roSpan.ToArray().AsSpan();
+			Assert.True(value.AsComparable(comparison) == roSpan);
 			Assert.True(roSpan.Equals(value, comparison));
 			Assert.True(value.TrimmedEquals(value, comparison));
 			Assert.True(value.TrimmedEquals(roSpan, comparison));
@@ -60,6 +61,7 @@ namespace Open.Text.Tests
 			var roSpan = value.AsSpan();
 			var span = roSpan.ToArray().AsSpan();
 			Assert.False(roSpan.Equals(other, comparison));
+			Assert.True(value.AsComparable(comparison) != other);
 			if (other is not null)
 			{
 				var oRoSpan = other.AsSpan();
