@@ -46,9 +46,9 @@ namespace Open.Text.Tests
 			Assert.Equal(expected, value);
 			Assert.True(value == expected);
 			Assert.True(value.Equals(expected));
-			Assert.True(value == new EnumValueCaseIgnored<Greek>(expected));
+			Assert.True(value == new EnumValue<Greek>(expected));
 			Assert.False(value != expected);
-			Assert.False(value != new EnumValueCaseIgnored<Greek>(expected));
+			Assert.False(value != new EnumValue<Greek>(expected));
 		}
 	}
 }
