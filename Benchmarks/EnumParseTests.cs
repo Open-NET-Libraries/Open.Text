@@ -22,7 +22,7 @@ namespace Open.Text.Benchmarks
 		static readonly string[] ValidValues = new string[] { Greek.Alpha.ToString(), Greek.Epsilon.ToString(), Greek.Phi.ToString() };
 		static readonly string[] InvalidValues = new string[] { "Apple", "Orange", "Pineapple" };
 
-		[Benchmark(Baseline = true)]
+		//[Benchmark(Baseline = true)]
 		public Greek EnumParse()
 		{
 			Greek e = Greek.None;
@@ -46,7 +46,128 @@ namespace Open.Text.Benchmarks
 			return e;
 		}
 
+		private static bool TryParseBySwitch(string value, bool ignoreCase, out Greek e)
+		{
+			if(ignoreCase)
+			{
+				if (value.Equals(nameof(Greek.Alpha), StringComparison.OrdinalIgnoreCase))
+				{
+					e = Greek.Alpha;
+					return true;
+				}
+
+				if (value.Equals(nameof(Greek.Beta), StringComparison.OrdinalIgnoreCase))
+				{
+					e = Greek.Beta;
+					return true;
+				}
+
+				if (value.Equals(nameof(Greek.Cappa), StringComparison.OrdinalIgnoreCase))
+				{
+					e = Greek.Cappa;
+					return true;
+				}
+
+				if (value.Equals(nameof(Greek.Delta), StringComparison.OrdinalIgnoreCase))
+				{
+					e = Greek.Delta;
+					return true;
+				}
+
+				if (value.Equals(nameof(Greek.Epsilon), StringComparison.OrdinalIgnoreCase))
+				{
+					e = Greek.Epsilon;
+					return true;
+				}
+
+				if (value.Equals(nameof(Greek.Gamma), StringComparison.OrdinalIgnoreCase))
+				{
+					e = Greek.Gamma;
+					return true;
+				}
+
+				if (value.Equals(nameof(Greek.Omega), StringComparison.OrdinalIgnoreCase))
+				{
+					e = Greek.Omega;
+					return true;
+				}
+
+				if (value.Equals(nameof(Greek.Theta), StringComparison.OrdinalIgnoreCase))
+				{
+					e = Greek.Theta;
+					return true;
+				}
+
+				if (value.Equals(nameof(Greek.None), StringComparison.OrdinalIgnoreCase))
+				{
+					e = Greek.None;
+					return true;
+				}
+
+				e = default!;
+				return false;
+			}
+
+			switch (value)
+			{
+				case nameof(Greek.Alpha):
+					e = Greek.Alpha;
+					return true;
+				case nameof(Greek.Beta):
+					e = Greek.Beta;
+					return true;
+				case nameof(Greek.Cappa):
+					e = Greek.Cappa;
+					return true;
+				case nameof(Greek.Delta):
+					e = Greek.Delta;
+					return true;
+				case nameof(Greek.Epsilon):
+					e = Greek.Epsilon;
+					return true;
+				case nameof(Greek.Gamma):
+					e = Greek.Gamma;
+					return true;
+				case nameof(Greek.Omega):
+					e = Greek.Omega;
+					return true;
+				case nameof(Greek.Theta):
+					e = Greek.Theta;
+					return true;
+				case nameof(Greek.None):
+					e = Greek.None;
+					return true;
+				default:
+					e = default!;
+					return false;
+			}
+		}
+
 		[Benchmark]
+		public Greek Switch()
+		{
+			Greek e = Greek.None;
+			if (UseValid)
+			{
+				foreach (string s in ValidValues)
+				{
+					if (!TryParseBySwitch(s, IgnoreCase, out e))
+						throw new Exception("Invalid.");
+				}
+			}
+			else
+			{
+				foreach (string s in InvalidValues)
+				{
+					if (TryParseBySwitch(s, IgnoreCase, out e))
+						throw new Exception("Valid.");
+				}
+
+			}
+			return e;
+		}
+
+		//[Benchmark]
 		public Greek EnumValueParse()
 		{
 			Greek e = Greek.None;
@@ -71,7 +192,7 @@ namespace Open.Text.Benchmarks
 		}
 
 
-		[Benchmark]
+		//[Benchmark]
 		public Greek FastEnumParse()
 		{
 			Greek e = Greek.None;
