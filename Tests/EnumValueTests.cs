@@ -19,7 +19,8 @@ namespace Open.Text.Tests
 			CheckImplicit(value, (Greek)Enum.Parse(typeof(Greek), value));
 			var lower = value.ToLower();
 			CheckImplicitCaseIgnored(lower, (Greek)Enum.Parse(typeof(Greek), lower, true));
-			Assert.True(EnumValueCaseIgnored<Greek>.TryParse(value, out _));
+			Assert.True(EnumValue.TryParse<Greek>(lower, true, out _));
+			Assert.False(EnumValue.TryParse<Greek>(lower, out _));
 		}
 
 		[Theory]
@@ -28,10 +29,10 @@ namespace Open.Text.Tests
 		public static void EvalValueParseFail(string value)
 		{
 			Assert.Throws<ArgumentException>(() => Enum.Parse(typeof(Greek), value));
-			Assert.False(EnumValueCaseIgnored<Greek>.TryParse(value, out _));
+			Assert.False(EnumValue.TryParse<Greek>(value, out _));
 			Assert.Throws<ArgumentException>(() => _ = new EnumValue<Greek>(value));
 			Assert.Throws<ArgumentException>(() => _ = new EnumValueCaseIgnored<Greek>(value));
-			Assert.False(EnumValueCaseIgnored<Greek>.TryParse(value, out _));
+			Assert.False(EnumValue.TryParse<Greek>(value, true, out _));
 		}
 
 		static void CheckImplicit(EnumValue<Greek> value, Greek expected)

@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
 
 namespace Open.Text
 {
@@ -43,72 +40,35 @@ namespace Open.Text
 		/// </summary>
 		public override string ToString() => Value.ToString();
 
-		static readonly Func<string, TEnum> Parser = CreateParseEnumDelegate();
+		internal static readonly ImmutableDictionary<string, TEnum> Lookup = CreateLookup();
 
 		/// <summary>
-		/// Uses an expression tree switch to get a matching enum value.
+		/// Uses a case-senstive dictionary lookup to get a matching enum value.
 		/// </summary>
 		/// <param name="value">The string represnting the enum to search for.</param>
 		/// <returns>The enum that represents the string <paramref name="value"/> provided.</returns>
 		/// <exception cref="ArgumentNullException">value is null</exception>
 		/// <exception cref="ArgumentException">Requested <paramref name="value"/> was not found.</exception>
 		public static TEnum Parse(string value)
-		{
-			if (value is null)
-				throw new ArgumentNullException(nameof(value));
-
-			try
-			{
-				return Parser(value);
-			}
-			catch (ArgumentException ex)
-			{
-				throw new ArgumentException($"Requested value '{value}' was not found.", nameof(value), ex);
-			}
-		}
+			=> TryParse(value, out var e) ? e : throw new ArgumentException($"Requested value '{value}' was not found.", nameof(value));
 
 		/// <summary>
-		/// Uses an expression tree switch to get a matching enum value.
+		/// Uses a case-senstive dictionary lookup to get a matching enum value.
 		/// </summary>
 		/// <returns>true if the value found; otherwise false.</returns>
 		/// <exception cref="ArgumentNullException"/>
 		public static bool TryParse(string value, out TEnum e)
 		{
-			try
-			{
-				e = Parser(value);
-				return true;
-			}
-			catch (ArgumentException)
-			{
-				e = default!;
-				return false;
-			}
+			if (Lookup.TryGetValue(value, out e!)) return true;
+			e = default!;
+			return false;
 		}
 
-		// https://stackoverflow.com/questions/26678181/enum-parse-vs-switch-performance
-		static Func<string, TEnum> CreateParseEnumDelegate()
-		{
-			var eValue = Expression.Parameter(typeof(string), "value"); // (string value)
-			var tEnum = typeof(TEnum);
-
-			return
-			  Expression.Lambda<Func<string, TEnum>>(
-				Expression.Block(tEnum,
-				  Expression.Switch(tEnum, eValue,
-					Expression.Block(tEnum,
-					  Expression.Throw(Expression.New(typeof(ArgumentException).GetConstructor(Type.EmptyTypes))),
-					  Expression.Default(tEnum)
-					),
-					null,
-					Enum.GetValues(tEnum).Cast<object>().Select(v => Expression.SwitchCase(
-					  Expression.Constant(v),
-					  Expression.Constant(v.ToString())
-					)).ToArray()
-				  )
-				), eValue
-			  ).Compile();
-		}
+		static ImmutableDictionary<string, TEnum> CreateLookup()
+			=> Enum
+				.GetValues(typeof(TEnum))
+				.Cast<TEnum>()
+				.ToImmutableDictionary(v => v.ToString(), v => v);
 
 		/// <summary>
 		/// Indicates whether this instance matches the enum value of <paramref name="other"/>.
@@ -184,14 +144,12 @@ namespace Open.Text
 		/// <inheritdoc cref="EnumValue{TEnum}.ToString"/>
 		public override string ToString() => Value.ToString();
 
-		internal static readonly ImmutableDictionary<string, TEnum> CaseInsensitiveLookup
-			= CreateCaseInsensitiveDictionary();
+		internal static readonly ImmutableDictionary<string, TEnum> Lookup = CreateLookup();
 
 		/// <summary>
 		/// Uses a case-insenstive dictionary lookup to get a matching enum value.
 		/// </summary>
 		/// <inheritdoc cref="EnumValue{TEnum}.Parse(string)" />
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static TEnum Parse(string value)
 			=> TryParse(value, out var e) ? e : throw new ArgumentException($"Requested value '{value}' was not found.", nameof(value));
 
@@ -201,12 +159,12 @@ namespace Open.Text
 		/// <inheritdoc cref="EnumValue{TEnum}.TryParse(string, out TEnum)"/>
 		public static bool TryParse(string value, out TEnum e)
 		{
-			if (CaseInsensitiveLookup.TryGetValue(value, out e!)) return true;
+			if (Lookup.TryGetValue(value, out e!)) return true;
 			e = default!;
 			return false;
 		}
 
-		static ImmutableDictionary<string, TEnum> CreateCaseInsensitiveDictionary()
+		static ImmutableDictionary<string, TEnum> CreateLookup()
 			=> Enum
 				.GetValues(typeof(TEnum))
 				.Cast<TEnum>()
