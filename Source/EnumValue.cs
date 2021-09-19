@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
@@ -40,7 +41,7 @@ namespace Open.Text
 		/// </summary>
 		public override string ToString() => Value.ToString();
 
-		internal static readonly ImmutableDictionary<string, TEnum> Lookup = CreateLookup();
+		static readonly (string Name, TEnum Value)[]?[] Lookup = CreateLookup();
 
 		/// <summary>
 		/// Uses a case-senstive dictionary lookup to get a matching enum value.
@@ -57,18 +58,49 @@ namespace Open.Text
 		/// </summary>
 		/// <returns>true if the value found; otherwise false.</returns>
 		/// <exception cref="ArgumentNullException"/>
-		public static bool TryParse(string value, out TEnum e)
+		public static bool TryParse(string? value, out TEnum e)
 		{
-			if (Lookup.TryGetValue(value, out e!)) return true;
+			if (value is null) goto notFound;
+			var len = value.Length;
+			if (len > Lookup.Length) goto notFound;
+			var r = Lookup[len];
+			if (r is null) goto notFound;
+
+			foreach(var item in r)
+			{
+				if (item.Name != value) continue;
+				e = item.Value;
+				return true;
+			}
+
+		notFound:
 			e = default!;
 			return false;
 		}
 
-		static ImmutableDictionary<string, TEnum> CreateLookup()
-			=> Enum
+		static (string Name, TEnum Value)[]?[] CreateLookup()
+		{
+			var longest = 0;
+			var d = new Dictionary<int, List<(string Name, TEnum Value)>>();
+			var values = Enum
 				.GetValues(typeof(TEnum))
-				.Cast<TEnum>()
-				.ToImmutableDictionary(v => v.ToString(), v => v);
+				.Cast<TEnum>();
+
+			foreach (var e in values)
+			{
+				var n = e.ToString();
+				var len = n.Length;
+				if (len > longest) longest = len;
+				if (!d.TryGetValue(len, out var v)) d.Add(len, v = new());
+				v.Add((n, e));
+			}
+
+			var result = new (string Name, TEnum Value)[longest][];
+			foreach (var i in d.Keys)
+				result[i] = d[i].ToArray();
+
+			return result;
+		}
 
 		/// <summary>
 		/// Indicates whether this instance matches the enum value of <paramref name="other"/>.
@@ -157,7 +189,7 @@ namespace Open.Text
 		/// Uses a case-insenstive dictionary lookup to get a matching enum value.
 		/// </summary>
 		/// <inheritdoc cref="EnumValue{TEnum}.TryParse(string, out TEnum)"/>
-		public static bool TryParse(string value, out TEnum e)
+		public static bool TryParse(string? value, out TEnum e)
 		{
 			if (Lookup.TryGetValue(value, out e!)) return true;
 			e = default!;
