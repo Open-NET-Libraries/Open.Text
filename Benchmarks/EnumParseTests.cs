@@ -22,7 +22,7 @@ namespace Open.Text.Benchmarks
 		static readonly string[] ValidValues = new string[] { Greek.Alpha.ToString(), Greek.Epsilon.ToString(), Greek.Phi.ToString() };
 		static readonly string[] InvalidValues = new string[] { "Apple", "Orange", "Pineapple" };
 
-		//[Benchmark(Baseline = true)]
+		[Benchmark(Baseline = true)]
 		public Greek EnumParse()
 		{
 			Greek e = Greek.None;
@@ -71,7 +71,7 @@ namespace Open.Text.Benchmarks
 		}
 
 
-		//[Benchmark]
+		[Benchmark]
 		public Greek FastEnumParse()
 		{
 			Greek e = Greek.None;
