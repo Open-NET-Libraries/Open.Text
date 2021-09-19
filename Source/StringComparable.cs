@@ -5,26 +5,50 @@ namespace Open.Text
 {
 	public struct StringComparable : IEquatable<StringComparable>, IEquatable<string>
 	{
+		/// <summary>
+		/// Constructs a StringComparable using the provided string and comparison type.
+		/// </summary>
+		/// <exception cref="ArgumentNullException"><paramref name="source"/> is null</exception>
 		public StringComparable(string source, StringComparison type)
 		{
 			Source = source ?? throw new ArgumentNullException(nameof(source));
 			Type = type;
 		}
 
+		/// <summary>
+		/// The string to use for comparison.
+		/// </summary>
 		public string Source { get; }
+
+		/// <summary>
+		/// The type of string comparison.
+		/// </summary>
 		public StringComparison Type { get; }
 
+		/// <summary>
+		/// The length of the string.
+		/// </summary>
 		public int Length => Source.Length;
 
+		/// <summary>
+		/// Compares <paramref name="other"/> if its value matches this instance.
+		/// </summary>
+		/// <returns>true if the value of <paramref name="other"/> matches; otherwise false. </returns>
 		public bool Equals(string? other)
 			=> Source.Equals(other, Type);
 
+		/// <inheritdoc cref="Equals(string?)"/>
 		public bool Equals(ReadOnlySpan<char> other)
 			=> Source.Equals(other, Type);
 
+		/// <inheritdoc cref="Equals(string?)"/>
 		public bool Equals(StringComparable other)
 			=> Source.Equals(other.Source, Type);
 
+		/// <summary>
+		/// Compares <paramref name="obj"/> if it is a string or StringComparable and if the value matches this instance.
+		/// </summary>
+		/// <returns>true if the value of <paramref name="obj"/> matches; otherwise false. </returns>
 		public override bool Equals(object obj)
 		{
 			return obj switch
@@ -35,6 +59,7 @@ namespace Open.Text
 			};
 		}
 
+		/// <inheritdoc />
 #if NETSTANDARD2_1_OR_GREATER
 		public override int GetHashCode()
 			=> HashCode.Combine(Source, Type);
@@ -65,14 +90,12 @@ namespace Open.Text
 		/// <summary>
 		/// Prepares a string for a specific StringComparison.
 		/// </summary>
-		/// <param name="type">The type of StrinComparison to perform.</param>
 		public static StringComparable AsComparable(this string source, StringComparison type)
 			=> new(source, type);
 
 		/// <summary>
 		/// Prepares a string to be case insensitive when comparing equality.
 		/// </summary>
-		/// <param name="source">The source string.</param>
 		/// <returns>A StringComparable that can be compared (== or !=) against other StringComparables, strings, and ReadOnlySpan&lt;char&gt;.</returns>
 		public static StringComparable AsCaseInsensitive(this string source)
 			=> new(source, StringComparison.OrdinalIgnoreCase);

@@ -225,9 +225,9 @@ namespace Open.Text
 
 			using var e = values.GetEnumerator();
 			if (!e.MoveNext()) return target;
-			if(target.Length!=0) target.Append(separator);
+			if (target.Length != 0) target.Append(separator);
 			target.Append(e.Current);
-			while(e.MoveNext())	target.Append(separator).Append(e.Current);
+			while (e.MoveNext()) target.Append(separator).Append(e.Current);
 
 			return target;
 		}

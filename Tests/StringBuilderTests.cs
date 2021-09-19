@@ -162,7 +162,7 @@ namespace Open.Text.Tests
 
 			var span = source.AsSpan();
 			var a = source.AsSpan().ToArray();
-			var joined = string.Join(separator??string.Empty, a);
+			var joined = string.Join(separator ?? string.Empty, a);
 			var list = a.ToList();
 			list.Insert(0, 'X');
 			var xValue = string.Join(separator, list);
