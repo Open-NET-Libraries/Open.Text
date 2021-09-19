@@ -46,9 +46,10 @@ namespace Open.Text
 		static readonly Func<string, TEnum> Parser = CreateParseEnumDelegate();
 
 		/// <summary>
-		/// Uses a case-insenstive dictionary lookup to get a matching enum value.
+		/// Uses an expression tree switch to get a matching enum value.
 		/// </summary>
-		/// <returns>The enum the represents the string <paramref name="value"/> provided.</returns>
+		/// <param name="value">The string represnting the enum to search for.</param>
+		/// <returns>The enum that represents the string <paramref name="value"/> provided.</returns>
 		/// <exception cref="ArgumentNullException">value is null</exception>
 		/// <exception cref="ArgumentException">Requested <paramref name="value"/> was not found.</exception>
 		public static TEnum Parse(string value)
@@ -67,7 +68,7 @@ namespace Open.Text
 		}
 
 		/// <summary>
-		/// Uses a case-insenstive dictionary lookup to get a matching enum value.
+		/// Uses an expression tree switch to get a matching enum value.
 		/// </summary>
 		/// <returns>true if the value found; otherwise false.</returns>
 		/// <exception cref="ArgumentNullException"/>
@@ -126,7 +127,7 @@ namespace Open.Text
 		/// Indicates whether this instance matches the provided enum <paramref name="value"/>.
 		/// </summary>
 		/// <returns>true if <paramref name="value"/> and this instance's enum value are the same; otherwise false.</returns>
-		public bool Equals(TEnum value) => Value.Equals(value); 
+		public bool Equals(TEnum value) => Value.Equals(value);
 		public static bool operator ==(EnumValue<TEnum> left, TEnum right) => left.Value.Equals(right);
 		public static bool operator !=(EnumValue<TEnum> left, TEnum right) => !left.Value.Equals(right);
 
@@ -172,7 +173,7 @@ namespace Open.Text
 		/// <summary>
 		/// Parses the string value to construct an EnumValueCaseIgnored&lt;<typeparamref name="TEnum"/>&gt; instance.
 		/// </summary>
-		/// <exception cref="ArgumentNullException">value is null.</exception>
+		/// <exception cref="ArgumentNullException"><paramref name="value"/> is null.</exception>
 		public EnumValueCaseIgnored(string value)
 		{
 			Value = Parse(value);
@@ -186,30 +187,21 @@ namespace Open.Text
 		internal static readonly ImmutableDictionary<string, TEnum> CaseInsensitiveLookup
 			= CreateCaseInsensitiveDictionary();
 
-		/// <inheritdoc cref="EnumValue{TEnum}.Parse(string)" />
 		/// <summary>
-		/// Uses an expression tree switch to get a matching enum value.
+		/// Uses a case-insenstive dictionary lookup to get a matching enum value.
 		/// </summary>
+		/// <inheritdoc cref="EnumValue{TEnum}.Parse(string)" />
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static TEnum Parse(string value)
-		{
-			try
-			{
-				return CaseInsensitiveLookup[value];
-			}
-			catch (KeyNotFoundException ex)
-			{
-				throw new ArgumentException($"Requested value '{value}' was not found.", nameof(value), ex);
-			}
-		}
+			=> TryParse(value, out var e) ? e : throw new ArgumentException($"Requested value '{value}' was not found.", nameof(value));
 
-		/// <inheritdoc cref="EnumValue{TEnum}.TryParse(string, out TEnum)"/>
 		/// <summary>
-		/// Uses an expression tree switch to get a matching enum value.
+		/// Uses a case-insenstive dictionary lookup to get a matching enum value.
 		/// </summary>
+		/// <inheritdoc cref="EnumValue{TEnum}.TryParse(string, out TEnum)"/>
 		public static bool TryParse(string value, out TEnum e)
 		{
-			if(CaseInsensitiveLookup.TryGetValue(value, out e!)) return true;
+			if (CaseInsensitiveLookup.TryGetValue(value, out e!)) return true;
 			e = default!;
 			return false;
 		}
@@ -257,5 +249,42 @@ namespace Open.Text
 			var eType = typeof(TEnum);
 			return $"{eType.Name}.{Value} [EnumValueCaseIgnored<{eType.FullName}>]";
 		}
+	}
+
+	public static class EnumValue
+	{
+		/// <inheritdoc cref="EnumValue{TEnum}.Parse(string)"/>
+		public static TEnum Parse<TEnum>(string value)
+			where TEnum : Enum
+			=> EnumValue<TEnum>.Parse(value);
+
+		/// <summary>
+		/// Converts the string representation of the name of one or more enumerated constants to an equivalent enumerated object.
+		/// A parameter specifies whether the operation is case-insensitive.
+		/// </summary>
+		/// <param name="ignoreCase">If true, will ignore case differences when looking for a match.</param>
+		/// <inheritdoc cref="EnumValue{TEnum}.Parse(string)"/>
+		public static TEnum Parse<TEnum>(string value, bool ignoreCase)
+			where TEnum : Enum
+			=> ignoreCase
+			? EnumValueCaseIgnored<TEnum>.Parse(value)
+			: EnumValue<TEnum>.Parse(value);
+
+		/// <inheritdoc cref="EnumValue{TEnum}.TryParse(string, out TEnum)"/>
+		public static bool TryParse<TEnum>(string value, out TEnum e)
+			where TEnum : Enum
+			=> EnumValue<TEnum>.TryParse(value, out e);
+
+		/// <inheritdoc cref="EnumValue{TEnum}.TryParse(string, out TEnum)"/>
+		/// <summary>
+		/// Converts the string representation of the name of one or more enumerated constants to an equivalent enumerated object.
+		/// A parameter specifies whether the operation is case-insensitive.
+		/// </summary>
+		/// <param name="ignoreCase">If true, will ignore case differences when looking for a match.</param>
+		public static bool TryParse<TEnum>(string value, bool ignoreCase, out TEnum e)
+			where TEnum : Enum
+			=> ignoreCase
+			? EnumValueCaseIgnored<TEnum>.TryParse(value, out e)
+			: EnumValue<TEnum>.TryParse(value, out e);
 	}
 }
