@@ -53,8 +53,8 @@ namespace Open.Text
 		}
 
 
-		/// <inheritdoc cref="FirstSplit(ReadOnlySpan{char}, char, out int)"/>
 		/// <param name="startIndex">The index to start the split.</param>
+		/// <inheritdoc cref="FirstSplit(ReadOnlySpan{char}, char, out int)"/>
 		public static ReadOnlySpan<char> FirstSplit(this string source,
 			char splitCharacter,
 			out int nextIndex,
@@ -74,8 +74,8 @@ namespace Open.Text
 			return FirstSplitSpan(source, startIndex, source.IndexOf(splitCharacter, startIndex), 1, out nextIndex);
 		}
 
-		/// <inheritdoc cref="FirstSplit(ReadOnlySpan{char}, ReadOnlySpan{char}, out int, StringComparison)"/>
 		/// <param name="startIndex">The index to start the split.</param>
+		/// <inheritdoc cref="FirstSplit(ReadOnlySpan{char}, ReadOnlySpan{char}, out int, StringComparison)"/>
 		public static ReadOnlySpan<char> FirstSplit(this string source,
 			string splitSequence,
 			out int nextIndex,

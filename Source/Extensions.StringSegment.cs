@@ -12,13 +12,13 @@ namespace Open.Text
 		public static StringSegment AsSegment(this string source)
 			=> StringSegment.Create(source);
 
-		/// <inheritdoc cref="AsSegment(string)"/>
 		/// <param name="start">The index to start the segment.</param>
+		/// <inheritdoc cref="AsSegment(string)"/>
 		public static StringSegment AsSegment(this string source, int start)
 			=> StringSegment.Create(source, start);
 
-		/// <inheritdoc cref="AsSegment(string, int)"/>
 		/// <param name="length">The length of the segment.</param>
+		/// <inheritdoc cref="AsSegment(string, int)"/>
 		public static StringSegment AsSegment(this string source, int start, int length)
 			=> StringSegment.Create(source, start, length);
 
@@ -87,10 +87,10 @@ namespace Open.Text
 			return First(source, search.AsSpan(), comparisonType);
 		}
 
-		/// <inheritdoc cref="First(string, string, StringComparison)"/>
 		/// <summary>
 		/// Finds the last instance of a string and returns a StringSegment for subsequent use.
 		/// </summary>
+		/// <inheritdoc cref="First(string, string, StringComparison)"/>
 		public static StringSegment Last(this string source, string search, StringComparison comparisonType = StringComparison.Ordinal)
 		{
 			if (source is null) throw new ArgumentNullException(nameof(source));
@@ -104,11 +104,11 @@ namespace Open.Text
 			return i == -1 ? default : StringSegment.Create(source, i, search.Length);
 		}
 
-		/// <inheritdoc cref="First(string, Regex)"/>
 		/// <summary>
 		/// Finds the last instance of a pattern and returns a StringSegment for subsequent use.
 		/// </summary>
 		/// <remarks>If the pattern is right-to-left, then it will return the last segment from the right (first segment from the left).</remarks>
+		/// <inheritdoc cref="First(string, Regex)"/>
 		public static StringSegment Last(this string source, Regex pattern)
 		{
 			if (source is null) throw new ArgumentNullException(nameof(source));

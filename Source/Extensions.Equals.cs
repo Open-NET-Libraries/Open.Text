@@ -130,11 +130,11 @@ namespace Open.Text
 			};
 		}
 
-		/// <inheritdoc cref="TrimmedEquals(string, in ReadOnlySpan{char}, StringComparison)"/>
 		/// <summary>
 		/// Optimized equals for comparing a trimmed string with another string.
 		/// </summary>
 		/// <param name="other">The string to compare to.</param>
+		/// <inheritdoc cref="TrimmedEquals(string, in ReadOnlySpan{char}, StringComparison)"/>
 		public static bool TrimmedEquals(this string? source, string? other, StringComparison stringComparison = StringComparison.Ordinal)
 		{
 			if (source is null) return other is null;
@@ -153,8 +153,8 @@ namespace Open.Text
 		}
 
 
-		/// <inheritdoc cref="TrimmedEquals(string, in ReadOnlySpan{char}, StringComparison)"/>
 		/// <param name="trimChar">The character to trim.</param>
+		/// <inheritdoc cref="TrimmedEquals(string, in ReadOnlySpan{char}, StringComparison)"/>
 		public static bool TrimmedEquals(this string? source, in ReadOnlySpan<char> other, char trimChar, StringComparison stringComparison = StringComparison.Ordinal)
 		{
 			if (source is null) return false;
@@ -171,8 +171,8 @@ namespace Open.Text
 			};
 		}
 
-		/// <inheritdoc cref="TrimmedEquals(string?, string?, StringComparison)"/>
 		/// <param name="trimChar">The character to trim.</param>
+		/// <inheritdoc cref="TrimmedEquals(string?, string?, StringComparison)"/>
 		public static bool TrimmedEquals(this string? source, string? other, char trimChar, StringComparison stringComparison = StringComparison.Ordinal)
 		{
 			if (source is null) return other is null;
@@ -190,8 +190,8 @@ namespace Open.Text
 			};
 		}
 
-		/// <inheritdoc cref="TrimmedEquals(string, in ReadOnlySpan{char}, StringComparison)"/>
 		/// <param name="trimChars">The characters to trim.</param>
+		/// <inheritdoc cref="TrimmedEquals(string, in ReadOnlySpan{char}, StringComparison)"/>
 		public static bool TrimmedEquals(this string? source, in ReadOnlySpan<char> other, in ReadOnlySpan<char> trimChars, StringComparison stringComparison = StringComparison.Ordinal)
 		{
 			if (source is null) return false;
@@ -208,8 +208,8 @@ namespace Open.Text
 			};
 		}
 
-		/// <inheritdoc cref="TrimmedEquals(string?, string?, StringComparison)"/>
 		/// <param name="trimChars">The characters to trim.</param>
+		/// <inheritdoc cref="TrimmedEquals(string?, string?, StringComparison)"/>
 		public static bool TrimmedEquals(this string? source, string? other, in ReadOnlySpan<char> trimChars, StringComparison stringComparison = StringComparison.Ordinal)
 		{
 			if (source is null) return other is null;

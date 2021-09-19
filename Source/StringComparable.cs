@@ -86,10 +86,10 @@ namespace Open.Text
 
 	public static class StringComparableExtensions
 	{
-		/// <inheritdoc cref="AsCaseInsensitive(string)"/>
 		/// <summary>
 		/// Prepares a string for a specific StringComparison.
 		/// </summary>
+		/// <inheritdoc cref="AsCaseInsensitive(string)"/>
 		public static StringComparable AsComparable(this string source, StringComparison type)
 			=> new(source, type);
 
@@ -100,28 +100,27 @@ namespace Open.Text
 		public static StringComparable AsCaseInsensitive(this string source)
 			=> new(source, StringComparison.OrdinalIgnoreCase);
 
-		/// <inheritdoc cref="AsCaseInsensitive(string)"/>
 		/// <summary>
 		/// Prepares a string to be invariant culture and case insensitive when comparing equality.
 		/// </summary>
+		/// <inheritdoc cref="AsCaseInsensitive(string)"/>
 		public static StringComparable AsCaseInsensitiveInvariantCulture(this string source)
 			=> new(source, StringComparison.InvariantCultureIgnoreCase);
 
-		/// <inheritdoc cref="AsCaseInsensitive(string)"/>
 		/// <summary>
 		/// Prepares a string to be invariant culture and case insensitive when comparing equality.
 		/// </summary>
+		/// <inheritdoc cref="AsCaseInsensitive(string)"/>
 		public static StringComparable AsCaseInsensitiveCurrentCulture(this string source)
 			=> new(source, StringComparison.CurrentCultureIgnoreCase);
 
-		/// <inheritdoc cref="AsCaseInsensitive(string)"/>
 		/// <summary>
 		/// Prepares a string to be current culture and case sensitive when comparing equality.
 		/// </summary>
+		/// <inheritdoc cref="AsCaseInsensitive(string)"/>
 		public static StringComparable AsCurrentCulture(this string source)
 			=> new(source, StringComparison.CurrentCulture);
 
-		/// <inheritdoc cref="AsCaseInsensitive(string)"/>
 		/// <summary>
 		/// Prepares a string to be invariant culture and case sensitive when comparing equality.
 		/// </summary>

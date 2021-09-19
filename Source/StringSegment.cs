@@ -72,8 +72,8 @@ namespace Open.Text
 		public StringSegment Following(bool includeSegment = false)
 			=> IsValid ? Create(Source, includeSegment ? Index : (Index + Length)) : default;
 
-		/// <inheritdoc cref="Preceding"/>
 		/// <param name="maxCharacters">The max number of characters to get.</param>
+		/// <inheritdoc cref="Preceding"/>
 		public StringSegment Preceding(int maxCharacters, bool includeSegment = false)
 		{
 			if (maxCharacters < 0) throw new ArgumentOutOfRangeException(nameof(maxCharacters), maxCharacters, "Must be at least zero.");
@@ -83,8 +83,8 @@ namespace Open.Text
 			return new(Source, start, includeSegment ? (Index - start + Length) : (Index - start));
 		}
 
-		/// <inheritdoc cref="Following"/>
 		/// <param name="maxCharacters">The max number of characters to get.</param>
+		/// <inheritdoc cref="Following"/>
 		public StringSegment Following(int maxCharacters, bool includeSegment = false)
 		{
 			if (maxCharacters < 0) throw new ArgumentOutOfRangeException(nameof(maxCharacters), maxCharacters, "Must be at least zero.");

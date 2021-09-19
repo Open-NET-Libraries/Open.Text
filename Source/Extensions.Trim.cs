@@ -30,9 +30,9 @@ namespace Open.Text
 			return source;
 		}
 
-		/// <inheritdoc cref="TrimStartPattern(string, Regex)"/>
 		/// <param name="comparisonType">The comparison type to use when searching.  Default is ordinal.</param>
 		/// <param name="max">The maximum number of times to remove the specified sequence.  -1 (default) = all instances.</param>
+		/// <inheritdoc cref="TrimStartPattern(string, Regex)"/>
 		public static ReadOnlySpan<char> TrimStartPattern(this ReadOnlySpan<char> source,
 			in ReadOnlySpan<char> pattern,
 			StringComparison comparisonType = StringComparison.Ordinal,
@@ -59,8 +59,8 @@ namespace Open.Text
 			return TrimStartPatternCore(source, pattern.AsSpan(), comparisonType, max);
 		}
 
-		/// <inheritdoc cref="TrimStartPattern(ReadOnlySpan{char}, in ReadOnlySpan{char}, StringComparison, int)"/>
 		/// <remarks>To any allocations, call .AsSpan() before calling this method name.</remarks>
+		/// <inheritdoc cref="TrimStartPattern(ReadOnlySpan{char}, in ReadOnlySpan{char}, StringComparison, int)"/>
 		public static string TrimStartPattern(this string source,
 			string pattern,
 			StringComparison comparisonType = StringComparison.Ordinal,
@@ -181,8 +181,8 @@ namespace Open.Text
 			return source;
 		}
 
-		/// <inheritdoc cref="TrimEndPattern(string, Regex)"/>
 		/// <param name="comparisonType">The comparison type to use when searching.  Default is ordinal.</param>
+		/// <inheritdoc cref="TrimEndPattern(string, Regex, int)"/>
 		public static ReadOnlySpan<char> TrimEndPattern(this ReadOnlySpan<char> source,
 			in ReadOnlySpan<char> pattern,
 			StringComparison comparisonType = StringComparison.Ordinal,
@@ -211,8 +211,8 @@ namespace Open.Text
 			return TrimEndPatternCore(source, pattern.AsSpan(), comparisonType, max);
 		}
 
-		/// <inheritdoc cref="TrimEndPattern(ReadOnlySpan{char}, in ReadOnlySpan{char}, StringComparison, int)"/>
 		/// <remarks>To any allocations, call .AsSpan() before calling this method name.</remarks>
+		/// <inheritdoc cref="TrimEndPattern(ReadOnlySpan{char}, in ReadOnlySpan{char}, StringComparison, int)"/>
 		public static string TrimEndPattern(this string source,
 			string pattern,
 			StringComparison comparisonType = StringComparison.Ordinal,
