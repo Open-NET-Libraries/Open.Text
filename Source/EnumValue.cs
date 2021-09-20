@@ -40,11 +40,35 @@ namespace Open.Text
 		/// <summary>
 		/// Returns the string representation of the enum value.
 		/// </summary>
-		public override string ToString() => NameLookup[Value];
+		public override string ToString() => NameLookup(Value);
 
 		internal static readonly (string Name, TEnum Value)[]?[] Lookup = CreateLookup();
 
-		internal static readonly ImmutableSortedDictionary<TEnum, string> NameLookup = CreateNameLookup();
+		internal static readonly Func<TEnum, string> NameLookup = GetEnumNameDelegate();
+
+		static Func<TEnum, string> GetEnumNameDelegate()
+		{
+			var eValue = Expression.Parameter(typeof(TEnum), "value"); // (TEnum value)
+			var tEnum = typeof(TEnum);
+			var tResult = typeof(string);
+
+			return
+			  Expression.Lambda<Func<TEnum, string>>(
+				Expression.Block(tResult,
+				  Expression.Switch(tResult, eValue,
+					Expression.Block(tResult,
+					  Expression.Throw(Expression.New(typeof(Exception).GetConstructor(Type.EmptyTypes))),
+					  Expression.Default(tResult)
+					),
+					null,
+					Enum.GetValues(tEnum).Cast<Object>().Select(v => Expression.SwitchCase(
+					  Expression.Constant(v.ToString()),
+					  Expression.Constant(v)
+					)).ToArray()
+				  )
+				), eValue
+			  ).Compile();
+		}
 
 		static (string Name, TEnum Value)[]?[] CreateLookup()
 		{
@@ -267,6 +291,6 @@ namespace Open.Text
 		/// <param name="value">The enum value to get the name for.</param>
 		/// <returns>The name of the enum.</returns>
 		public static string GetName<TEnum>(TEnum value) where TEnum : Enum
-			=> EnumValue<TEnum>.NameLookup[value];
+			=> EnumValue<TEnum>.NameLookup(value);
 	}
 }

@@ -5,7 +5,7 @@ namespace Open.Text.Tests
 {
 	public static class EnumValueTests
 	{
-		enum Greek
+		public enum Greek
 		{
 			Alpha, Beta, Gamma
 		}
@@ -35,6 +35,18 @@ namespace Open.Text.Tests
 			Assert.False(EnumValue.TryParse<Greek>(value, true, out _));
 		}
 
+
+		[Theory]
+		[InlineData(Greek.Alpha)]
+		[InlineData(Greek.Beta)]
+		[InlineData(Greek.Gamma)]
+
+		public static void GetName(Greek expected)
+		{
+			var s = expected.ToString();
+			Assert.Equal(s, EnumValue.GetName(expected));
+		}
+
 		static void CheckImplicit(EnumValue<Greek> value, Greek expected)
 		{
 			Assert.Equal(expected, value);
@@ -54,5 +66,6 @@ namespace Open.Text.Tests
 			Assert.False(value != expected);
 			Assert.False(value != new EnumValue<Greek>(expected));
 		}
+
 	}
 }
