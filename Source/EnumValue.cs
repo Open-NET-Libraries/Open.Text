@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace Open.Text
 {
@@ -39,9 +40,11 @@ namespace Open.Text
 		/// <summary>
 		/// Returns the string representation of the enum value.
 		/// </summary>
-		public override string ToString() => Value.ToString();
+		public override string ToString() => NameLookup[Value];
 
 		internal static readonly (string Name, TEnum Value)[]?[] Lookup = CreateLookup();
+
+		internal static readonly ImmutableSortedDictionary<TEnum, string> NameLookup = CreateNameLookup();
 
 		static (string Name, TEnum Value)[]?[] CreateLookup()
 		{
@@ -66,6 +69,11 @@ namespace Open.Text
 
 			return result;
 		}
+
+		static ImmutableSortedDictionary<TEnum, string> CreateNameLookup()
+			=> Enum.GetValues(typeof(TEnum))
+				.Cast<TEnum>()
+				.ToImmutableSortedDictionary(v => v, v => v.ToString());
 
 		/// <summary>
 		/// Indicates whether this instance matches the enum value of <paramref name="other"/>.
@@ -251,5 +259,14 @@ namespace Open.Text
 			e = default!;
 			return false;
 		}
+
+		/// <summary>
+		/// Uses a dictionary to lookup the name of the enum value.
+		/// </summary>
+		/// <typeparam name="TEnum">The enum type.</typeparam>
+		/// <param name="value">The enum value to get the name for.</param>
+		/// <returns>The name of the enum.</returns>
+		public static string GetName<TEnum>(TEnum value) where TEnum : Enum
+			=> EnumValue<TEnum>.NameLookup[value];
 	}
 }
