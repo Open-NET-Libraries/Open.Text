@@ -1,5 +1,5 @@
-﻿using Open.Text.Benchmarks;
-using BenchmarkDotNet.Running;
+﻿using BenchmarkDotNet.Running;
+using Open.Text.Benchmarks;
 
 //BenchmarkRunner.Run<EnumParseTests>();
 BenchmarkRunner.Run<EnumToStringTests>();

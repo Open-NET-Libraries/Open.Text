@@ -371,29 +371,29 @@ namespace Open.Text
 					return ImmutableArray<string>.Empty;
 
 				case StringSplitOptions.RemoveEmptyEntries:
-				{
-					Debug.Assert(!source.IsEmpty);
-					var list = new List<string>();
+					{
+						Debug.Assert(!source.IsEmpty);
+						var list = new List<string>();
 
-				loop:
-					var result = source.FirstSplit(splitCharacter, out var nextIndex);
-					if (!result.IsEmpty) list.Add(result.ToString());
-					if (nextIndex == -1) return list;
-					source = source.Slice(nextIndex);
-					goto loop;
-				}
+					loop:
+						var result = source.FirstSplit(splitCharacter, out var nextIndex);
+						if (!result.IsEmpty) list.Add(result.ToString());
+						if (nextIndex == -1) return list;
+						source = source.Slice(nextIndex);
+						goto loop;
+					}
 
 				default:
-				{
-					Debug.Assert(!source.IsEmpty);
-					var list = new List<string>();
-				loop:
-					var result = source.FirstSplit(splitCharacter, out var nextIndex);
-					list.Add(result.IsEmpty ? string.Empty : result.ToString());
-					if (nextIndex == -1) return list;
-					source = source.Slice(nextIndex);
-					goto loop;
-				}
+					{
+						Debug.Assert(!source.IsEmpty);
+						var list = new List<string>();
+					loop:
+						var result = source.FirstSplit(splitCharacter, out var nextIndex);
+						list.Add(result.IsEmpty ? string.Empty : result.ToString());
+						if (nextIndex == -1) return list;
+						source = source.Slice(nextIndex);
+						goto loop;
+					}
 			}
 		}
 
@@ -419,29 +419,29 @@ namespace Open.Text
 					return ImmutableArray<string>.Empty;
 
 				case StringSplitOptions.RemoveEmptyEntries:
-				{
-					Debug.Assert(!source.IsEmpty);
-					var list = new List<string>();
+					{
+						Debug.Assert(!source.IsEmpty);
+						var list = new List<string>();
 
-				loop:
-					var result = source.FirstSplit(splitSequence, out var nextIndex, comparisonType);
-					if (!result.IsEmpty) list.Add(result.ToString());
-					if (nextIndex == -1) return list;
-					source = source.Slice(nextIndex);
-					goto loop;
-				}
+					loop:
+						var result = source.FirstSplit(splitSequence, out var nextIndex, comparisonType);
+						if (!result.IsEmpty) list.Add(result.ToString());
+						if (nextIndex == -1) return list;
+						source = source.Slice(nextIndex);
+						goto loop;
+					}
 
 				default:
-				{
-					Debug.Assert(!source.IsEmpty);
-					var list = new List<string>();
-				loop:
-					var result = source.FirstSplit(splitSequence, out var nextIndex, comparisonType);
-					list.Add(result.IsEmpty ? string.Empty : result.ToString());
-					if (nextIndex == -1) return list;
-					source = source.Slice(nextIndex);
-					goto loop;
-				}
+					{
+						Debug.Assert(!source.IsEmpty);
+						var list = new List<string>();
+					loop:
+						var result = source.FirstSplit(splitSequence, out var nextIndex, comparisonType);
+						list.Add(result.IsEmpty ? string.Empty : result.ToString());
+						if (nextIndex == -1) return list;
+						source = source.Slice(nextIndex);
+						goto loop;
+					}
 			}
 		}
 	}

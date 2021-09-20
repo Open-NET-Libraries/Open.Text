@@ -42,7 +42,7 @@ namespace Open.Text.Benchmarks
 
 		private static bool TryParseBySwitch(string value, bool ignoreCase, out Greek e)
 		{
-			if(ignoreCase)
+			if (ignoreCase)
 			{
 				if (value.Equals(nameof(Greek.Alpha), StringComparison.OrdinalIgnoreCase))
 				{
@@ -149,7 +149,7 @@ namespace Open.Text.Benchmarks
 		private static bool TryParseByLengthSwitch(string value, bool ignoreCase, out Greek e)
 		{
 			var len = value.Length;
-			switch(len)
+			switch (len)
 			{
 				case 3:
 					if (value.Equals(nameof(Greek.Phi), ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal))

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
@@ -62,7 +61,7 @@ namespace Open.Text
 					),
 					null,
 					Enum.GetValues(tEnum).Cast<Object>().Select(v => Expression.SwitchCase(
-					  Expression.Constant(v.ToString()),
+					  Expression.Constant(string.Intern(v.ToString())),
 					  Expression.Constant(v)
 					)).ToArray()
 				  )
@@ -80,7 +79,7 @@ namespace Open.Text
 
 			foreach (var e in values)
 			{
-				var n = e.ToString();
+				var n = string.Intern(e.ToString());
 				var len = n.Length;
 				if (len > longest) longest = len;
 				if (!d.TryGetValue(len, out var v)) d.Add(len, v = new());
@@ -93,11 +92,6 @@ namespace Open.Text
 
 			return result;
 		}
-
-		static ImmutableSortedDictionary<TEnum, string> CreateNameLookup()
-			=> Enum.GetValues(typeof(TEnum))
-				.Cast<TEnum>()
-				.ToImmutableSortedDictionary(v => v, v => v.ToString());
 
 		/// <summary>
 		/// Indicates whether this instance matches the enum value of <paramref name="other"/>.
@@ -171,15 +165,7 @@ namespace Open.Text
 		public TEnum Value { get; }
 
 		/// <inheritdoc cref="EnumValue{TEnum}.ToString"/>
-		public override string ToString() => Value.ToString();
-
-		internal static readonly ImmutableDictionary<string, TEnum> Lookup = CreateLookup();
-
-		static ImmutableDictionary<string, TEnum> CreateLookup()
-			=> Enum
-				.GetValues(typeof(TEnum))
-				.Cast<TEnum>()
-				.ToImmutableDictionary(v => v.ToString(), v => v, StringComparer.OrdinalIgnoreCase);
+		public override string ToString() => EnumValue<TEnum>.NameLookup(Value);
 
 		/// <inheritdoc cref="EnumValue{TEnum}.Equals(EnumValue{TEnum})"/>
 		public bool Equals(EnumValue<TEnum> other) => Value.Equals(other.Value);
@@ -270,11 +256,11 @@ namespace Open.Text
 			if (r is null) goto notFound;
 
 			var sc = ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
-			foreach (var item in r)
+			foreach (var (Name, Value) in r)
 			{
-				if (item.Name.Equals(value, sc))
+				if (Name.Equals(value, sc))
 				{
-					e = item.Value;
+					e = Value;
 					return true;
 				}
 			}
