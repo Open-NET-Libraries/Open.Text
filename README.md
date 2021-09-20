@@ -1,6 +1,6 @@
 # Open.Text
 
-A set of useful extensions for working with strings, spans, and value formatting.
+A set of useful extensions for working with strings, spans, enums, and value formatting.
 
 [![NuGet](https://img.shields.io/nuget/v/Open.Text.svg)](https://www.nuget.org/packages/Open.Text/)
 
