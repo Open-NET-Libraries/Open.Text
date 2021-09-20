@@ -64,6 +64,7 @@ instead of
 ```cs
 if(myString.Equals("HELLO!", StringComparison.OrdinalIgnoreCase)) { }
 ```
+---
 
 ### `EnumValue<TEnum>` & `EnumValueIgnoreCase<TEnum>`
 
