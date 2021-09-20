@@ -102,7 +102,7 @@ The implicit conversion between a `string` and `EnumValue<TEnum>` make this poss
 
 If you need to allow for case-insensitive comparison then simply use `EnumValueCaseIgnored<TEnum>` instead.
 
-The performance is outstanding as it uses an expression tree for case-sensitive matching and a dictionary for case-insensitive.
+The performance is outstanding as it uses the length of the names to build a tree in order to parse values and uses an expression tree instead of calling `.ToString()` on the value.
 
 ---
 
