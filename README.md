@@ -53,7 +53,7 @@ Instead of extensions like `string.BeforeFirst(search)`, now you can call `strin
 
 ---
 
-### `StringComparable` Extensions
+### `StringComparable` & `SpanComparable` Extensions
 
 ```cs
 if(myString.AsCaseInsensitive()=="HELLO!") { }
