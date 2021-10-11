@@ -1,7 +1,6 @@
-﻿namespace Open.Text.Benchmarks
+﻿namespace Open.Text.Benchmarks;
+
+public enum Greek
 {
-	public enum Greek
-	{
-		Alpha, Beta, Cappa, Delta, Epsilon, Gamma, Omega, Phi, Theta, None
-	}
+	Alpha, Beta, Cappa, Delta, Epsilon, Gamma, Omega, Phi, Theta, None
 }
