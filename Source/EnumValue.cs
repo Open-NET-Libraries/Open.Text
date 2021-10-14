@@ -12,6 +12,7 @@ namespace Open.Text;
 /// <remarks>String parsing or coercion is case sensitve and must be exact.</remarks>
 [DebuggerDisplay("{GetDebuggerDisplay()}")]
 public struct EnumValue<TEnum>
+	: IEquatable<EnumValue<TEnum>>, IEquatable<EnumValueCaseIgnored<TEnum>>, IEquatable<TEnum>
 	where TEnum : Enum
 {
 	/// <summary>
@@ -60,7 +61,7 @@ public struct EnumValue<TEnum>
 				  Expression.Default(tResult)
 				),
 				null,
-				Enum.GetValues(tEnum).Cast<Object>().Select(v => Expression.SwitchCase(
+				Enum.GetValues(tEnum).Cast<object>().Select(v => Expression.SwitchCase(
 				  Expression.Constant(string.Intern(v.ToString())),
 				  Expression.Constant(v)
 				)).ToArray()
@@ -107,10 +108,10 @@ public struct EnumValue<TEnum>
 	public static bool operator !=(EnumValue<TEnum> left, EnumValueCaseIgnored<TEnum> right) => !left.Value.Equals(right.Value);
 
 	/// <summary>
-	/// Indicates whether this instance matches the provided enum <paramref name="value"/>.
+	/// Indicates whether this instance matches the provided enum <paramref name="other"/>.
 	/// </summary>
-	/// <returns>true if <paramref name="value"/> and this instance's enum value are the same; otherwise false.</returns>
-	public bool Equals(TEnum value) => Value.Equals(value);
+	/// <returns>true if <paramref name="other"/> and this instance's enum value are the same; otherwise false.</returns>
+	public bool Equals(TEnum other) => Value.Equals(other);
 	public static bool operator ==(EnumValue<TEnum> left, TEnum right) => left.Value.Equals(right);
 	public static bool operator !=(EnumValue<TEnum> left, TEnum right) => !left.Value.Equals(right);
 
@@ -141,6 +142,7 @@ public struct EnumValue<TEnum>
 /// </summary>
 [DebuggerDisplay("{GetDebuggerDisplay()}")]
 public struct EnumValueCaseIgnored<TEnum>
+	: IEquatable<EnumValueCaseIgnored<TEnum>>, IEquatable<EnumValue<TEnum>>, IEquatable<TEnum>
 	where TEnum : Enum
 {
 	/// <summary>
@@ -176,7 +178,7 @@ public struct EnumValueCaseIgnored<TEnum>
 	public static bool operator !=(EnumValueCaseIgnored<TEnum> left, EnumValueCaseIgnored<TEnum> right) => !left.Value.Equals(right.Value);
 
 	/// <inheritdoc cref="EnumValue{TEnum}.Equals(TEnum)"/>
-	public bool Equals(TEnum value) => Value.Equals(value);
+	public bool Equals(TEnum other) => Value.Equals(other);
 	public static bool operator ==(EnumValueCaseIgnored<TEnum> left, TEnum right) => left.Value.Equals(right);
 	public static bool operator !=(EnumValueCaseIgnored<TEnum> left, TEnum right) => !left.Value.Equals(right);
 

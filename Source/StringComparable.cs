@@ -3,7 +3,8 @@ using System.Collections.Generic;
 
 namespace Open.Text;
 
-public struct StringComparable : IEquatable<StringComparable>, IEquatable<string>
+public struct StringComparable
+	: IEquatable<StringComparable>, IEquatable<string>
 {
 	/// <summary>
 	/// Constructs a StringComparable using the provided string and comparison type.
