@@ -116,11 +116,9 @@ public struct EnumValue<TEnum>
 
 	/// <inheritdoc />
 	public override bool Equals(object? obj)
-	{
-		return obj is TEnum e && Value.Equals(e)
-			|| obj is EnumValue<TEnum> v1 && Value.Equals(v1.Value)
-			|| obj is EnumValueCaseIgnored<TEnum> v2 && Value.Equals(v2.Value);
-	}
+		=> obj is TEnum e && Value.Equals(e)
+		|| obj is EnumValue<TEnum> v1 && Value.Equals(v1.Value)
+		|| obj is EnumValueCaseIgnored<TEnum> v2 && Value.Equals(v2.Value);
 
 	/// <inheritdoc />
 	public override int GetHashCode() => Value.GetHashCode();
@@ -184,11 +182,9 @@ public struct EnumValueCaseIgnored<TEnum>
 
 	/// <inheritdoc />
 	public override bool Equals(object? obj)
-	{
-		return obj is TEnum e && Value.Equals(e)
-			|| obj is EnumValueCaseIgnored<TEnum> v1 && Value.Equals(v1.Value)
-			|| obj is EnumValue<TEnum> v2 && Value.Equals(v2.Value);
-	}
+		=> obj is TEnum e && Value.Equals(e)
+		|| obj is EnumValueCaseIgnored<TEnum> v1 && Value.Equals(v1.Value)
+		|| obj is EnumValue<TEnum> v2 && Value.Equals(v2.Value);
 
 	/// <inheritdoc />
 	public override int GetHashCode() => Value.GetHashCode();
