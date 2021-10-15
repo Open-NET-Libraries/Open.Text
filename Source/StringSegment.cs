@@ -6,7 +6,8 @@ namespace Open.Text;
 /// <summary>
 /// Similar to an ArraySegment but specifically for strings.
 /// </summary>
-public readonly struct StringSegment
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2225:Operator overloads have named alternates", Justification = "AsSpan and AsMemory methods are available.")]
+public readonly struct StringSegment : IEquatable<StringSegment>
 {
 	private StringSegment(string source, int start, int length)
 	{
@@ -131,8 +132,8 @@ public readonly struct StringSegment
 	{
 		if (!IsValid)
 		{
-			if (offset == 0 && length == 0) return this;
-			throw new InvalidOperationException("Cannot slice a null value.");
+			return offset == 0 && length == 0 ? this
+				: throw new InvalidOperationException("Cannot slice a null value.");
 		}
 		var newIndex = Index + offset;
 		if (newIndex < 0) throw new ArgumentOutOfRangeException(nameof(offset), offset, "Cannot index less than the start of the string.");
@@ -169,17 +170,10 @@ public readonly struct StringSegment
 
 	/// <inheritdoc cref="string.Equals(string, StringComparison)">
 	public bool Equals(string? other, StringComparison stringComparison = StringComparison.Ordinal)
-	{
-		if (other is null) return !IsValid;
-		if (other.Length != Length) return false;
-		return AsSpan().Equals(other, stringComparison);
-	}
+		=> other is null ? !IsValid : other.Length == Length && AsSpan().Equals(other, stringComparison);
 
 	public bool Equals(in ReadOnlySpan<char> other, StringComparison stringComparison = StringComparison.Ordinal)
-	{
-		if (other.Length != Length) return false;
-		return AsSpan().Equals(other, stringComparison);
-	}
+		=> other.Length == Length && AsSpan().Equals(other, stringComparison);
 
 	/// <inheritdoc />
 	public override bool Equals(object? obj)

@@ -11,7 +11,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 
-
+[assembly: CLSCompliant(true)]
 namespace Open.Text;
 
 public static partial class Extensions
@@ -19,8 +19,8 @@ public static partial class Extensions
 	private const uint BYTE_RED = 1024;
 	private static readonly string[] _byte_labels = new[] { "KB", "MB", "GB", "TB", "PB" };
 	private static readonly string[] _number_labels = new[] { "K", "M", "B" };
-	public static readonly Regex VALID_ALPHA_NUMERIC_ONLY = new(@"^\w+$", RegexOptions.Compiled);
-	public static readonly Regex VALID_ALPHA_NUMERIC_ONLY_TRIM = new(@"^\s*\w+\s*$", RegexOptions.Compiled);
+	public static readonly Regex ValidAlphaNumericOnlyPattern = new(@"^\w+$", RegexOptions.Compiled);
+	public static readonly Regex ValidAlphaNumericOnlyUntrimmedPattern = new(@"^\s*\w+\s*$", RegexOptions.Compiled);
 
 	/// <summary>
 	/// Provides the substring before the search string.
@@ -87,7 +87,7 @@ public static partial class Extensions
 	/// <returns>The original string.</returns>
 	public static string AssertIsNotNullOrWhiteSpace(this string? source)
 	{
-		if (source is null) throw new NullReferenceException(nameof(source));
+		if (source is null) throw new ArgumentNullException(nameof(source));
 		if (string.IsNullOrWhiteSpace(source)) throw new ArgumentException("Cannot be empty or white-space.", nameof(source));
 		Contract.EndContractBlock();
 
@@ -127,10 +127,9 @@ public static partial class Extensions
 	/// <returns>The formatted string, or empty string if the value is null.</returns>
 	public static string ToFormat<T>(this T? value, string? format = null, CultureInfo? cultureInfo = default)
 		where T : struct
-	{
-		if (!value.HasValue) return string.Empty;
-		return string.Format(cultureInfo ?? CultureInfo.InvariantCulture, format ?? "{0}", value.Value);
-	}
+		=> value.HasValue
+		? string.Format(cultureInfo ?? CultureInfo.InvariantCulture, format ?? "{0}", value.Value)
+		: string.Empty;
 
 	/// <summary>
 	/// Returns true if only contains alphanumeric characters. Regex: (^\w+$).
@@ -139,7 +138,7 @@ public static partial class Extensions
 	/// <param name="trim">Will be trimmed if true.</param>
 	public static bool IsAlphaNumeric(this string source, bool trim = false)
 		=> !string.IsNullOrWhiteSpace(source)
-		&& (trim ? VALID_ALPHA_NUMERIC_ONLY_TRIM : VALID_ALPHA_NUMERIC_ONLY).IsMatch(source);
+		&& (trim ? ValidAlphaNumericOnlyUntrimmedPattern : ValidAlphaNumericOnlyPattern).IsMatch(source);
 
 	#region Regex helper methods.
 	private static readonly Func<Capture, string> _textDelegate = (Func<Capture, string>)
@@ -152,8 +151,10 @@ public static partial class Extensions
 	/// </summary>
 	/// <remarks>This is a stop-gap until .NET 6 releases the .ValueSpan property.</remarks>
 	/// <param name="capture">The capture to get the span from.</param>
-	public static ReadOnlySpan<char> AsSpan(this Capture capture) =>
-		_textDelegate.Invoke(capture).AsSpan(capture.Index, capture.Length);
+	public static ReadOnlySpan<char> AsSpan(this Capture capture)
+		=> capture is null
+		? throw new ArgumentNullException(nameof(capture))
+		: _textDelegate.Invoke(capture).AsSpan(capture.Index, capture.Length);
 
 	public static string? GetValue(this GroupCollection groups, string groupName, bool throwIfInvalid = false)
 	{
@@ -164,14 +165,9 @@ public static partial class Extensions
 		Contract.EndContractBlock();
 
 		var group = groups[groupName];
-		if (group is null)
-		{
-			if (throwIfInvalid)
-				throw new ArgumentException("Group not found.", nameof(groupName));
-			return null;
-		}
-
-		return group.Success ? group.Value : null;
+		return group is null
+			? throwIfInvalid ? throw new ArgumentException("Group not found.", nameof(groupName)) : null
+			: group.Success ? group.Value : null;
 	}
 
 	public static ReadOnlySpan<char> GetValueSpan(this GroupCollection groups, string groupName, bool throwIfInvalid = false)
@@ -183,14 +179,9 @@ public static partial class Extensions
 		Contract.EndContractBlock();
 
 		var group = groups[groupName];
-		if (group is null)
-		{
-			if (throwIfInvalid)
-				throw new ArgumentException("Group not found.", nameof(groupName));
-			return null;
-		}
-
-		return group.Success ? group.AsSpan() : ReadOnlySpan<char>.Empty;
+		return group is null
+			? throwIfInvalid ? throw new ArgumentException("Group not found.", nameof(groupName)) : null
+			: group.Success ? group.AsSpan() : ReadOnlySpan<char>.Empty;
 	}
 	#endregion
 
@@ -262,12 +253,6 @@ public static partial class Extensions
 		=> ToByteString((double)bytes, decimalFormat, cultureInfo);
 
 	/// <summary>
-	/// Returns an abbreviated metric representation of a quantity of bytes. 
-	/// </summary>
-	public static string ToByteString(this ulong bytes, string decimalFormat = "N1", CultureInfo? cultureInfo = default)
-		=> ToByteString((double)bytes, decimalFormat, cultureInfo);
-
-	/// <summary>
 	/// Returns an abbreviated metric representation of a number. 
 	/// </summary>
 	public static string ToMetricString(this double number, string decimalFormat = "N1", CultureInfo? cultureInfo = default)
@@ -285,12 +270,6 @@ public static partial class Extensions
 
 		return number.ToString(decimalFormat, cultureInfo ?? CultureInfo.InvariantCulture) + label;
 	}
-
-	/// <summary>
-	/// Returns an abbreviated metric representation of a number. 
-	/// </summary>
-	public static string ToMetricString(this ulong number, string decimalFormat = "N1", CultureInfo? cultureInfo = default)
-		=> ToMetricString((double)number, decimalFormat, cultureInfo);
 
 	/// <summary>
 	/// Returns an abbreviated metric representation of a number. 

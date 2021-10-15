@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Open.Text;
 
@@ -10,6 +11,7 @@ namespace Open.Text;
 /// A case struct representing an enum value that can be implicitly coerced from a string.
 /// </summary>
 /// <remarks>String parsing or coercion is case sensitve and must be exact.</remarks>
+[SuppressMessage("Usage", "CA2225:Operator overloads have named alternates", Justification = "Already exposes via a property.")]
 [DebuggerDisplay("{GetDebuggerDisplay()}")]
 public struct EnumValue<TEnum>
 	: IEquatable<EnumValue<TEnum>>, IEquatable<EnumValueCaseIgnored<TEnum>>, IEquatable<TEnum>
@@ -140,6 +142,7 @@ public struct EnumValue<TEnum>
 /// <summary>
 /// A case struct representing an enum value that when parsing or coercing from a string ignores case differences.
 /// </summary>
+[SuppressMessage("Usage", "CA2225:Operator overloads have named alternates", Justification = "Already exposes via a property.")]
 [DebuggerDisplay("{GetDebuggerDisplay()}")]
 public struct EnumValueCaseIgnored<TEnum>
 	: IEquatable<EnumValueCaseIgnored<TEnum>>, IEquatable<EnumValue<TEnum>>, IEquatable<TEnum>

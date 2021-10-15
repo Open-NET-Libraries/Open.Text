@@ -41,8 +41,9 @@ public static partial class Extensions
 		if (max < -1) throw new ArgumentOutOfRangeException(nameof(max), max, "Must be -1 or greater.");
 		Contract.EndContractBlock();
 
-		if (max == 0 || source.IsEmpty || pattern.IsEmpty || pattern.Length > source.Length) return source;
-		return TrimStartPatternCore(source, in pattern, comparisonType, max);
+		return max == 0 || source.IsEmpty || pattern.IsEmpty || pattern.Length > source.Length
+			? source
+			: TrimStartPatternCore(source, in pattern, comparisonType, max);
 	}
 
 	/// <inheritdoc cref="TrimStartPattern(ReadOnlySpan{char}, in ReadOnlySpan{char}, StringComparison, int)"/>
@@ -55,8 +56,9 @@ public static partial class Extensions
 		if (max < -1) throw new ArgumentOutOfRangeException(nameof(max), max, "Must be -1 or greater.");
 		Contract.EndContractBlock();
 
-		if (max == 0 || source.IsEmpty || pattern.Length == 0 || pattern.Length > source.Length) return source;
-		return TrimStartPatternCore(source, pattern.AsSpan(), comparisonType, max);
+		return max == 0 || source.IsEmpty || pattern.Length == 0 || pattern.Length > source.Length
+			? source
+			: TrimStartPatternCore(source, pattern.AsSpan(), comparisonType, max);
 	}
 
 	/// <remarks>To any allocations, call .AsSpan() before calling this method name.</remarks>
@@ -71,12 +73,13 @@ public static partial class Extensions
 		if (max < -1) throw new ArgumentOutOfRangeException(nameof(max), max, "Must be -1 or greater.");
 		Contract.EndContractBlock();
 
-		if (max == 0 || source.Length == 0 || pattern.Length == 0 || pattern.Length > source.Length) return source;
-		if (max != 1) return TrimStartPatternCore(source.AsSpan(), pattern.AsSpan(), comparisonType, max).ToString();
-
-		return source.IndexOf(pattern, comparisonType) == 0
-			? source.Substring(pattern.Length)
-			: source;
+		return max == 0 || source.Length == 0 || pattern.Length == 0 || pattern.Length > source.Length
+			? source
+			: max != 1
+            ? TrimStartPatternCore(source.AsSpan(), pattern.AsSpan(), comparisonType, max).ToString()
+            : source.IndexOf(pattern, comparisonType) == 0
+            ? source.Substring(pattern.Length)
+            : source;
 	}
 
 	/// <summary>
@@ -191,9 +194,9 @@ public static partial class Extensions
 		if (max < -1) throw new ArgumentOutOfRangeException(nameof(max), max, "Must be -1 or greater.");
 		Contract.EndContractBlock();
 
-		if (max == 0 || source.IsEmpty || pattern.Length == 0 || pattern.Length > source.Length) return source;
-
-		return TrimEndPatternCore(source, in pattern, comparisonType, max);
+		return max == 0 || source.IsEmpty || pattern.Length == 0 || pattern.Length > source.Length
+			? source
+			: TrimEndPatternCore(source, in pattern, comparisonType, max);
 	}
 
 	/// <inheritdoc cref="TrimEndPattern(ReadOnlySpan{char}, in ReadOnlySpan{char}, StringComparison, int)"/>
@@ -206,9 +209,9 @@ public static partial class Extensions
 		if (max < -1) throw new ArgumentOutOfRangeException(nameof(max), max, "Must be -1 or greater.");
 		Contract.EndContractBlock();
 
-		if (max == 0 || source.IsEmpty || pattern.Length == 0 || pattern.Length > source.Length) return source;
-
-		return TrimEndPatternCore(source, pattern.AsSpan(), comparisonType, max);
+		return max == 0 || source.IsEmpty || pattern.Length == 0 || pattern.Length > source.Length
+			? source
+			: TrimEndPatternCore(source, pattern.AsSpan(), comparisonType, max);
 	}
 
 	/// <remarks>To any allocations, call .AsSpan() before calling this method name.</remarks>

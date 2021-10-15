@@ -290,8 +290,8 @@ public static class StringBuilderExtensions
 	/// </summary>
 	public static StringBuilder AppendWithSeparator(this StringBuilder target, string? separator, object value, params object[] values)
 	{
-		if (target is null)
-			throw new ArgumentNullException(nameof(values));
+		if (target is null) throw new ArgumentNullException(nameof(target));
+		if (values is null) throw new ArgumentNullException(nameof(values));
 		Contract.EndContractBlock();
 
 		if (string.IsNullOrEmpty(separator))
@@ -302,7 +302,6 @@ public static class StringBuilderExtensions
 		}
 		else
 		{
-
 			if (target.Length != 0)
 				target.Append(separator);
 			target.Append(value);
@@ -318,8 +317,8 @@ public static class StringBuilderExtensions
 	/// </summary>
 	public static StringBuilder AppendWithSeparator(this StringBuilder target, char separator, object value, params object[] values)
 	{
-		if (target is null)
-			throw new ArgumentNullException(nameof(values));
+		if (target is null) throw new ArgumentNullException(nameof(target));
+		if (values is null) throw new ArgumentNullException(nameof(values));
 		Contract.EndContractBlock();
 
 		if (target.Length != 0)
@@ -337,7 +336,7 @@ public static class StringBuilderExtensions
 	public static void AppendWithSeparator<T>(this StringBuilder target, IDictionary<string, T> source, string key, string itemSeparator, string keyValueSeparator)
 	{
 		if (target is null)
-			throw new NullReferenceException();
+			throw new ArgumentNullException(nameof(target));
 		if (source is null)
 			throw new ArgumentNullException(nameof(source));
 		if (key is null)

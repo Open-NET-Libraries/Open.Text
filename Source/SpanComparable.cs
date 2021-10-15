@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Open.Text;
 
@@ -54,21 +55,24 @@ public readonly ref struct SpanComparable
 
 	[Obsolete("Equals() on ReadOnlySpan will always throw an exception. Use == instead.")]
 	[EditorBrowsable(EditorBrowsableState.Never)]
+	[SuppressMessage("Design", "CA1065:Do not raise exceptions in unexpected locations", Justification = "<Pending>")]
 #pragma warning disable CS0809 // Obsolete member overrides non-obsolete member
 	public override bool Equals(object obj) => throw new NotSupportedException();
 
 #pragma warning restore CS0809 // Obsolete member overrides non-obsolete member
 
-	/// <inheritdoc />
+#pragma warning disable IDE0079 // Remove unnecessary suppression
 #pragma warning disable IDE0070 // Use 'System.HashCode'
+	/// <inheritdoc />
 	public override int GetHashCode()
-#pragma warning restore IDE0070 // Use 'System.HashCode'
 	{
 		int hashCode = 1013877538;
 		hashCode = hashCode * -1521134295 + Source.GetHashCode();
 		hashCode = hashCode * -1521134295 + Type.GetHashCode();
 		return hashCode;
 	}
+#pragma warning restore IDE0070 // Use 'System.HashCode'
+#pragma warning restore IDE0079 // Remove unnecessary suppression
 
 	public static bool operator ==(SpanComparable a, SpanComparable b) => a.Equals(b);
 	public static bool operator !=(SpanComparable a, SpanComparable b) => !a.Equals(b);

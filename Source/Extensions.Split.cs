@@ -20,8 +20,9 @@ public static partial class Extensions
 
 		nextIndex = i + n;
 		var segmentLen = i - start;
-		if (segmentLen == 0) return ReadOnlySpan<char>.Empty;
-		return source.AsSpan(start, segmentLen);
+		return segmentLen == 0
+			? ReadOnlySpan<char>.Empty
+			: source.AsSpan(start, segmentLen);
 	}
 
 	static ReadOnlySpan<char> FirstSplitSpan(ReadOnlySpan<char> rest, int i, int n, out int nextIndex)
@@ -33,8 +34,9 @@ public static partial class Extensions
 		}
 
 		nextIndex = i + n;
-		if (i == 0) return ReadOnlySpan<char>.Empty;
-		return rest.Slice(0, i);
+		return i == 0
+			? ReadOnlySpan<char>.Empty
+			: rest.Slice(0, i);
 	}
 
 	static ReadOnlyMemory<char> FirstSplitMemory(string source, int start, int i, int n, out int nextIndex)
@@ -48,8 +50,9 @@ public static partial class Extensions
 
 		nextIndex = i + n;
 		var segmentLen = i - start;
-		if (segmentLen == 0) return ReadOnlyMemory<char>.Empty;
-		return source.AsMemory(start, segmentLen);
+		return segmentLen == 0
+			? ReadOnlyMemory<char>.Empty
+			: source.AsMemory(start, segmentLen);
 	}
 
 
