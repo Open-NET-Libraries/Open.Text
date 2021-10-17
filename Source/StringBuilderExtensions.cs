@@ -16,6 +16,37 @@ namespace Open.Text;
 public static class StringBuilderExtensions
 {
 	/// <summary>
+	/// Generic variation on the append method that attempts to avoid boxing via a switch.
+	/// </summary>
+	/// <typeparam name="T">The type being passed.</typeparam>
+	/// <param name="sb">The string builder to append to.</param>
+	/// <param name="value">The generic value to append.</param>
+	/// <exception cref="ArgumentNullException">If the provided StringBuilder is null.</exception>
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "HAA0601:Value type to reference type conversion causing boxing allocation", Justification = "Unavoidable.")]
+	public static StringBuilder Append<T>(this StringBuilder sb, T value)
+		=> sb is null
+		? throw new ArgumentNullException(nameof(sb))
+		: value switch
+		{
+			char c => sb.Append(c),
+			byte b => sb.Append(b),
+			sbyte b => sb.Append(b),
+			bool b => sb.Append(b),
+			ulong ul => sb.Append(ul),
+			uint l => sb.Append(l),
+			ushort u => sb.Append(u),
+			long l => sb.Append(l),
+			int i => sb.Append(i),
+			short s => sb.Append(s),
+			float f => sb.Append(f),
+			double d => sb.Append(d),
+			decimal d => sb.Append(d),
+			string s => sb.Append(s),
+			char[] c => sb.Append(c),
+			_ => sb.Append(value)
+		};
+
+	/// <summary>
 	/// Adds every entry to a StringBuilder.
 	/// </summary>
 	/// <typeparam name="T">The type of the source.</typeparam>
@@ -27,7 +58,7 @@ public static class StringBuilderExtensions
 		var sb = new StringBuilder(len);
 
 		for (var i = 0; i < len; i++)
-			sb.Append(source[i]);
+			sb.Append<T>(source[i]);
 
 		return sb;
 	}
@@ -39,7 +70,7 @@ public static class StringBuilderExtensions
 		var sb = new StringBuilder(len);
 
 		for (var i = 0; i < len; i++)
-			sb.Append(source[i]);
+			sb.Append<T>(source[i]);
 
 		return sb;
 	}
@@ -55,7 +86,7 @@ public static class StringBuilderExtensions
 		if (source is null) throw new ArgumentNullException(nameof(source));
 		var sb = new StringBuilder();
 		foreach (var s in source)
-			sb.Append(s);
+			sb.Append<T>(s);
 
 		return sb;
 	}
@@ -75,11 +106,11 @@ public static class StringBuilderExtensions
 
 		var sb = new StringBuilder(2 * len - 1);
 
-		sb.Append(source[0]);
+		sb.Append<T>(source[0]);
 		for (var i = 1; i < len; i++)
 		{
 			sb.Append(separator);
-			sb.Append(source[i]);
+			sb.Append<T>(source[i]);
 		}
 
 		return sb;
@@ -95,11 +126,11 @@ public static class StringBuilderExtensions
 
 		var sb = new StringBuilder(2 * len - 1);
 
-		sb.Append(source[0]);
+		sb.Append<T>(source[0]);
 		for (var i = 1; i < len; i++)
 		{
 			sb.Append(separator);
-			sb.Append(source[i]);
+			sb.Append<T>(source[i]);
 		}
 
 		return sb;
@@ -119,11 +150,11 @@ public static class StringBuilderExtensions
 
 		var sb = new StringBuilder(2 * len - 1);
 
-		sb.Append(source[0]);
+		sb.Append<T>(source[0]);
 		for (var i = 1; i < len; i++)
 		{
 			sb.Append(separator);
-			sb.Append(source[i]);
+			sb.Append<T>(source[i]);
 		}
 
 		return sb;
@@ -137,11 +168,11 @@ public static class StringBuilderExtensions
 
 		var sb = new StringBuilder(2 * len - 1);
 
-		sb.Append(source[0]);
+		sb.Append<T>(source[0]);
 		for (var i = 1; i < len; i++)
 		{
 			sb.Append(separator);
-			sb.Append(source[i]);
+			sb.Append<T>(source[i]);
 		}
 
 		return sb;
@@ -188,7 +219,7 @@ public static class StringBuilderExtensions
 
 		if (values == null) return target;
 		foreach (var value in values)
-			target.Append(value);
+			target.Append<T>(value);
 		return target;
 	}
 
@@ -209,8 +240,9 @@ public static class StringBuilderExtensions
 		using var e = values.GetEnumerator();
 		if (!e.MoveNext()) return target;
 		if (target.Length != 0) target.Append(separator);
-		target.Append(e.Current);
-		while (e.MoveNext()) target.Append(separator).Append(e.Current);
+		target.Append<T>(e.Current);
+		while (e.MoveNext())
+			target.Append(separator).Append<T>(e.Current);
 
 		return target;
 	}
@@ -229,8 +261,9 @@ public static class StringBuilderExtensions
 		using var e = values.GetEnumerator();
 		if (!e.MoveNext()) return target;
 		if (target.Length != 0) target.Append(separator);
-		target.Append(e.Current);
-		while (e.MoveNext()) target.Append(separator).Append(e.Current);
+		target.Append<T>(e.Current);
+		while (e.MoveNext())
+			target.Append(separator).Append<T>(e.Current);
 
 		return target;
 	}
@@ -245,7 +278,7 @@ public static class StringBuilderExtensions
 		Contract.EndContractBlock();
 
 		foreach (var value in values)
-			target.Append(value);
+			target.Append<T>(value);
 		return target;
 	}
 
@@ -264,8 +297,9 @@ public static class StringBuilderExtensions
 		var e = values.GetEnumerator();
 		if (!e.MoveNext()) return target;
 		if (target.Length != 0) target.Append(separator);
-		target.Append(e.Current);
-		while (e.MoveNext()) target.Append(separator).Append(e.Current);
+		target.Append<T>(e.Current);
+		while (e.MoveNext())
+			target.Append(separator).Append<T>(e.Current);
 
 		return target;
 	}
@@ -282,8 +316,9 @@ public static class StringBuilderExtensions
 		var e = values.GetEnumerator();
 		if (!e.MoveNext()) return target;
 		if (target.Length != 0) target.Append(separator);
-		target.Append(e.Current);
-		while (e.MoveNext()) target.Append(separator).Append(e.Current);
+		target.Append<T>(e.Current);
+		while (e.MoveNext())
+			target.Append(separator).Append<T>(e.Current);
 
 		return target;
 	}
@@ -354,6 +389,6 @@ public static class StringBuilderExtensions
 			target
 				.AppendWithSeparator(itemSeparator, key)
 				.Append(keyValueSeparator)
-				.Append(result);
+				.Append<T>(result);
 	}
 }

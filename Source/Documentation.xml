@@ -832,6 +832,15 @@
             Useful extensions for working with StringBuilders.
             </summary>
         </member>
+        <member name="M:Open.Text.StringBuilderExtensions.Append``1(System.Text.StringBuilder,``0)">
+            <summary>
+            Generic variation on the append method that attempts to avoid boxing via a switch.
+            </summary>
+            <typeparam name="T">The type being passed.</typeparam>
+            <param name="sb">The string builder to append to.</param>
+            <param name="value">The generic value to append.</param>
+            <exception cref="T:System.ArgumentNullException">If the provided StringBuilder is null.</exception>
+        </member>
         <member name="M:Open.Text.StringBuilderExtensions.ToStringBuilder``1(System.ReadOnlySpan{``0}@)">
             <summary>
             Adds every entry to a StringBuilder.
