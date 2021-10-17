@@ -66,22 +66,22 @@ public readonly struct StringSegment : IEquatable<StringSegment>
 	/// <summary>
 	/// The original string this segment is using.
 	/// </summary>
-	public string Source { get; }
+	public readonly string Source { get; }
 
 	/// <summary>
 	/// The starting point on the original string that this segment begins.
 	/// </summary>
-	public int Index { get; }
+	public readonly int Index { get; }
 
 	/// <summary>
 	/// The length of the segment.
 	/// </summary>
-	public int Length { get; }
+	public readonly int Length { get; }
 
 	/// <summary>
 	/// The index just beyond the last character.
 	/// </summary>
-	public int End { get; }
+	public readonly int End { get; }
 
 	/// <summary>
 	/// Returns a ReadOnlyMemory representing the segment of the string defined by this.
@@ -229,8 +229,7 @@ public readonly struct StringSegment : IEquatable<StringSegment>
 
 		while (end != i)
 		{
-			ref readonly var c = ref span[i];
-			if (!char.IsWhiteSpace(c)) break;
+			if (!char.IsWhiteSpace(span[i])) break;
 			++i;
 		}
 
@@ -260,8 +259,7 @@ public readonly struct StringSegment : IEquatable<StringSegment>
 
 		while (end != i)
 		{
-			ref readonly var c = ref span[i];
-			if (trim.IndexOf(c) == -1) break;
+			if (trim.IndexOf(span[i]) == -1) break;
 			++i;
 		}
 
@@ -276,8 +274,7 @@ public readonly struct StringSegment : IEquatable<StringSegment>
 
 		while (end != i)
 		{
-			ref readonly var c = ref span[end - 1];
-			if (!char.IsWhiteSpace(c)) break;
+			if (!char.IsWhiteSpace(span[end - 1])) break;
 			--end;
 		}
 
@@ -307,8 +304,7 @@ public readonly struct StringSegment : IEquatable<StringSegment>
 
 		while (end != i)
 		{
-			ref readonly var c = ref span[end - 1];
-			if (trim.IndexOf(c) == -1) break;
+			if (trim.IndexOf(span[end - 1]) == -1) break;
 			--end;
 		}
 

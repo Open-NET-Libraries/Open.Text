@@ -7,6 +7,7 @@ using BenchmarkDotNet.Attributes;
 
 namespace Open.Text.Benchmarks;
 
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "For benchmarking.")]
 public class CharAssumptionTests
 {
 	const string TestString = "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -33,10 +34,7 @@ public class CharAssumptionTests
 				Update(a, i, TestString[i]);
 		return a;
 
-		static void Update(char[] a, int i, char v)
-		{
-			a[i] = v;
-		}
+		static void Update(char[] a, int i, char v) => a[i] = v;
 	}
 
 	[Benchmark]
@@ -93,10 +91,7 @@ public class CharAssumptionTests
 		}
 		return a;
 
-		static void Update(Span<char> a, in int i, in char v)
-		{
-			a[i] = v;
-		}
+		static void Update(Span<char> a, in int i, in char v) => a[i] = v;
 	}
 
 	[Benchmark]
@@ -113,10 +108,7 @@ public class CharAssumptionTests
 		}
 		return a;
 
-		static void Update(Span<char> a, in int i, char v)
-		{
-			a[i] = v;
-		}
+		static void Update(Span<char> a, in int i, char v) => a[i] = v;
 	}
 
 	[Benchmark]
@@ -133,9 +125,6 @@ public class CharAssumptionTests
 		}
 		return a;
 
-		static void Update(Span<char> a, in int i, in char v)
-		{
-			a[i] = v;
-		}
+		static void Update(Span<char> a, in int i, in char v) => a[i] = v;
 	}
 }

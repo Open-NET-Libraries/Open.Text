@@ -697,13 +697,13 @@
         <member name="M:Open.Text.SpanComparable.Equals(System.ReadOnlySpan{System.Char})">
             <inheritdoc cref="M:Open.Text.SpanComparable.Equals(System.String)"/>
         </member>
-        <member name="M:Open.Text.SpanComparable.Equals(Open.Text.StringComparable@)">
+        <member name="M:Open.Text.SpanComparable.Equals(Open.Text.StringComparable)">
             <inheritdoc cref="M:Open.Text.SpanComparable.Equals(System.String)"/>
         </member>
         <member name="M:Open.Text.SpanComparable.Equals(Open.Text.SpanComparable)">
             <inheritdoc cref="M:Open.Text.SpanComparable.Equals(System.String)"/>
         </member>
-        <member name="M:Open.Text.SpanComparable.Equals(Open.Text.StringSegment@)">
+        <member name="M:Open.Text.SpanComparable.Equals(Open.Text.StringSegment)">
             <inheritdoc cref="M:Open.Text.SpanComparable.Equals(System.String)"/>
         </member>
         <member name="M:Open.Text.SpanComparable.Equals(System.Object)">
@@ -985,7 +985,7 @@
         <member name="M:Open.Text.StringComparable.Equals(Open.Text.StringComparable)">
             <inheritdoc cref="M:Open.Text.StringComparable.Equals(System.String)"/>
         </member>
-        <member name="M:Open.Text.StringComparable.Equals(Open.Text.SpanComparable)">
+        <member name="M:Open.Text.StringComparable.Equals(Open.Text.SpanComparable@)">
             <inheritdoc cref="M:Open.Text.StringComparable.Equals(System.String)"/>
         </member>
         <member name="M:Open.Text.StringComparable.Equals(Open.Text.StringSegment)">

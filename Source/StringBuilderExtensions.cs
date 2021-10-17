@@ -22,7 +22,6 @@ public static class StringBuilderExtensions
 	/// <param name="sb">The string builder to append to.</param>
 	/// <param name="value">The generic value to append.</param>
 	/// <exception cref="ArgumentNullException">If the provided StringBuilder is null.</exception>
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "HAA0601:Value type to reference type conversion causing boxing allocation", Justification = "Unavoidable.")]
 	public static StringBuilder Append<T>(this StringBuilder sb, T value)
 		=> sb is null
 		? throw new ArgumentNullException(nameof(sb))

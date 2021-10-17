@@ -13,7 +13,7 @@ namespace Open.Text;
 /// <remarks>String parsing or coercion is case sensitve and must be exact.</remarks>
 [SuppressMessage("Usage", "CA2225:Operator overloads have named alternates", Justification = "Already exposes via a property.")]
 [DebuggerDisplay("{GetDebuggerDisplay()}")]
-public struct EnumValue<TEnum>
+public readonly struct EnumValue<TEnum>
 	: IEquatable<EnumValue<TEnum>>, IEquatable<EnumValueCaseIgnored<TEnum>>, IEquatable<TEnum>
 	where TEnum : Enum
 {
@@ -37,7 +37,7 @@ public struct EnumValue<TEnum>
 	/// <summary>
 	/// The enum value that this represents.
 	/// </summary>
-	public TEnum Value { get; }
+	public readonly TEnum Value { get; }
 
 	/// <summary>
 	/// Returns the string representation of the enum value.
@@ -178,7 +178,7 @@ public struct EnumValue<TEnum>
 /// </summary>
 [SuppressMessage("Usage", "CA2225:Operator overloads have named alternates", Justification = "Already exposes via a property.")]
 [DebuggerDisplay("{GetDebuggerDisplay()}")]
-public struct EnumValueCaseIgnored<TEnum>
+public readonly struct EnumValueCaseIgnored<TEnum>
 	: IEquatable<EnumValueCaseIgnored<TEnum>>, IEquatable<EnumValue<TEnum>>, IEquatable<TEnum>
 	where TEnum : Enum
 {
@@ -200,7 +200,7 @@ public struct EnumValueCaseIgnored<TEnum>
 	}
 
 	/// <inheritdoc cref="EnumValue{TEnum}.Value"/>
-	public TEnum Value { get; }
+	public readonly TEnum Value { get; }
 
 	/// <inheritdoc cref="EnumValue{TEnum}.ToString"/>
 	public override string ToString() => EnumValue<TEnum>.NameLookup(Value);

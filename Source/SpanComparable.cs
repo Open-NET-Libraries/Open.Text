@@ -22,12 +22,12 @@ public readonly ref struct SpanComparable
 	/// <summary>
 	/// The span to use for comparison.
 	/// </summary>
-	public ReadOnlySpan<char> Source { get; }
+	public readonly ReadOnlySpan<char> Source { get; }
 
 	/// <summary>
 	/// The type of string comparison.
 	/// </summary>
-	public StringComparison Type { get; }
+	public readonly StringComparison Type { get; }
 
 	/// <summary>
 	/// The length of the string.
@@ -46,7 +46,7 @@ public readonly ref struct SpanComparable
 		=> Source.Equals(other, Type);
 
 	/// <inheritdoc cref="Equals(string?)"/>
-	public bool Equals(in StringComparable other)
+	public bool Equals(StringComparable other)
 		=> Source.Equals(other.Source, Type)
 		|| Type != other.Type && other.Equals(Source);
 
@@ -56,7 +56,7 @@ public readonly ref struct SpanComparable
 		|| Type != other.Type && other.Equals(Source);
 
 	/// <inheritdoc cref="Equals(string?)"/>
-	public bool Equals(in StringSegment other)
+	public bool Equals(StringSegment other)
 		=> Equals(other.AsSpan());
 
 	/// <summary />

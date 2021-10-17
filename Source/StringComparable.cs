@@ -6,7 +6,7 @@ namespace Open.Text;
 /// <summary>
 /// A StringComparison variable struct for comparing a string against other values.
 /// </summary>
-public struct StringComparable
+public readonly struct StringComparable
 	: IEquatable<StringComparable>, IEquatable<string>, IEquatable<StringSegment>
 {
 	/// <summary>
@@ -22,12 +22,12 @@ public struct StringComparable
 	/// <summary>
 	/// The string to use for comparison.
 	/// </summary>
-	public string Source { get; }
+	public readonly string Source { get; }
 
 	/// <summary>
 	/// The type of string comparison.
 	/// </summary>
-	public StringComparison Type { get; }
+	public readonly StringComparison Type { get; }
 
 	/// <summary>
 	/// The length of the string.
@@ -51,7 +51,7 @@ public struct StringComparable
 		|| Type != other.Type && other.Equals(Source);
 
 	/// <inheritdoc cref="Equals(string?)"/>
-	public bool Equals(SpanComparable other)
+	public bool Equals(in SpanComparable other)
 		=> Source.Equals(other.Source, Type)
 		|| Type != other.Type && other.Equals(Source);
 
