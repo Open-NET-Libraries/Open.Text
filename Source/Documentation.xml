@@ -1,0 +1,1272 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Open.Text</name>
+    </assembly>
+    <members>
+        <member name="T:Open.Text.EnumValue`1">
+            <summary>
+            A case struct representing an enum value that can be implicitly coerced from a string.
+            </summary>
+            <remarks>String parsing or coercion is case sensitve and must be exact.</remarks>
+        </member>
+        <member name="M:Open.Text.EnumValue`1.#ctor(`0)">
+            <summary>
+            Constructs an EnumValue&lt;<typeparamref name="TEnum"/>&gt; using the provided enum value.
+            </summary>
+        </member>
+        <member name="M:Open.Text.EnumValue`1.#ctor(System.String)">
+            <summary>
+            Parses the string value to construct an EnumValue&lt;<typeparamref name="TEnum"/>&gt; instance.
+            </summary>
+            <exception cref="T:System.ArgumentNullException">value is null.</exception>
+        </member>
+        <member name="P:Open.Text.EnumValue`1.Value">
+            <summary>
+            The enum value that this represents.
+            </summary>
+        </member>
+        <member name="M:Open.Text.EnumValue`1.ToString">
+            <summary>
+            Returns the string representation of the enum value.
+            </summary>
+        </member>
+        <member name="M:Open.Text.EnumValue`1.Equals(Open.Text.EnumValue{`0})">
+            <summary>
+            Indicates whether this instance matches the enum value of <paramref name="other"/>.
+            </summary>
+            <returns>true if <paramref name="other"/>'s enum value and this instance's enum value are the same; otherwise false.</returns>
+        </member>
+        <member name="M:Open.Text.EnumValue`1.op_Equality(Open.Text.EnumValue{`0},Open.Text.EnumValue{`0})">
+            <summary>
+            Compares an EnumValue and EnumValueCaseIgnored for enum equality.
+            </summary>
+        </member>
+        <member name="M:Open.Text.EnumValue`1.op_Inequality(Open.Text.EnumValue{`0},Open.Text.EnumValue{`0})">
+            <summary>
+            Compares an EnumValue and EnumValueCaseIgnored for enum inequality.
+            </summary>
+        </member>
+        <member name="M:Open.Text.EnumValue`1.Equals(Open.Text.EnumValueCaseIgnored{`0})">
+            <inheritdoc cref="M:Open.Text.EnumValue`1.Equals(Open.Text.EnumValue{`0})"/>
+        </member>
+        <member name="M:Open.Text.EnumValue`1.op_Equality(Open.Text.EnumValue{`0},Open.Text.EnumValueCaseIgnored{`0})">
+            <summary>
+            Compares two EnumValue for enum equality.
+            </summary>
+        </member>
+        <member name="M:Open.Text.EnumValue`1.op_Inequality(Open.Text.EnumValue{`0},Open.Text.EnumValueCaseIgnored{`0})">
+            <summary>
+            Compares two EnumValue for enum inequality.
+            </summary>
+        </member>
+        <member name="M:Open.Text.EnumValue`1.Equals(`0)">
+            <summary>
+            Indicates whether this instance matches the provided enum <paramref name="other"/>.
+            </summary>
+            <returns>true if <paramref name="other"/> and this instance's enum value are the same; otherwise false.</returns>
+        </member>
+        <member name="M:Open.Text.EnumValue`1.op_Equality(Open.Text.EnumValue{`0},`0)">
+            <summary>
+            Compares an EnumValue and an enum value for enum equality.
+            </summary>
+        </member>
+        <member name="M:Open.Text.EnumValue`1.op_Inequality(Open.Text.EnumValue{`0},`0)">
+            <summary>
+            Compares an EnumValue and an enum value for enum inequality.
+            </summary>
+        </member>
+        <member name="M:Open.Text.EnumValue`1.Equals(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:Open.Text.EnumValue`1.GetHashCode">
+            <inheritdoc />
+        </member>
+        <member name="M:Open.Text.EnumValue`1.op_Implicit(Open.Text.EnumValueCaseIgnored{`0})~Open.Text.EnumValue{`0}">
+            <summary>
+            Implicitly converts an EnumValueCaseInsensitive to an EnumValue.
+            Before conversion they are already equivalent.
+            </summary>
+        </member>
+        <member name="M:Open.Text.EnumValue`1.op_Implicit(Open.Text.EnumValue{`0})~`0">
+            <summary>
+            Implicitly returns the actual enum contained by the EnumValue.
+            </summary>
+        </member>
+        <member name="M:Open.Text.EnumValue`1.op_Implicit(System.String)~Open.Text.EnumValue{`0}">
+            <summary>
+            Implicitly converts an string to an EnumValue of enum type TEnum.
+            </summary>
+        </member>
+        <member name="T:Open.Text.EnumValueCaseIgnored`1">
+            <summary>
+            A case struct representing an enum value that when parsing or coercing from a string ignores case differences.
+            </summary>
+        </member>
+        <member name="M:Open.Text.EnumValueCaseIgnored`1.#ctor(`0)">
+            <summary>
+            Constructs an EnumValueCaseIgnored&lt;<typeparamref name="TEnum"/>&gt; using the provided enum value.
+            </summary>
+        </member>
+        <member name="M:Open.Text.EnumValueCaseIgnored`1.#ctor(System.String)">
+            <summary>
+            Parses the string value to construct an EnumValueCaseIgnored&lt;<typeparamref name="TEnum"/>&gt; instance.
+            </summary>
+            <exception cref="T:System.ArgumentNullException"><paramref name="value"/> is null.</exception>
+        </member>
+        <member name="P:Open.Text.EnumValueCaseIgnored`1.Value">
+            <inheritdoc cref="P:Open.Text.EnumValue`1.Value"/>
+        </member>
+        <member name="M:Open.Text.EnumValueCaseIgnored`1.ToString">
+            <inheritdoc cref="M:Open.Text.EnumValue`1.ToString"/>
+        </member>
+        <member name="M:Open.Text.EnumValueCaseIgnored`1.Equals(Open.Text.EnumValue{`0})">
+            <inheritdoc cref="M:Open.Text.EnumValue`1.Equals(Open.Text.EnumValue{`0})"/>
+        </member>
+        <member name="M:Open.Text.EnumValueCaseIgnored`1.op_Equality(Open.Text.EnumValueCaseIgnored{`0},Open.Text.EnumValue{`0})">
+            <summary>
+            Compares an EnumValueCaseIgnored and EnumValue for enum equality.
+            </summary>
+        </member>
+        <member name="M:Open.Text.EnumValueCaseIgnored`1.op_Inequality(Open.Text.EnumValueCaseIgnored{`0},Open.Text.EnumValue{`0})">
+            <summary>
+            Compares an EnumValueCaseIgnored and EnumValue for enum inequality.
+            </summary>
+        </member>
+        <member name="M:Open.Text.EnumValueCaseIgnored`1.Equals(Open.Text.EnumValueCaseIgnored{`0})">
+            <inheritdoc cref="M:Open.Text.EnumValue`1.Equals(Open.Text.EnumValue{`0})"/>
+        </member>
+        <member name="M:Open.Text.EnumValueCaseIgnored`1.op_Equality(Open.Text.EnumValueCaseIgnored{`0},Open.Text.EnumValueCaseIgnored{`0})">
+            <summary>
+            Compares two EnumValueCaseIgnored for enum equality.
+            </summary>
+        </member>
+        <member name="M:Open.Text.EnumValueCaseIgnored`1.op_Inequality(Open.Text.EnumValueCaseIgnored{`0},Open.Text.EnumValueCaseIgnored{`0})">
+            <summary>
+            Compares two EnumValueCaseIgnored for enum inequality.
+            </summary>
+        </member>
+        <member name="M:Open.Text.EnumValueCaseIgnored`1.Equals(`0)">
+            <inheritdoc cref="M:Open.Text.EnumValue`1.Equals(`0)"/>
+        </member>
+        <member name="M:Open.Text.EnumValueCaseIgnored`1.op_Equality(Open.Text.EnumValueCaseIgnored{`0},`0)">
+            <summary>
+            Compares an EnumValueCaseIgnored and an enum value for enum equality.
+            </summary>
+        </member>
+        <member name="M:Open.Text.EnumValueCaseIgnored`1.op_Inequality(Open.Text.EnumValueCaseIgnored{`0},`0)">
+            <summary>
+            Compares an EnumValueCaseIgnored and an enum value for enum inequality.
+            </summary>
+        </member>
+        <member name="M:Open.Text.EnumValueCaseIgnored`1.Equals(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:Open.Text.EnumValueCaseIgnored`1.GetHashCode">
+            <inheritdoc />
+        </member>
+        <member name="M:Open.Text.EnumValueCaseIgnored`1.op_Implicit(Open.Text.EnumValue{`0})~Open.Text.EnumValueCaseIgnored{`0}">
+            <summary>
+            Implicitly converts an EnumValue to an EnumValueCaseInsensitive.
+            Before conversion they are already equivalent.
+            </summary>
+        </member>
+        <member name="M:Open.Text.EnumValueCaseIgnored`1.op_Implicit(Open.Text.EnumValueCaseIgnored{`0})~`0">
+            <summary>
+            Implicitly returns the actual enum contained by the EnumValueCaseIgnored.
+            </summary>
+        </member>
+        <member name="M:Open.Text.EnumValueCaseIgnored`1.op_Implicit(System.String)~Open.Text.EnumValueCaseIgnored{`0}">
+            <summary>
+            Implicitly converts an string to an EnumValueCaseIgnored of enum type TEnum.
+            </summary>
+        </member>
+        <member name="T:Open.Text.EnumValue">
+            <summary>
+            Fast utilties and extensions for parsing enums and retreiving the name of an enum value. 
+            </summary>
+        </member>
+        <member name="M:Open.Text.EnumValue.Parse``1(System.String)">
+            <returns>The enum that represents the string <paramref name="value"/> provided.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="value"/> is null.</exception>
+            <exception cref="T:System.ArgumentException">Requested <paramref name="value"/> was not found.</exception>
+            <inheritdoc cref="M:Open.Text.EnumValue.TryParse``1(System.String,System.Boolean,``0@)"/>
+        </member>
+        <member name="M:Open.Text.EnumValue.Parse``1(System.String,System.Boolean)">
+            <inheritdoc cref="M:Open.Text.EnumValue.TryParse``1(System.String,System.Boolean,``0@)"/>
+        </member>
+        <member name="M:Open.Text.EnumValue.TryParse``1(System.String,``0@)">
+            <inheritdoc cref="M:Open.Text.EnumValue.TryParse``1(System.String,System.Boolean,``0@)"/>
+        </member>
+        <member name="M:Open.Text.EnumValue.TryParse``1(System.String,System.Boolean,``0@)">
+            <summary>
+            Converts the string representation of the name of one or more enumerated constants to an equivalent enumerated object.
+            </summary>
+            <param name="value">The string representing the enum value to search for.</param>
+            <param name="ignoreCase">If true, will ignore case differences when looking for a match.</param>
+            <param name="e">The enum that represents the string <paramref name="value"/> provided.</param>
+            <returns>true if the value was found; otherwise false.</returns>
+        </member>
+        <member name="M:Open.Text.EnumValue.GetName``1(``0)">
+            <summary>
+            Uses an expression tree to do an fast lookup the name of the enum value.
+            </summary>
+            <remarks>Is faster than calling .ToString() on a value.</remarks>
+            <typeparam name="TEnum">The enum type.</typeparam>
+            <param name="value">The enum value to get the name for.</param>
+            <returns>The name of the enum.</returns>
+        </member>
+        <member name="T:Open.Text.Extensions">
+            <summary />
+        </member>
+        <member name="M:Open.Text.Extensions.Equals(System.ReadOnlySpan{System.Char}@,System.String,System.StringComparison)">
+            <summary>
+            Optimized equals for comparing as span vs a string.
+            </summary>
+            <param name="source">The source span.</param>
+            <param name="other">The string to compare to.</param>
+            <param name="stringComparison">The string comparison type.</param>
+            <returns>True if the are contents equal.</returns>
+        </member>
+        <member name="M:Open.Text.Extensions.Equals(System.Span{System.Char}@,System.String,System.StringComparison)">
+            <inheritdoc cref="M:Open.Text.Extensions.Equals(System.ReadOnlySpan{System.Char}@,System.String,System.StringComparison)"/>
+        </member>
+        <member name="M:Open.Text.Extensions.Equals(System.Span{System.Char}@,System.ReadOnlySpan{System.Char}@,System.StringComparison)">
+            <summary>
+            Optimized equals for comparing spans.
+            </summary>
+            <param name="source">The source span.</param>
+            <param name="other">The span to compare to.</param>
+            <param name="stringComparison">The string comparison type.</param>
+            <returns>True if the are contents equal.</returns>
+        </member>
+        <member name="M:Open.Text.Extensions.Equals(System.Span{System.Char}@,System.Span{System.Char}@,System.StringComparison)">
+            <inheritdoc cref="M:Open.Text.Extensions.Equals(System.Span{System.Char}@,System.ReadOnlySpan{System.Char}@,System.StringComparison)" />
+        </member>
+        <member name="M:Open.Text.Extensions.Equals(System.String,System.ReadOnlySpan{System.Char}@,System.StringComparison)">
+            <summary>
+            Optimized equals for comparing as string to a span.
+            </summary>
+            <param name="source">The source string.</param>
+            <param name="other">The span to compare to.</param>
+            <param name="stringComparison">The string comparison type.</param>
+            <returns>True if the are contents equal.</returns>
+        </member>
+        <member name="M:Open.Text.Extensions.Equals(System.String,System.Span{System.Char}@,System.StringComparison)">
+            <inheritdoc cref="M:Open.Text.Extensions.Equals(System.String,System.ReadOnlySpan{System.Char}@,System.StringComparison)" />
+        </member>
+        <member name="M:Open.Text.Extensions.TrimmedEquals(System.String,System.ReadOnlySpan{System.Char}@,System.StringComparison)">
+            <inheritdoc cref="M:Open.Text.Extensions.TrimmedEquals(System.String,System.ReadOnlySpan{System.Char}@,System.Char,System.StringComparison)"/>
+        </member>
+        <member name="M:Open.Text.Extensions.TrimmedEquals(System.String,System.String,System.StringComparison)">
+            <inheritdoc cref="M:Open.Text.Extensions.TrimmedEquals(System.String,System.String,System.Char,System.StringComparison)"/>
+        </member>
+        <member name="M:Open.Text.Extensions.TrimmedEquals(System.String,System.ReadOnlySpan{System.Char}@,System.Char,System.StringComparison)">
+            <param name="source">The source string to virtually trim.</param>
+            <param name="other">The span to compare to.</param>
+            <param name="trimChar">The character to trim.</param>
+            <param name="stringComparison">The string comparison type.</param>
+            <inheritdoc cref="M:Open.Text.Extensions.TrimmedEquals(System.String,System.String,System.ReadOnlySpan{System.Char}@,System.StringComparison)"/>
+        </member>
+        <member name="M:Open.Text.Extensions.TrimmedEquals(System.String,System.String,System.Char,System.StringComparison)">
+            <param name="source">The source string to virtually trim.</param>
+            <param name="other">The string to compare to.</param>
+            <param name="trimChar">The character to trim.</param>
+            <param name="stringComparison">The string comparison type.</param>
+            <inheritdoc cref="M:Open.Text.Extensions.TrimmedEquals(System.String,System.String,System.ReadOnlySpan{System.Char}@,System.StringComparison)"/>
+        </member>
+        <member name="M:Open.Text.Extensions.TrimmedEquals(System.String,System.ReadOnlySpan{System.Char}@,System.ReadOnlySpan{System.Char}@,System.StringComparison)">
+            <summary>
+            Optimized equals for comparing trimmed string with span.
+            </summary>
+            <param name="source">The source string to virtually trim.</param>
+            <param name="other">The span to compare to.</param>
+            <param name="trimChars">The characters to trim.</param>
+            <param name="stringComparison">The string comparison type.</param>
+            <inheritdoc cref="M:Open.Text.Extensions.TrimmedEquals(System.String,System.String,System.ReadOnlySpan{System.Char}@,System.StringComparison)"/>
+        </member>
+        <member name="M:Open.Text.Extensions.TrimmedEquals(System.String,System.String,System.ReadOnlySpan{System.Char}@,System.StringComparison)">
+            <summary>
+            Optimized equals for comparing a trimmed string with another string.
+            </summary>
+            <param name="source">The source string to virtually trim.</param>
+            <param name="other">The string to compare to.</param>
+            <param name="trimChars">The characters to trim.</param>
+            <param name="stringComparison">The string comparison type.</param>
+            <returns>True if the are contents equal.</returns>
+        </member>
+        <member name="M:Open.Text.Extensions.FirstSplit(System.String,System.Char,System.Int32@,System.Int32)">
+            <summary>
+            Finds the first instance of a character and returns the set of characters up to that character.
+            </summary>
+            <param name="source">The source characters to look through.</param>
+            <param name="splitCharacter">The charcter to find.</param>
+            <param name="nextIndex">The next possible index following the the current one.</param>
+            <param name="startIndex">The index to start the split.</param>
+            <returns>The portion of the source up to and excluding the sequence searched for.</returns>
+        </member>
+        <member name="M:Open.Text.Extensions.FirstSplit(System.String,System.String,System.Int32@,System.Int32,System.StringComparison)">
+            <summary>
+            Finds the first instance of a character sequence and returns the set of characters up to that sequence.
+            </summary>
+            <param name="source">The source characters to look through.</param>
+            <param name="splitSequence">The sequence to find.</param>
+            <param name="nextIndex">The next possible index following the the current one.</param>
+            <param name="startIndex">The index to start the split.</param>
+            <param name="comparisonType">The string comparison type to use.</param>
+            <returns>The portion of the source up to and excluding the sequence searched for.</returns>
+        </member>
+        <member name="M:Open.Text.Extensions.FirstSplit(System.ReadOnlySpan{System.Char},System.Char,System.Int32@)">
+            <inheritdoc cref="M:Open.Text.Extensions.FirstSplit(System.String,System.Char,System.Int32@,System.Int32)"/>
+        </member>
+        <member name="M:Open.Text.Extensions.FirstSplit(System.ReadOnlySpan{System.Char},System.ReadOnlySpan{System.Char},System.Int32@,System.StringComparison)">
+            <inheritdoc cref="M:Open.Text.Extensions.FirstSplit(System.String,System.String,System.Int32@,System.Int32,System.StringComparison)"/>
+        </member>
+        <member name="M:Open.Text.Extensions.SplitToEnumerable(System.String,System.Char,System.StringSplitOptions)">
+            <summary>
+            Enumerates a string by segments that are separated by the split character.
+            </summary>
+            <param name="source">The source characters to look through.</param>
+            <param name="splitCharacter">The charcter to find.</param>
+            <param name="options">Can specify to omit empty entries.</param>
+            <returns>An enumerable of the segments.</returns>
+        </member>
+        <member name="M:Open.Text.Extensions.SplitToEnumerable(System.String,System.String,System.StringSplitOptions,System.StringComparison)">
+            <summary>
+            Enumerates a string by segments that are separated by the split character.
+            </summary>
+            <param name="source">The source characters to look through.</param>
+            <param name="splitSequence">The sequence to find.</param>
+            <param name="options">Can specify to omit empty entries.</param>
+            <param name="comparisonType">The string comparison type to use.</param>
+            <returns>The portion of the source up to and excluding the sequence searched for.</returns>
+        </member>
+        <member name="M:Open.Text.Extensions.SplitAsMemory(System.String,System.Char,System.StringSplitOptions)">
+            <inheritdoc cref="M:Open.Text.Extensions.SplitToEnumerable(System.String,System.Char,System.StringSplitOptions)" />
+        </member>
+        <member name="M:Open.Text.Extensions.SplitAsMemory(System.String,System.String,System.StringSplitOptions,System.StringComparison)">
+            <inheritdoc cref="M:Open.Text.Extensions.SplitToEnumerable(System.String,System.String,System.StringSplitOptions,System.StringComparison)"/>
+        </member>
+        <member name="M:Open.Text.Extensions.Split(System.ReadOnlySpan{System.Char},System.Char,System.StringSplitOptions)">
+            <summary>
+            Splits a sequence of characters into strings using the character provided.
+            </summary>
+            <param name="source">The source string to split up.</param>
+            <param name="splitCharacter">The character to split by.</param>
+            <param name="options">Can specify to omit empty entries.</param>
+            <returns>The resultant list of string segments.</returns>
+        </member>
+        <member name="M:Open.Text.Extensions.Split(System.ReadOnlySpan{System.Char},System.ReadOnlySpan{System.Char}@,System.StringSplitOptions,System.StringComparison)">
+            <summary>
+            Splits a sequence of characters into strings using the character sequence provided.
+            </summary>
+            <param name="source">The source string to split up.</param>
+            <param name="splitSequence">The sequence to split by.</param>
+            <param name="options">Can specify to omit empty entries.</param>
+            <param name="comparisonType">The optional comparsion type.</param>
+            <returns>The resultant list of string segments.</returns>
+        </member>
+        <member name="M:Open.Text.Extensions.AsSegment(System.String)">
+            <inheritdoc cref="M:Open.Text.StringSegment.Create(System.String)"/>
+        </member>
+        <member name="M:Open.Text.Extensions.AsSegment(System.String,System.Int32)">
+            <inheritdoc cref="M:Open.Text.StringSegment.Create(System.String,System.Int32)"/>
+        </member>
+        <member name="M:Open.Text.Extensions.AsSegment(System.String,System.Int32,System.Int32)">
+            <inheritdoc cref="M:Open.Text.StringSegment.Create(System.String,System.Int32,System.Int32)"/>
+        </member>
+        <member name="M:Open.Text.Extensions.First(System.String,System.String,System.StringComparison)">
+            <summary>
+            Finds the first instance of a string and returns a StringSegment for subsequent use.
+            </summary>
+            <param name="source">The source string to search.</param>
+            <param name="search">The string pattern to look for.</param>
+            <param name="comparisonType">The string comparision type to use.  Default is Ordinal.</param>
+            <returns>
+            The segment representing the found string.
+            If not found, the StringSegment.IsValid property will be false.
+            </returns>
+        </member>
+        <member name="M:Open.Text.Extensions.First(System.String,System.Text.RegularExpressions.Regex)">
+            <summary>
+            Finds the first instance of a pattern and returns a StringSegment for subsequent use.
+            </summary>
+            <param name="source">The source string to search.</param>
+            <param name="pattern">The pattern to look for.</param>
+            <returns>
+            The segment representing the found string.
+            If not found, the StringSegment.IsValid property will be false.
+            </returns>
+            <remarks>If the pattern is right-to-left, then it will return the first segment from the right.</remarks>
+        </member>
+        <member name="M:Open.Text.Extensions.First(Open.Text.StringSegment,System.ReadOnlySpan{System.Char}@,System.StringComparison)">
+            <inheritdoc cref="M:Open.Text.Extensions.First(System.String,System.String,System.StringComparison)" />
+        </member>
+        <member name="M:Open.Text.Extensions.First(Open.Text.StringSegment,System.String,System.StringComparison)">
+            <inheritdoc cref="M:Open.Text.Extensions.First(System.String,System.String,System.StringComparison)" />
+        </member>
+        <member name="M:Open.Text.Extensions.Last(System.String,System.String,System.StringComparison)">
+            <summary>
+            Finds the last instance of a string and returns a StringSegment for subsequent use.
+            </summary>
+            <inheritdoc cref="M:Open.Text.Extensions.First(System.String,System.String,System.StringComparison)"/>
+        </member>
+        <member name="M:Open.Text.Extensions.Last(System.String,System.Text.RegularExpressions.Regex)">
+            <summary>
+            Finds the last instance of a pattern and returns a StringSegment for subsequent use.
+            </summary>
+            <remarks>If the pattern is right-to-left, then it will return the last segment from the right (first segment from the left).</remarks>
+            <inheritdoc cref="M:Open.Text.Extensions.First(System.String,System.Text.RegularExpressions.Regex)"/>
+        </member>
+        <member name="M:Open.Text.Extensions.Last(Open.Text.StringSegment,System.ReadOnlySpan{System.Char}@,System.StringComparison)">
+            <inheritdoc cref="M:Open.Text.Extensions.Last(System.String,System.String,System.StringComparison)" />
+        </member>
+        <member name="M:Open.Text.Extensions.Last(Open.Text.StringSegment,System.String,System.StringComparison)">
+            <inheritdoc cref="M:Open.Text.Extensions.Last(System.String,System.String,System.StringComparison)" />
+        </member>
+        <member name="M:Open.Text.Extensions.TrimStartPattern(System.ReadOnlySpan{System.Char},System.ReadOnlySpan{System.Char}@,System.StringComparison,System.Int32)">
+            <param name="source">The source sequence of characters.</param>
+            <param name="pattern">The pattern to search for.</param>
+            <param name="comparisonType">The comparison type to use when searching.  Default is ordinal.</param>
+            <param name="max">The maximum number of times to remove the specified sequence.  -1 (default) = all instances.</param>
+            <inheritdoc cref="M:Open.Text.Extensions.TrimStartPattern(System.String,System.Text.RegularExpressions.Regex,System.Int32)"/>
+        </member>
+        <member name="M:Open.Text.Extensions.TrimStartPattern(System.ReadOnlySpan{System.Char},System.String,System.StringComparison,System.Int32)">
+            <inheritdoc cref="M:Open.Text.Extensions.TrimStartPattern(System.ReadOnlySpan{System.Char},System.ReadOnlySpan{System.Char}@,System.StringComparison,System.Int32)"/>
+        </member>
+        <member name="M:Open.Text.Extensions.TrimStartPattern(System.String,System.String,System.StringComparison,System.Int32)">
+            <remarks>To any allocations, call .AsSpan() before calling this method name.</remarks>
+            <inheritdoc cref="M:Open.Text.Extensions.TrimStartPattern(System.ReadOnlySpan{System.Char},System.ReadOnlySpan{System.Char}@,System.StringComparison,System.Int32)"/>
+        </member>
+        <member name="M:Open.Text.Extensions.TrimStartPattern(System.String,System.Text.RegularExpressions.Regex,System.Int32)">
+            <summary>
+            Trims (omits) a matching pattern from the start of a sequence of characters.
+            </summary>
+            <param name="source">The source sequence of characters.</param>
+            <param name="pattern">The pattern to search for.</param>
+            <param name="max">The maximum number of times to remove the specified sequence.  -1 (default) = all instances.</param>
+            <returns>The resultant trimmed string.</returns>
+        </member>
+        <member name="M:Open.Text.Extensions.TrimEndPattern(System.ReadOnlySpan{System.Char},System.ReadOnlySpan{System.Char}@,System.StringComparison,System.Int32)">
+            <param name="source">The source sequence of characters.</param>
+            <param name="comparisonType">The comparison type to use when searching.  Default is ordinal.</param>
+            <param name="pattern">The pattern to search for.</param>
+            <param name="max">The maximum number of times to remove the specified sequence.  -1 (default) = all instances.</param>
+            <returns>The resultant trimmed span.</returns>
+            <inheritdoc cref="M:Open.Text.Extensions.TrimEndPattern(System.String,System.Text.RegularExpressions.Regex,System.Int32)"/>
+        </member>
+        <member name="M:Open.Text.Extensions.TrimEndPattern(System.ReadOnlySpan{System.Char},System.String,System.StringComparison,System.Int32)">
+            <inheritdoc cref="M:Open.Text.Extensions.TrimEndPattern(System.ReadOnlySpan{System.Char},System.ReadOnlySpan{System.Char}@,System.StringComparison,System.Int32)"/>
+        </member>
+        <member name="M:Open.Text.Extensions.TrimEndPattern(System.String,System.String,System.StringComparison,System.Int32)">
+            <remarks>To any allocations, call .AsSpan() before calling this method name.</remarks>
+            <inheritdoc cref="M:Open.Text.Extensions.TrimEndPattern(System.ReadOnlySpan{System.Char},System.ReadOnlySpan{System.Char}@,System.StringComparison,System.Int32)"/>
+        </member>
+        <member name="M:Open.Text.Extensions.TrimEndPattern(System.String,System.Text.RegularExpressions.Regex,System.Int32)">
+            <summary>
+            Trims (omits) a matching pattern from the end of a sequence of characters.
+            </summary>
+            <param name="source">The source sequence of characters.</param>
+            <param name="pattern">The pattern to search for.</param>
+            <param name="max">The maximum number of times to remove the specified sequence.  -1 (default) = all instances.</param>
+            <returns>The resultant trimmed string.</returns>
+        </member>
+        <member name="F:Open.Text.Extensions.ValidAlphaNumericOnlyPattern">
+            <summary>
+            Compiled pattern for finding alpha-numeric sequences.
+            </summary>
+        </member>
+        <member name="F:Open.Text.Extensions.ValidAlphaNumericOnlyUntrimmedPattern">
+            <summary>
+            Compiled pattern for finding alpha-numeric sequences and possible surrounding white-space.
+            </summary>
+        </member>
+        <member name="M:Open.Text.Extensions.LastIndexOf(System.ReadOnlySpan{System.Char}@,System.ReadOnlySpan{System.Char}@,System.StringComparison)">
+            <summary>
+            Provides the substring before the search string.
+            </summary>
+            <param name="source">The source string to search in.</param>
+            <param name="search">The search string to look for.  If the search is null or empty this method returns null.</param>
+            <param name="comparisonType">The comparison type to use when searching.</param>
+            <returns>The source of the string before the search string.  Returns null if search string is not found.</returns>
+        </member>
+        <member name="M:Open.Text.Extensions.ToTitleCase(System.String,System.Globalization.CultureInfo)">
+            <summary>
+            Converts a string to title-case.
+            </summary>
+            <param name="source">The string to apply title-casing to.</param>
+            <param name="cultureInfo">The optional culture info.  Default is invariant.</param>
+            <returns>The new title-cased string.</returns>
+        </member>
+        <member name="M:Open.Text.Extensions.IsAnyNullOrWhiteSpace(System.String[])">
+            <summary>
+            Returns true if any string is null, empty or white-space only.
+            </summary>
+            <param name="values">The set of values to validate.</param>
+            <returns>True if any of the provided values is is null, empty or white-space only. Otherwise false.</returns>
+        </member>
+        <member name="M:Open.Text.Extensions.AssertIsNotNullOrWhiteSpace(System.String)">
+            <summary>
+            Throws if null, empty or white-space only.
+            </summary>
+            <exception cref="T:System.NullReferenceException">If the source is null.</exception>
+            <exception cref="T:System.ArgumentException">If the source is empty or white-space.</exception>
+            <param name="source">The source string to validate.</param>
+            <returns>The original string.</returns>
+        </member>
+        <member name="M:Open.Text.Extensions.IsNullOrWhiteSpace(System.String)">
+            <summary>
+            Shortcut for String.IsNullOrWhiteSpace(source).
+            </summary>
+        </member>
+        <member name="M:Open.Text.Extensions.ToNullIfWhiteSpace(System.String,System.Boolean)">
+            <summary>
+            Shortcut for returning a null if the source string is null, white space or empty.
+            </summary>
+            <param name="value">The value to be trimmed.</param>
+            <param name="trim">True will trim whitespace from valid response.</param>
+        </member>
+        <member name="M:Open.Text.Extensions.ToFormat(System.String,System.String)">
+            <summary>
+            Shortcut for returning a formatted string if non-null, non-whitespace action exists.
+            </summary>
+            <param name="value">The value to be formatted.</param>
+            <param name="format">The format string.</param>
+        </member>
+        <member name="M:Open.Text.Extensions.ToFormat``1(System.Nullable{``0},System.String,System.Globalization.CultureInfo)">
+            <summary>
+            Shortcut for returning a formatted a value if non-null.
+            </summary>
+            <param name="value">The value to be formatted.</param>
+            <param name="format">The format string.</param>
+            <param name="cultureInfo">The optional culture info.  Default is invariant.</param>
+            <returns>The formatted string, or empty string if the value is null.</returns>
+        </member>
+        <member name="M:Open.Text.Extensions.IsAlphaNumeric(System.String,System.Boolean)">
+            <summary>
+            Returns true if only contains alphanumeric characters. Regex: (^\w+$).
+            </summary>
+            <param name="source">The value to be formatted.</param>
+            <param name="trim">Will be trimmed if true.</param>
+        </member>
+        <member name="M:Open.Text.Extensions.AsSpan(System.Text.RegularExpressions.Capture)">
+            <summary>
+            Returns a ReadOnlySpan of the capture without creating a new string.
+            </summary>
+            <remarks>This is a stop-gap until .NET 6 releases the .ValueSpan property.</remarks>
+            <param name="capture">The capture to get the span from.</param>
+        </member>
+        <member name="M:Open.Text.Extensions.GetValue(System.Text.RegularExpressions.GroupCollection,System.String,System.Boolean)">
+            <summary>
+            Gets a group by name.
+            </summary>
+            <remarks>If throwIfInvalid = false then will return null if not found; otherwise an ArgumentException will be thrown.</remarks>
+            <param name="groups">The group collection to get the group from.</param>
+            <param name="groupName">The declared name of the group.</param>
+            <param name="throwIfInvalid">Causes an exception if true and a group is not found.</param>
+            <returns>The value of the requested group.</returns>
+            <exception cref="T:System.ArgumentNullException">Groups or groupName is null.</exception>
+            <exception cref="T:System.ArgumentException">If throwIfInvalid is true and no group is found.</exception>
+        </member>
+        <member name="M:Open.Text.Extensions.GetValueSpan(System.Text.RegularExpressions.GroupCollection,System.String,System.Boolean)">
+            <remarks>If throwIfInvalid = false then will return an empty span if not found; otherwise an ArgumentException will be thrown.</remarks>
+            <inheritdoc cref="M:Open.Text.Extensions.GetValue(System.Text.RegularExpressions.GroupCollection,System.String,System.Boolean)" />
+        </member>
+        <member name="M:Open.Text.Extensions.ToString``1(System.Nullable{``0},System.String,``0,System.Globalization.CultureInfo)">
+            <summary>
+            Shortcut for formating Nullable&lt;T&gt;.
+            </summary>
+        </member>
+        <member name="M:Open.Text.Extensions.ToString(System.Nullable{System.Double},System.String,System.Double,System.Globalization.CultureInfo)">
+            <summary>
+            Shortcut for formating Nullable&lt;double&gt;.
+            </summary>
+        </member>
+        <member name="M:Open.Text.Extensions.ToString(System.Nullable{System.Single},System.String,System.Single,System.Globalization.CultureInfo)">
+            <summary>
+            Shortcut for formating Nullable&lt;float&gt;.
+            </summary>
+        </member>
+        <member name="M:Open.Text.Extensions.ToPercentString(System.Int32,System.Int32,System.Int32,System.Globalization.CultureInfo)">
+            <summary>
+            Shortcut for formating to a percent.
+            </summary>
+        </member>
+        <member name="M:Open.Text.Extensions.ToByteString(System.Double,System.String,System.Globalization.CultureInfo)">
+            <summary>
+            Returns an abbreviated metric representation of a quantity of bytes. 
+            </summary>
+        </member>
+        <member name="M:Open.Text.Extensions.ToByteString(System.Int32,System.String,System.Globalization.CultureInfo)">
+            <summary>
+            Returns an abbreviated metric representation of a quantity of bytes. 
+            </summary>
+        </member>
+        <member name="M:Open.Text.Extensions.ToByteString(System.Int64,System.String,System.Globalization.CultureInfo)">
+            <summary>
+            Returns an abbreviated metric representation of a quantity of bytes. 
+            </summary>
+        </member>
+        <member name="M:Open.Text.Extensions.ToMetricString(System.Double,System.String,System.Globalization.CultureInfo)">
+            <summary>
+            Returns an abbreviated metric representation of a number. 
+            </summary>
+        </member>
+        <member name="M:Open.Text.Extensions.ToMetricString(System.Int64,System.String,System.Globalization.CultureInfo)">
+            <summary>
+            Returns an abbreviated metric representation of a number. 
+            </summary>
+        </member>
+        <member name="M:Open.Text.Extensions.ToMetricString(System.Int32,System.String,System.Globalization.CultureInfo)">
+            <summary>
+            Returns an abbreviated metric representation of a number. 
+            </summary>
+        </member>
+        <member name="F:Open.Text.Extensions.WhiteSpacePattern">
+            <summary>
+            Compiled Regex for finding white-space.
+            </summary>
+        </member>
+        <member name="M:Open.Text.Extensions.ReplaceWhiteSpace(System.String,System.String)">
+            <summary>
+            Replaces any white-space with the specified string.
+            Collapses multiple white-space characters to a single space if no replacement specified.
+            </summary>
+            <param name="source">The source string.</param>
+            <param name="replace">The optional pattern to replace with.</param>
+            <returns>The resultant string.</returns>
+        </member>
+        <member name="F:Open.Text.Extensions.Newline">
+            <summary>
+            String constant for carriage return and then newline.
+            </summary>
+        </member>
+        <member name="M:Open.Text.Extensions.WriteLineNoTabs(System.IO.TextWriter,System.String)">
+            <summary>
+            Shortcut for WriteLineNoTabs on a TextWriter. Mimimcs similar classes.
+            </summary>
+        </member>
+        <member name="M:Open.Text.Extensions.Supplant``1(System.String,``0[],System.Globalization.CultureInfo)">
+            <summary>
+            An alternative to String.Format that takes an array of values.
+            </summary>
+            <typeparam name="T">The generic type of the values provided.</typeparam>
+            <param name="format">The format string.</param>
+            <param name="values">The values to inject.</param>
+            <param name="cultureInfo">The optional culture info.  Default is invariant.</param>
+            <returns>The resultant string.</returns>
+        </member>
+        <member name="T:Open.Text.SpanComparable">
+            <summary>
+            A StringComparison variable struct for comparing a ReadOnlySpan&lt;char&gt; against other values.
+            </summary>
+        </member>
+        <member name="M:Open.Text.SpanComparable.#ctor(System.ReadOnlySpan{System.Char},System.StringComparison)">
+            <summary>
+            Constructs a SpanComparable using the provided string and comparison type.
+            </summary>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is null</exception>
+        </member>
+        <member name="P:Open.Text.SpanComparable.Source">
+            <summary>
+            The span to use for comparison.
+            </summary>
+        </member>
+        <member name="P:Open.Text.SpanComparable.Type">
+            <summary>
+            The type of string comparison.
+            </summary>
+        </member>
+        <member name="P:Open.Text.SpanComparable.Length">
+            <summary>
+            The length of the string.
+            </summary>
+        </member>
+        <member name="M:Open.Text.SpanComparable.Equals(System.String)">
+            <summary>
+            Compares <paramref name="other"/> if its characters matches this instance.
+            </summary>
+            <returns>true if the value of <paramref name="other"/> matches; otherwise false. </returns>
+        </member>
+        <member name="M:Open.Text.SpanComparable.Equals(System.ReadOnlySpan{System.Char})">
+            <inheritdoc cref="M:Open.Text.SpanComparable.Equals(System.String)"/>
+        </member>
+        <member name="M:Open.Text.SpanComparable.Equals(Open.Text.StringComparable)">
+            <inheritdoc cref="M:Open.Text.SpanComparable.Equals(System.String)"/>
+        </member>
+        <member name="M:Open.Text.SpanComparable.Equals(Open.Text.SpanComparable)">
+            <inheritdoc cref="M:Open.Text.SpanComparable.Equals(System.String)"/>
+        </member>
+        <member name="M:Open.Text.SpanComparable.Equals(Open.Text.StringSegment)">
+            <inheritdoc cref="M:Open.Text.SpanComparable.Equals(System.String)"/>
+        </member>
+        <member name="M:Open.Text.SpanComparable.Equals(System.Object)">
+            <summary />
+        </member>
+        <member name="M:Open.Text.SpanComparable.GetHashCode">
+            <inheritdoc />
+        </member>
+        <member name="M:Open.Text.SpanComparable.op_Equality(Open.Text.SpanComparable,Open.Text.SpanComparable)">
+            <summary>
+            Compares two SpanComparables for equality.
+            </summary>
+        </member>
+        <member name="M:Open.Text.SpanComparable.op_Inequality(Open.Text.SpanComparable,Open.Text.SpanComparable)">
+            <summary>
+            Compares two SpanComparables for inequality.
+            </summary>
+        </member>
+        <member name="M:Open.Text.SpanComparable.op_Equality(Open.Text.SpanComparable,System.String)">
+            <summary>
+            Compares a SpanComparable with a string for equality.
+            </summary>
+        </member>
+        <member name="M:Open.Text.SpanComparable.op_Inequality(Open.Text.SpanComparable,System.String)">
+            <summary>
+            Compares a SpanComparable with a string for inequality.
+            </summary>
+        </member>
+        <member name="M:Open.Text.SpanComparable.op_Equality(Open.Text.SpanComparable,System.ReadOnlySpan{System.Char})">
+            <summary>
+            Compares a SpanComparable with a span for equality.
+            </summary>
+        </member>
+        <member name="M:Open.Text.SpanComparable.op_Inequality(Open.Text.SpanComparable,System.ReadOnlySpan{System.Char})">
+            <summary>
+            Compares a SpanComparable with a span for inequality.
+            </summary>
+        </member>
+        <member name="M:Open.Text.SpanComparable.op_Equality(Open.Text.SpanComparable,Open.Text.StringComparable)">
+            <summary>
+            Compares a SpanComparable with a StringComparable for equality.
+            </summary>
+        </member>
+        <member name="M:Open.Text.SpanComparable.op_Inequality(Open.Text.SpanComparable,Open.Text.StringComparable)">
+            <summary>
+            Compares a SpanComparable with a StringComparable for inequality.
+            </summary>
+        </member>
+        <member name="T:Open.Text.SpanComparableExtensions">
+            <summary/>
+        </member>
+        <member name="M:Open.Text.SpanComparableExtensions.AsComparable(System.ReadOnlySpan{System.Char},System.StringComparison)">
+            <summary>
+            Prepares a span for a specific StringComparison operation.
+            </summary>
+            <inheritdoc cref="M:Open.Text.SpanComparableExtensions.AsCaseInsensitive(System.ReadOnlySpan{System.Char})"/>
+        </member>
+        <member name="M:Open.Text.SpanComparableExtensions.AsCaseInsensitive(System.ReadOnlySpan{System.Char})">
+            <summary>
+            Prepares a span to be case insensitive when comparing equality.
+            </summary>
+            <inheritdoc cref="M:Open.Text.StringComparableExtensions.AsCaseInsensitive(System.String)"/>
+        </member>
+        <member name="M:Open.Text.SpanComparableExtensions.AsCaseInsensitiveInvariantCulture(System.ReadOnlySpan{System.Char})">
+            <summary>
+            Prepares a span to be invariant culture and case insensitive when comparing equality.
+            </summary>
+            <inheritdoc cref="M:Open.Text.SpanComparableExtensions.AsCaseInsensitive(System.ReadOnlySpan{System.Char})"/>
+        </member>
+        <member name="M:Open.Text.SpanComparableExtensions.AsCaseInsensitiveCurrentCulture(System.ReadOnlySpan{System.Char})">
+            <summary>
+            Prepares a span to be invariant culture and case insensitive when comparing equality.
+            </summary>
+            <inheritdoc cref="M:Open.Text.SpanComparableExtensions.AsCaseInsensitive(System.ReadOnlySpan{System.Char})"/>
+        </member>
+        <member name="M:Open.Text.SpanComparableExtensions.AsCurrentCulture(System.ReadOnlySpan{System.Char})">
+            <summary>
+            Prepares a span to be current culture and case sensitive when comparing equality.
+            </summary>
+            <inheritdoc cref="M:Open.Text.SpanComparableExtensions.AsCaseInsensitive(System.ReadOnlySpan{System.Char})"/>
+        </member>
+        <member name="M:Open.Text.SpanComparableExtensions.AsInvariantCulture(System.ReadOnlySpan{System.Char})">
+            <summary>
+            Prepares a span to be invariant culture and case sensitive when comparing equality.
+            </summary>
+            <inheritdoc cref="M:Open.Text.SpanComparableExtensions.AsCaseInsensitive(System.ReadOnlySpan{System.Char})"/>
+        </member>
+        <member name="M:Open.Text.SpanComparableExtensions.AsComparable(Open.Text.StringSegment,System.StringComparison)">
+            <summary>
+            Prepares a StringSegment for a specific StringComparison operation.
+            </summary>
+            <inheritdoc cref="M:Open.Text.SpanComparableExtensions.AsCaseInsensitive(System.ReadOnlySpan{System.Char})"/>
+        </member>
+        <member name="M:Open.Text.SpanComparableExtensions.AsCaseInsensitive(Open.Text.StringSegment)">
+            <summary>
+            Prepares a StringSegment to be case insensitive when comparing equality.
+            </summary>
+            <inheritdoc cref="M:Open.Text.SpanComparableExtensions.AsCaseInsensitive(System.ReadOnlySpan{System.Char})"/>
+        </member>
+        <member name="M:Open.Text.SpanComparableExtensions.AsCaseInsensitiveInvariantCulture(Open.Text.StringSegment)">
+            <summary>
+            Prepares a StringSegment to be invariant culture and case insensitive when comparing equality.
+            </summary>
+            <inheritdoc cref="M:Open.Text.SpanComparableExtensions.AsCaseInsensitive(System.ReadOnlySpan{System.Char})"/>
+        </member>
+        <member name="M:Open.Text.SpanComparableExtensions.AsCaseInsensitiveCurrentCulture(Open.Text.StringSegment)">
+            <summary>
+            Prepares a StringSegment to be invariant culture and case insensitive when comparing equality.
+            </summary>
+            <inheritdoc cref="M:Open.Text.SpanComparableExtensions.AsCaseInsensitive(System.ReadOnlySpan{System.Char})"/>
+        </member>
+        <member name="M:Open.Text.SpanComparableExtensions.AsCurrentCulture(Open.Text.StringSegment)">
+            <summary>
+            Prepares a StringSegment to be current culture and case sensitive when comparing equality.
+            </summary>
+            <inheritdoc cref="M:Open.Text.SpanComparableExtensions.AsCaseInsensitive(System.ReadOnlySpan{System.Char})"/>
+        </member>
+        <member name="M:Open.Text.SpanComparableExtensions.AsInvariantCulture(Open.Text.StringSegment)">
+            <summary>
+            Prepares a StringSegment to be invariant culture and case sensitive when comparing equality.
+            </summary>
+            <inheritdoc cref="M:Open.Text.SpanComparableExtensions.AsCaseInsensitive(System.ReadOnlySpan{System.Char})"/>
+        </member>
+        <member name="T:Open.Text.StringBuilderExtensions">
+            <summary>
+            Useful extensions for working with StringBuilders.
+            </summary>
+        </member>
+        <member name="M:Open.Text.StringBuilderExtensions.ToStringBuilder``1(System.ReadOnlySpan{``0}@)">
+            <summary>
+            Adds every entry to a StringBuilder.
+            </summary>
+            <typeparam name="T">The type of the source.</typeparam>
+            <param name="source">The source span.</param>
+            <returns>The resultant StringBuilder.</returns>
+        </member>
+        <member name="M:Open.Text.StringBuilderExtensions.ToStringBuilder``1(System.Span{``0}@)">
+            <inheritdoc cref="M:Open.Text.StringBuilderExtensions.ToStringBuilder``1(System.ReadOnlySpan{``0}@)" />
+        </member>
+        <member name="M:Open.Text.StringBuilderExtensions.ToStringBuilder``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Adds every entry to a StringBuilder.
+            </summary>
+            <typeparam name="T">The type of the source.</typeparam>
+            <param name="source">The source span.</param>
+            <returns>The resultant StringBuilder.</returns>
+        </member>
+        <member name="M:Open.Text.StringBuilderExtensions.ToStringBuilder``1(System.ReadOnlySpan{``0}@,System.String)">
+            <summary>
+            Adds every entry to a StringBuilder separated by the specified sequence.
+            </summary>
+            <typeparam name="T">The type of the source.</typeparam>
+            <param name="source">The source span.</param>
+            <param name="separator">The separator sequence.</param>
+            <returns>The resultant StringBuilder.</returns>
+        </member>
+        <member name="M:Open.Text.StringBuilderExtensions.ToStringBuilder``1(System.Span{``0}@,System.String)">
+            <inheritdoc cref="M:Open.Text.StringBuilderExtensions.ToStringBuilder``1(System.ReadOnlySpan{``0}@,System.String)" />
+        </member>
+        <member name="M:Open.Text.StringBuilderExtensions.ToStringBuilder``1(System.ReadOnlySpan{``0}@,System.Char)">
+            <summary>
+            Adds every entry to a StringBuilder separated by the specified character.
+            </summary>
+            <typeparam name="T">The type of the source.</typeparam>
+            <param name="source">The source span.</param>
+            <param name="separator">The separator character.</param>
+            <returns>The resultant StringBuilder.</returns>
+        </member>
+        <member name="M:Open.Text.StringBuilderExtensions.ToStringBuilder``1(System.Span{``0}@,System.Char)">
+            <inheritdoc cref="M:Open.Text.StringBuilderExtensions.ToStringBuilder``1(System.ReadOnlySpan{``0}@,System.Char)" />
+        </member>
+        <member name="M:Open.Text.StringBuilderExtensions.ToStringBuilder``1(System.Collections.Generic.IEnumerable{``0},System.String)">
+            <summary>
+            Adds every entry to a StringBuilder separated by the specified sequence.
+            </summary>
+            <typeparam name="T">The type of the source.</typeparam>
+            <param name="source">The source enumerable.</param>
+            <param name="separator">The separator sequence.</param>
+            <returns>The resultant StringBuilder.</returns>
+        </member>
+        <member name="M:Open.Text.StringBuilderExtensions.ToStringBuilder``1(System.Collections.Generic.IEnumerable{``0},System.Char)">
+            <summary>
+            Adds every entry to a StringBuilder separated by the specified character.
+            </summary>
+            <typeparam name="T">The type of the source.</typeparam>
+            <param name="source">The source enumerable.</param>
+            <param name="separator">The separator character.</param>
+            <returns>The resultant StringBuilder.</returns>
+        </member>
+        <member name="M:Open.Text.StringBuilderExtensions.AppendAll``1(System.Text.StringBuilder,System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Shortcut for adding an array of values to a StringBuilder.
+            </summary>
+        </member>
+        <member name="M:Open.Text.StringBuilderExtensions.AppendAll``1(System.Text.StringBuilder,System.Collections.Generic.IEnumerable{``0},System.String)">
+            <summary>
+            Shortcut for adding an array of values to a StringBuilder.
+            </summary>
+        </member>
+        <member name="M:Open.Text.StringBuilderExtensions.AppendAll``1(System.Text.StringBuilder,System.Collections.Generic.IEnumerable{``0},System.Char)">
+            <summary>
+            Shortcut for adding an array of values to a StringBuilder.
+            </summary>
+        </member>
+        <member name="M:Open.Text.StringBuilderExtensions.AppendAll``1(System.Text.StringBuilder,System.ReadOnlySpan{``0}@)">
+            <summary>
+            Shortcut for adding an array of values to a StringBuilder.
+            </summary>
+        </member>
+        <member name="M:Open.Text.StringBuilderExtensions.AppendAll``1(System.Text.StringBuilder,System.ReadOnlySpan{``0}@,System.String)">
+            <summary>
+            Shortcut for adding an array of values to a StringBuilder.
+            </summary>
+        </member>
+        <member name="M:Open.Text.StringBuilderExtensions.AppendAll``1(System.Text.StringBuilder,System.ReadOnlySpan{``0}@,System.Char)">
+            <summary>
+            Shortcut for adding an array of values to a StringBuilder.
+            </summary>
+        </member>
+        <member name="M:Open.Text.StringBuilderExtensions.AppendWithSeparator(System.Text.StringBuilder,System.String,System.Object,System.Object[])">
+            <summary>
+            Appends values to StringBuilder prefixing the provided separator.
+            </summary>
+        </member>
+        <member name="M:Open.Text.StringBuilderExtensions.AppendWithSeparator(System.Text.StringBuilder,System.Char,System.Object,System.Object[])">
+            <summary>
+            Appends values to StringBuilder prefixing the provided separator.
+            </summary>
+        </member>
+        <member name="M:Open.Text.StringBuilderExtensions.AppendWithSeparator``1(System.Text.StringBuilder,System.Collections.Generic.IDictionary{System.String,``0},System.String,System.String,System.String)">
+            <summary>
+            Appends a key/value pair to StringBuilder using the provided separators.
+            </summary>
+        </member>
+        <member name="T:Open.Text.StringComparable">
+            <summary>
+            A StringComparison variable struct for comparing a string against other values.
+            </summary>
+        </member>
+        <member name="M:Open.Text.StringComparable.#ctor(System.String,System.StringComparison)">
+            <summary>
+            Constructs a StringComparable using the provided string and comparison type.
+            </summary>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is null</exception>
+        </member>
+        <member name="P:Open.Text.StringComparable.Source">
+            <summary>
+            The string to use for comparison.
+            </summary>
+        </member>
+        <member name="P:Open.Text.StringComparable.Type">
+            <summary>
+            The type of string comparison.
+            </summary>
+        </member>
+        <member name="P:Open.Text.StringComparable.Length">
+            <summary>
+            The length of the string.
+            </summary>
+        </member>
+        <member name="M:Open.Text.StringComparable.Equals(System.String)">
+            <summary>
+            Compares <paramref name="other"/> if its characters matches this instance.
+            </summary>
+            <returns>true if the value of <paramref name="other"/> matches; otherwise false. </returns>
+        </member>
+        <member name="M:Open.Text.StringComparable.Equals(System.ReadOnlySpan{System.Char})">
+            <inheritdoc cref="M:Open.Text.StringComparable.Equals(System.String)"/>
+        </member>
+        <member name="M:Open.Text.StringComparable.Equals(Open.Text.StringComparable)">
+            <inheritdoc cref="M:Open.Text.StringComparable.Equals(System.String)"/>
+        </member>
+        <member name="M:Open.Text.StringComparable.Equals(Open.Text.SpanComparable)">
+            <inheritdoc cref="M:Open.Text.StringComparable.Equals(System.String)"/>
+        </member>
+        <member name="M:Open.Text.StringComparable.Equals(Open.Text.StringSegment)">
+            <inheritdoc cref="M:Open.Text.StringComparable.Equals(System.String)"/>
+        </member>
+        <member name="M:Open.Text.StringComparable.Equals(System.Object)">
+            <summary>
+            Compares <paramref name="obj"/> if it is a string or StringComparable and if the value matches this instance.
+            </summary>
+            <returns>true if the value of <paramref name="obj"/> matches; otherwise false. </returns>
+        </member>
+        <member name="M:Open.Text.StringComparable.GetHashCode">
+            <inheritdoc />
+        </member>
+        <member name="M:Open.Text.StringComparable.op_Equality(Open.Text.StringComparable,Open.Text.StringComparable)">
+            <summary>
+            Compares two StringComparables for equality.
+            </summary>
+        </member>
+        <member name="M:Open.Text.StringComparable.op_Inequality(Open.Text.StringComparable,Open.Text.StringComparable)">
+            <summary>
+            Compares two StringComparables for inequality.
+            </summary>
+        </member>
+        <member name="M:Open.Text.StringComparable.op_Equality(Open.Text.StringComparable,System.String)">
+            <summary>
+            Compares a StringComparable and a string for equality.
+            </summary>
+        </member>
+        <member name="M:Open.Text.StringComparable.op_Inequality(Open.Text.StringComparable,System.String)">
+            <summary>
+            Compares a StringComparable and a string for inequality.
+            </summary>
+        </member>
+        <member name="M:Open.Text.StringComparable.op_Equality(Open.Text.StringComparable,System.ReadOnlySpan{System.Char})">
+            <summary>
+            Compares a StringComparable and a span for equality.
+            </summary>
+        </member>
+        <member name="M:Open.Text.StringComparable.op_Inequality(Open.Text.StringComparable,System.ReadOnlySpan{System.Char})">
+            <summary>
+            Compares a StringComparable and a span for inequality.
+            </summary>
+        </member>
+        <member name="M:Open.Text.StringComparable.op_Equality(Open.Text.StringComparable,Open.Text.SpanComparable)">
+            <summary>
+            Compares a StringComparable and a SpanComparable for equality.
+            </summary>
+        </member>
+        <member name="M:Open.Text.StringComparable.op_Inequality(Open.Text.StringComparable,Open.Text.SpanComparable)">
+            <summary>
+            Compares a StringComparable and a SpanComparable for inequality.
+            </summary>
+        </member>
+        <member name="T:Open.Text.StringComparableExtensions">
+            <summary />
+        </member>
+        <member name="M:Open.Text.StringComparableExtensions.AsComparable(System.String,System.StringComparison)">
+            <summary>
+            Prepares a string for a specific StringComparison operation.
+            </summary>
+            <inheritdoc cref="M:Open.Text.StringComparableExtensions.AsCaseInsensitive(System.String)"/>
+        </member>
+        <member name="M:Open.Text.StringComparableExtensions.AsCaseInsensitive(System.String)">
+            <summary>
+            Prepares a string to be case insensitive when comparing equality.
+            </summary>
+            <returns>A StringComparable that can be compared (== or !=) against other StringComparables, SpanComparables, strings, and ReadOnlySpan&lt;char&gt;.</returns>
+        </member>
+        <member name="M:Open.Text.StringComparableExtensions.AsCaseInsensitiveInvariantCulture(System.String)">
+            <summary>
+            Prepares a string to be invariant culture and case insensitive when comparing equality.
+            </summary>
+            <inheritdoc cref="M:Open.Text.StringComparableExtensions.AsCaseInsensitive(System.String)"/>
+        </member>
+        <member name="M:Open.Text.StringComparableExtensions.AsCaseInsensitiveCurrentCulture(System.String)">
+            <summary>
+            Prepares a string to be invariant culture and case insensitive when comparing equality.
+            </summary>
+            <inheritdoc cref="M:Open.Text.StringComparableExtensions.AsCaseInsensitive(System.String)"/>
+        </member>
+        <member name="M:Open.Text.StringComparableExtensions.AsCurrentCulture(System.String)">
+            <summary>
+            Prepares a string to be current culture and case sensitive when comparing equality.
+            </summary>
+            <inheritdoc cref="M:Open.Text.StringComparableExtensions.AsCaseInsensitive(System.String)"/>
+        </member>
+        <member name="M:Open.Text.StringComparableExtensions.AsInvariantCulture(System.String)">
+            <summary>
+            Prepares a string to be invariant culture and case sensitive when comparing equality.
+            </summary>
+        </member>
+        <member name="T:Open.Text.StringSegment">
+            <summary>
+            Similar to an ArraySegment but specifically for strings.<br/>
+            Provides a reference to the original string.
+            </summary>
+        </member>
+        <member name="M:Open.Text.StringSegment.Create(System.String,System.Int32,System.Int32)">
+            <summary>
+            Creates a StringSegment representing the provided string.
+            </summary>
+            <param name="source">The string the segment belongs to.</param>
+            <param name="start">The starting point of the string to use as the index of the segment.</param>
+            <param name="length">The length of the segment.</param>
+            <exception cref="T:System.ArgumentNullException">If the source is null.</exception>
+        </member>
+        <member name="M:Open.Text.StringSegment.Create(System.String,System.Int32)">
+            <inheritdoc cref="M:Open.Text.StringSegment.Create(System.String,System.Int32,System.Int32)"/>
+        </member>
+        <member name="M:Open.Text.StringSegment.Create(System.String)">
+            <inheritdoc cref="M:Open.Text.StringSegment.Create(System.String,System.Int32,System.Int32)"/>
+        </member>
+        <member name="P:Open.Text.StringSegment.SourceSegment">
+            <summary>
+            A segment representing the full length of the source string.
+            </summary>
+        </member>
+        <member name="P:Open.Text.StringSegment.IsValid">
+            <summary>
+            True if this has a source string.
+            False if it is a default segment.
+            </summary>
+        </member>
+        <member name="P:Open.Text.StringSegment.Source">
+            <summary>
+            The original string this segment is using.
+            </summary>
+        </member>
+        <member name="P:Open.Text.StringSegment.Index">
+            <summary>
+            The starting point on the original string that this segment begins.
+            </summary>
+        </member>
+        <member name="P:Open.Text.StringSegment.Length">
+            <summary>
+            The length of the segment.
+            </summary>
+        </member>
+        <member name="P:Open.Text.StringSegment.End">
+            <summary>
+            The index just beyond the last character.
+            </summary>
+        </member>
+        <member name="M:Open.Text.StringSegment.AsMemory">
+            <summary>
+            Returns a ReadOnlyMemory representing the segment of the string defined by this.
+            </summary>
+        </member>
+        <member name="M:Open.Text.StringSegment.AsSpan">
+            <summary>
+            Returns a ReadOnlySpan representing the segment of the string defined by this.
+            </summary>
+        </member>
+        <member name="M:Open.Text.StringSegment.ToString">
+            <summary>
+            Returns a string representing the value of this StringSegment.
+            </summary>
+            <remarks>Will return the base.ToString() value if this is invalid.</remarks>
+        </member>
+        <member name="M:Open.Text.StringSegment.Preceding(System.Boolean)">
+            <inheritdoc cref="M:Open.Text.StringSegment.Preceding(System.Int32,System.Boolean)"/>
+        </member>
+        <member name="M:Open.Text.StringSegment.Following(System.Boolean)">
+            <inheritdoc cref="M:Open.Text.StringSegment.Following(System.Int32,System.Boolean)"/>
+        </member>
+        <member name="M:Open.Text.StringSegment.Preceding(System.Int32,System.Boolean)">
+            <summary>
+            Gets the string segment that precedes this one.
+            </summary>
+            <param name="maxCharacters">The max number of characters to get.</param>
+            <param name="includeSegment">When true, will include this segment.</param>
+        </member>
+        <member name="M:Open.Text.StringSegment.Following(System.Int32,System.Boolean)">
+            <summary>
+            Gets the string segment that follows this one.
+            </summary>
+            <param name="maxCharacters">The max number of characters to get.</param>
+            <param name="includeSegment">When true, will include this segment.</param>
+        </member>
+        <member name="M:Open.Text.StringSegment.OffsetIndex(System.Int32)">
+            <summary>
+            Creates a StringSegment that starts offset by the value provided.
+            </summary>
+            <param name="offset">The value (positive or negative) to move the index by and adjust the length.</param>
+        </member>
+        <member name="M:Open.Text.StringSegment.OffsetLength(System.Int32)">
+            <summary>
+            Creates a StringSegment modifies the length by the value provided.
+            </summary>
+            <param name="offset">The value (positive or negative) to adjust the length.</param>
+        </member>
+        <member name="M:Open.Text.StringSegment.Slice(System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Creates a StringSegment that starts offset by the value provided and extends by the length provided.
+            </summary>
+            <param name="offset">The value (positive or negative) to move the index by.</param>
+            <param name="length">The length desired.</param>
+            <param name="ignoreLengthBoundary">
+            If true, the length can exceed the segment length but not past the full length of the source string.
+            If false (default), an ArgumentOutOfRangeException will be thrown if the expected length exeeds the segment.
+            </param>
+        </member>
+        <member name="M:Open.Text.StringSegment.TrimStart">
+            <summary>
+            Returns the StringSegment of this segment that does not have whitespace at the beginning.
+            </summary>
+        </member>
+        <member name="M:Open.Text.StringSegment.TrimEnd">
+            <summary>
+            Returns a StringSegment that does not have whitespace at the end.
+            </summary>
+        </member>
+        <member name="M:Open.Text.StringSegment.TrimStart(System.Char@)">
+            <summary>
+            Returns the StringSegment of this segment that does not have the trim character at the beginning.
+            </summary>
+            <param name="trim">The character to skip over.</param>
+        </member>
+        <member name="M:Open.Text.StringSegment.TrimEnd(System.Char@)">
+            <summary>
+            Returns the StringSegment of this segment that does not have the trim character at the end.
+            </summary>
+            <inheritdoc cref="M:Open.Text.StringSegment.TrimStart(System.Char@)"/>
+        </member>
+        <member name="M:Open.Text.StringSegment.TrimStart(System.ReadOnlySpan{System.Char}@)">
+            <summary>
+            Returns the StringSegment of this segment that does not have any of the trim characters at the beginning.
+            </summary>
+            <param name="trim">The characters to skip over.</param>
+        </member>
+        <member name="M:Open.Text.StringSegment.TrimEnd(System.ReadOnlySpan{System.Char}@)">
+            <summary>
+            Returns the StringSegment of this segment that does not have any of the trim characters at the end.
+            </summary>
+            <inheritdoc cref="M:Open.Text.StringSegment.TrimStart(System.ReadOnlySpan{System.Char}@)"/>
+        </member>
+        <member name="M:Open.Text.StringSegment.Trim">
+            <summary>
+            Returns the StringSegment of this segment that does not have whitespace at the beginning nor the end.
+            </summary>
+        </member>
+        <member name="M:Open.Text.StringSegment.Trim(System.Char@)">
+            <summary>
+            Returns the StringSegment of this segment that does not have the trim character at the beginning nor the end.
+            </summary>
+            <inheritdoc cref="M:Open.Text.StringSegment.TrimStart(System.Char@)"/>
+        </member>
+        <member name="M:Open.Text.StringSegment.Trim(System.ReadOnlySpan{System.Char}@)">
+            <summary>
+            Returns the StringSegment of this segment that does not have the trim character at the beginning nor the end.
+            </summary>
+            <inheritdoc cref="M:Open.Text.StringSegment.TrimStart(System.ReadOnlySpan{System.Char}@)"/>
+        </member>
+        <member name="M:Open.Text.StringSegment.Equals(Open.Text.StringSegment)">
+            <summary>
+            Returns true if the other string segment values match.
+            </summary>
+        </member>
+        <member name="M:Open.Text.StringSegment.Equals(System.String,System.StringComparison)">
+            <summary>
+            Determines whether this StringSegment and a specified System.String object have the same characters.
+            </summary>
+            <inheritdoc cref="M:System.String.Equals(System.String,System.StringComparison)"/>
+        </member>
+        <member name="M:Open.Text.StringSegment.Equals(System.ReadOnlySpan{System.Char}@,System.StringComparison)">
+            <summary>
+            Determines whether this StringSegment and a specified ReadOnlySpan have the same characters.
+            </summary>
+            <inheritdoc cref="M:System.String.Equals(System.String,System.StringComparison)"/>
+        </member>
+        <member name="M:Open.Text.StringSegment.Equals(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:Open.Text.StringSegment.GetHashCode">
+            <inheritdoc />
+        </member>
+        <member name="M:Open.Text.StringSegment.op_Equality(Open.Text.StringSegment,Open.Text.StringSegment)">
+            <summary>
+            Compares two StringSegments for equality.
+            </summary>
+        </member>
+        <member name="M:Open.Text.StringSegment.op_Inequality(Open.Text.StringSegment,Open.Text.StringSegment)">
+            <summary>
+            Compares two StringSegments for inequality.
+            </summary>
+        </member>
+        <member name="M:Open.Text.StringSegment.op_Implicit(Open.Text.StringSegment)~System.ReadOnlySpan{System.Char}">
+            <summary>
+            Implicitly converts a StringSegment to a ReadOnlySpan.
+            </summary>
+        </member>
+        <member name="M:Open.Text.StringSegment.op_Implicit(Open.Text.StringSegment)~System.ReadOnlyMemory{System.Char}">
+            <summary>
+            Implicitly converts a StringSegment to a ReadOnlyMemory.
+            </summary>
+        </member>
+    </members>
+</doc>

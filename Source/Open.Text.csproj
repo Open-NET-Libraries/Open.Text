@@ -18,7 +18,7 @@
 		<PackageProjectUrl>https://github.com/Open-NET-Libraries/Open.Text</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/Open-NET-Libraries/Open.Text</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<PackageTags>dotnet, dotnetcore, string, span, enum, readonlyspan, text, format, split, trim, equals, trimmed equals, first, last, preceding, following, stringbuilder, extensions</PackageTags>
+		<PackageTags>dotnet, dotnetcore, string, span, enum, readonlyspan, text, format, split, trim, equals, trimmed equals, first, last, preceding, following, stringbuilder, extensions, stringcomparable, spancomparable</PackageTags>
 		<Version>3.5.0</Version>
 		<PackageReleaseNotes></PackageReleaseNotes>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -26,6 +26,9 @@
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 		<PackageIcon>logo.png</PackageIcon>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<DocumentationFile>Documentation.xml</DocumentationFile>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -35,6 +38,10 @@
 	<ItemGroup>
 		<None Remove=".git" />
 		<None Remove=".gitignore" />
+		<None Include="..\README.md">
+		  <Pack>True</Pack>
+		  <PackagePath></PackagePath>
+		</None>
 		<None Include="logo.png">
 			<Pack>True</Pack>
 			<PackagePath></PackagePath>

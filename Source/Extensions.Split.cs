@@ -56,8 +56,14 @@ public static partial class Extensions
 	}
 
 
+	/// <summary>
+	/// Finds the first instance of a character and returns the set of characters up to that character.
+	/// </summary>
+	/// <param name="source">The source characters to look through.</param>
+	/// <param name="splitCharacter">The charcter to find.</param>
+	/// <param name="nextIndex">The next possible index following the the current one.</param>
 	/// <param name="startIndex">The index to start the split.</param>
-	/// <inheritdoc cref="FirstSplit(ReadOnlySpan{char}, char, out int)"/>
+	/// <returns>The portion of the source up to and excluding the sequence searched for.</returns>
 	public static ReadOnlySpan<char> FirstSplit(this string source,
 		char splitCharacter,
 		out int nextIndex,
@@ -77,8 +83,15 @@ public static partial class Extensions
 		return FirstSplitSpan(source, startIndex, source.IndexOf(splitCharacter, startIndex), 1, out nextIndex);
 	}
 
+	/// <summary>
+	/// Finds the first instance of a character sequence and returns the set of characters up to that sequence.
+	/// </summary>
+	/// <param name="source">The source characters to look through.</param>
+	/// <param name="splitSequence">The sequence to find.</param>
+	/// <param name="nextIndex">The next possible index following the the current one.</param>
 	/// <param name="startIndex">The index to start the split.</param>
-	/// <inheritdoc cref="FirstSplit(ReadOnlySpan{char}, ReadOnlySpan{char}, out int, StringComparison)"/>
+	/// <param name="comparisonType">The string comparison type to use.</param>
+	/// <returns>The portion of the source up to and excluding the sequence searched for.</returns>
 	public static ReadOnlySpan<char> FirstSplit(this string source,
 		string splitSequence,
 		out int nextIndex,
@@ -103,13 +116,7 @@ public static partial class Extensions
 		return FirstSplitSpan(source, startIndex, source.IndexOf(splitSequence, startIndex, comparisonType), splitSequence.Length, out nextIndex);
 	}
 
-	/// <summary>
-	/// Finds the first instance of a character and returns the set of characters up to that character.
-	/// </summary>
-	/// <param name="source">The source characters to look through.</param>
-	/// <param name="splitCharacter">The charcter to find.</param>
-	/// <param name="nextIndex">The next possible index following the the current one.</param>
-	/// <returns>The portion of the source up to and excluding the sequence searched for.</returns>
+	/// <inheritdoc cref="FirstSplit(string, char, out int, int)"/>
 	public static ReadOnlySpan<char> FirstSplit(this ReadOnlySpan<char> source,
 		char splitCharacter,
 		out int nextIndex)
@@ -124,14 +131,7 @@ public static partial class Extensions
 		return FirstSplitSpan(source, i, 1, out nextIndex);
 	}
 
-	/// <summary>
-	/// Finds the first instance of a character sequence and returns the set of characters up to that sequence.
-	/// </summary>
-	/// <param name="source">The source characters to look through.</param>
-	/// <param name="splitSequence">The sequence to find.</param>
-	/// <param name="nextIndex">The next possible index following the the current one.</param>
-	/// <param name="comparisonType">The string comparison type to use.</param>
-	/// <returns>The portion of the source up to and excluding the sequence searched for.</returns>
+	/// <inheritdoc cref="FirstSplit(string, string, out int, int, StringComparison)"/>
 	public static ReadOnlySpan<char> FirstSplit(this ReadOnlySpan<char> source,
 		ReadOnlySpan<char> splitSequence,
 		out int nextIndex,
@@ -257,7 +257,7 @@ public static partial class Extensions
 	}
 
 
-	/// <inheritdoc cref="SplitToEnumerable(string, char, StringSplitOptions)">
+	/// <inheritdoc cref="SplitToEnumerable(string, char, StringSplitOptions)" />
 	public static IEnumerable<ReadOnlyMemory<char>> SplitAsMemory(this string source,
 		char splitCharacter,
 		StringSplitOptions options = StringSplitOptions.None)
@@ -301,7 +301,7 @@ public static partial class Extensions
 	}
 
 
-	/// <inheritdoc cref="SplitToEnumerable(string, string, StringComparison, StringSplitOptions)"/>
+	/// <inheritdoc cref="SplitToEnumerable(string, string, StringSplitOptions, StringComparison)"/>
 	public static IEnumerable<ReadOnlyMemory<char>> SplitAsMemory(this string source,
 		string splitSequence,
 		StringSplitOptions options = StringSplitOptions.None,

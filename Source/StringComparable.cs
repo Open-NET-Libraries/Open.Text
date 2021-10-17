@@ -3,8 +3,11 @@ using System.Collections.Generic;
 
 namespace Open.Text;
 
+/// <summary>
+/// A StringComparison variable struct for comparing a string against other values.
+/// </summary>
 public struct StringComparable
-	: IEquatable<StringComparable>, IEquatable<string>
+	: IEquatable<StringComparable>, IEquatable<string>, IEquatable<StringSegment>
 {
 	/// <summary>
 	/// Constructs a StringComparable using the provided string and comparison type.
@@ -32,7 +35,7 @@ public struct StringComparable
 	public int Length => Source.Length;
 
 	/// <summary>
-	/// Compares <paramref name="other"/> if its value matches this instance.
+	/// Compares <paramref name="other"/> if its characters matches this instance.
 	/// </summary>
 	/// <returns>true if the value of <paramref name="other"/> matches; otherwise false. </returns>
 	public bool Equals(string? other)
@@ -51,6 +54,10 @@ public struct StringComparable
 	public bool Equals(SpanComparable other)
 		=> Source.Equals(other.Source, Type)
 		|| Type != other.Type && other.Equals(Source);
+
+	/// <inheritdoc cref="Equals(string?)"/>
+	public bool Equals(StringSegment other)
+		=> Equals(other.AsSpan());
 
 	/// <summary>
 	/// Compares <paramref name="obj"/> if it is a string or StringComparable and if the value matches this instance.
@@ -77,20 +84,49 @@ public struct StringComparable
 	}
 #endif
 
+	/// <summary>
+	/// Compares two StringComparables for equality.
+	/// </summary>
 	public static bool operator ==(StringComparable a, StringComparable b) => a.Equals(b);
+
+	/// <summary>
+	/// Compares two StringComparables for inequality.
+	/// </summary>
 	public static bool operator !=(StringComparable a, StringComparable b) => !a.Equals(b);
 
+	/// <summary>
+	/// Compares a StringComparable and a string for equality.
+	/// </summary>
 	public static bool operator ==(StringComparable a, string? b) => a.Equals(b);
+
+	/// <summary>
+	/// Compares a StringComparable and a string for inequality.
+	/// </summary>
 	public static bool operator !=(StringComparable a, string? b) => !a.Equals(b);
 
+	/// <summary>
+	/// Compares a StringComparable and a span for equality.
+	/// </summary>
 	public static bool operator ==(StringComparable a, ReadOnlySpan<char> b) => a.Equals(b);
+
+	/// <summary>
+	/// Compares a StringComparable and a span for inequality.
+	/// </summary>
 	public static bool operator !=(StringComparable a, ReadOnlySpan<char> b) => !a.Equals(b);
 
+	/// <summary>
+	/// Compares a StringComparable and a SpanComparable for equality.
+	/// </summary>
 	public static bool operator ==(StringComparable a, SpanComparable b) => a.Equals(b);
+
+	/// <summary>
+	/// Compares a StringComparable and a SpanComparable for inequality.
+	/// </summary>
 	public static bool operator !=(StringComparable a, SpanComparable b) => !a.Equals(b);
 
 }
 
+/// <summary />
 public static class StringComparableExtensions
 {
 	/// <summary>

@@ -44,7 +44,7 @@ namespace Open.Text.Tests
 		public static void GetName(Greek expected)
 		{
 			var s = expected.ToString();
-			Assert.Equal(s, EnumValue.GetName(expected));
+			Assert.Equal(s, expected.GetName());
 		}
 
 		static void CheckImplicit(EnumValue<Greek> value, Greek expected)

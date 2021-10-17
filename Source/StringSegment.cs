@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Open.Text;
 
 /// <summary>
-/// Similar to an ArraySegment but specifically for strings.
+/// Similar to an ArraySegment but specifically for strings.<br/>
+/// Provides a reference to the original string.
 /// </summary>
 [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2225:Operator overloads have named alternates", Justification = "AsSpan and AsMemory methods are available.")]
 public readonly struct StringSegment : IEquatable<StringSegment>
@@ -16,74 +18,127 @@ public readonly struct StringSegment : IEquatable<StringSegment>
 		if (start + length > source.Length) throw new ArgumentOutOfRangeException(nameof(length), length, "Exceeds the number of characters available.");
 		Index = start;
 		Length = length;
+		End = start + length;
 	}
 
+	/// <summary>
+	/// Creates a StringSegment representing the provided string.
+	/// </summary>
+	/// <param name="source">The string the segment belongs to.</param>
+	/// <param name="start">The starting point of the string to use as the index of the segment.</param>
+	/// <param name="length">The length of the segment.</param>
+	/// <exception cref="ArgumentNullException">If the source is null.</exception>
 	public static StringSegment Create(string source, int start, int length)
 		=> new(source ?? throw new ArgumentNullException(nameof(source)), start, length);
 
+	/// <inheritdoc cref="Create(string, int, int)"/>
 	public static StringSegment Create(string source, int start)
 		=> source is null
 		? throw new ArgumentNullException(nameof(source))
 		: (new(source, start, source.Length - start));
 
+	/// <inheritdoc cref="Create(string, int, int)"/>
 	public static StringSegment Create(string source)
 		=> source is null
 		? throw new ArgumentNullException(nameof(source))
 		: (new(source, 0, source.Length));
 
+	/// <summary>
+	/// A segment representing the full length of the source string.
+	/// </summary>
 	public StringSegment SourceSegment
 		=> !IsValid || Index == 0 && Length == Source.Length
 		? this
 		: Create(Source);
 
+	/// <summary>
+	/// True if this has a source string.
+	/// False if it is a default segment.
+	/// </summary>
 	public bool IsValid
 		=> Source is not null;
 
+	/// <summary>
+	/// The original string this segment is using.
+	/// </summary>
 	public string Source { get; }
+
+	/// <summary>
+	/// The starting point on the original string that this segment begins.
+	/// </summary>
 	public int Index { get; }
+
+	/// <summary>
+	/// The length of the segment.
+	/// </summary>
 	public int Length { get; }
 
+	/// <summary>
+	/// The index just beyond the last character.
+	/// </summary>
+	public int End { get; }
+
+	/// <summary>
+	/// Returns a ReadOnlyMemory representing the segment of the string defined by this.
+	/// </summary>
 	public ReadOnlyMemory<char> AsMemory()
-		=> IsValid ? Source.AsMemory(Index, Length) : ReadOnlyMemory<char>.Empty;
+		=> IsValid
+		? Source.AsMemory(Index, Length)
+		: ReadOnlyMemory<char>.Empty;
 
+	/// <summary>
+	/// Returns a ReadOnlySpan representing the segment of the string defined by this.
+	/// </summary>
 	public ReadOnlySpan<char> AsSpan()
-		=> IsValid ? Source.AsSpan(Index, Length) : ReadOnlySpan<char>.Empty;
+		=> IsValid
+		? Source.AsSpan(Index, Length)
+		: ReadOnlySpan<char>.Empty;
 
+	/// <summary>
+	/// Returns a string representing the value of this StringSegment.
+	/// </summary>
+	/// <remarks>Will return the base.ToString() value if this is invalid.</remarks>
 	public override string ToString()
-		=> IsValid ? Source.Substring(Index, Length) : base.ToString();
+		=> IsValid
+		? Source.Substring(Index, Length)
+		: base.ToString();
+
+	/// <inheritdoc cref="Preceding(int, bool)"/>
+	public StringSegment Preceding(bool includeSegment = false)
+		=> IsValid
+		? Create(Source, 0, includeSegment ? End : Index)
+		: default;
+
+	/// <inheritdoc cref="Following(int, bool)"/>
+	public StringSegment Following(bool includeSegment = false)
+		=> IsValid
+		? Create(Source, includeSegment ? Index : End)
+		: default;
 
 	/// <summary>
 	/// Gets the string segment that precedes this one.
 	/// </summary>
-	/// <param name="includeSegment">When true, will include this segment.</param>
-	public StringSegment Preceding(bool includeSegment = false)
-		=> IsValid ? Create(Source, 0, includeSegment ? (Index + Length) : Index) : default;
-
-	/// <summary>
-	/// Gets the string segment that follows this one.
-	/// </summary>
-	/// <param name="includeSegment">When true, will include this segment.</param>
-	public StringSegment Following(bool includeSegment = false)
-		=> IsValid ? Create(Source, includeSegment ? Index : (Index + Length)) : default;
-
 	/// <param name="maxCharacters">The max number of characters to get.</param>
-	/// <inheritdoc cref="Preceding"/>
+	/// <param name="includeSegment">When true, will include this segment.</param>
 	public StringSegment Preceding(int maxCharacters, bool includeSegment = false)
 	{
 		if (maxCharacters < 0) throw new ArgumentOutOfRangeException(nameof(maxCharacters), maxCharacters, "Must be at least zero.");
 		if (!IsValid) return default;
 		if (maxCharacters == 0) return includeSegment ? this : new(Source, Index, 0);
 		var start = Math.Max(0, Index - maxCharacters);
-		return new(Source, start, includeSegment ? (Index - start + Length) : (Index - start));
+		return new(Source, start, includeSegment ? (End - start) : (Index - start));
 	}
 
+	/// <summary>
+	/// Gets the string segment that follows this one.
+	/// </summary>
 	/// <param name="maxCharacters">The max number of characters to get.</param>
-	/// <inheritdoc cref="Following"/>
+	/// <param name="includeSegment">When true, will include this segment.</param>
 	public StringSegment Following(int maxCharacters, bool includeSegment = false)
 	{
 		if (maxCharacters < 0) throw new ArgumentOutOfRangeException(nameof(maxCharacters), maxCharacters, "Must be at least zero.");
 		if (!IsValid) return default;
-		var start = includeSegment ? Index : (Index + Length);
+		var start = includeSegment ? Index : End;
 		if (maxCharacters == 0) return includeSegment ? this : new(Source, start, 0);
 		var len = Math.Min(includeSegment ? (maxCharacters + Length) : maxCharacters, Source.Length - start);
 		return new(Source, start, len);
@@ -150,7 +205,7 @@ public readonly struct StringSegment : IEquatable<StringSegment>
 		}
 		else
 		{
-			var end = Index + Length;
+			var end = End;
 			if (newEnd > end)
 			{
 				if (newIndex > end) throw new ArgumentOutOfRangeException(nameof(offset), offset, "Index is greater than the length of the segment.");
@@ -161,17 +216,242 @@ public readonly struct StringSegment : IEquatable<StringSegment>
 
 	}
 
+	private int TrimStartCore(in ReadOnlySpan<char> span)
+	{
+		int i = Index;
+		var end = End;
+		Debug.Assert(i < end);
+
+		while (end != i)
+		{
+			ref readonly var c = ref span[i];
+			if (!char.IsWhiteSpace(c)) break;
+			++i;
+		}
+
+		return i - Index;
+	}
+
+	private int TrimStartCore(in ReadOnlySpan<char> span, in char trim)
+	{
+		int i = Index;
+		var end = End;
+		Debug.Assert(i < end);
+
+		while (end != i)
+		{
+			ref readonly var c = ref span[i];
+			if (c != trim) break;
+			++i;
+		}
+
+		return i - Index;
+	}
+
+	private int TrimStartCore(in ReadOnlySpan<char> span, in ReadOnlySpan<char> trim)
+	{
+		int i = Index;
+		var end = End;
+		Debug.Assert(i < end);
+
+		while (end != i)
+		{
+			ref readonly var c = ref span[i];
+			if (trim.IndexOf(c) == -1) break;
+			++i;
+		}
+
+		return i - Index;
+	}
+
+	private int TrimEndCore(in ReadOnlySpan<char> span)
+	{
+		int i = Index;
+		var end = End;
+		Debug.Assert(i < end);
+
+		while (end != i)
+		{
+			ref readonly var c = ref span[end - 1];
+			if (!char.IsWhiteSpace(c)) break;
+			--end;
+		}
+
+		return End - end;
+	}
+
+	private int TrimEndCore(in ReadOnlySpan<char> span, in char trim)
+	{
+		int i = Index;
+		var end = End;
+		Debug.Assert(i < end);
+
+		while (end != i)
+		{
+			ref readonly var c = ref span[end - 1];
+			if (c != trim) break;
+			--end;
+		}
+
+		return End - end;
+	}
+
+	private int TrimEndCore(in ReadOnlySpan<char> span, in ReadOnlySpan<char> trim)
+	{
+		int i = Index;
+		var end = End;
+		Debug.Assert(i < end);
+
+		while (end != i)
+		{
+			ref readonly var c = ref span[end - 1];
+			if (trim.IndexOf(c) == -1) break;
+			--end;
+		}
+
+		return End - end;
+	}
+
+	/// <summary>
+	/// Returns the StringSegment of this segment that does not have whitespace at the beginning.
+	/// </summary>
+	public StringSegment TrimStart()
+	{
+		if (!IsValid || Length == 0) return this;
+
+		var trimmed = TrimStartCore(Source.AsSpan());
+		return trimmed == 0 ? this
+			: Create(Source, Index + trimmed, Length - trimmed);
+	}
+
+	/// <summary>
+	/// Returns a StringSegment that does not have whitespace at the end.
+	/// </summary>
+	public StringSegment TrimEnd()
+	{
+		if (!IsValid || Length == 0) return this;
+
+		var trimmed = TrimEndCore(Source.AsSpan());
+		return trimmed == 0 ? this
+			: Create(Source, Index, Length - trimmed);
+	}
+
+	/// <summary>
+	/// Returns the StringSegment of this segment that does not have the trim character at the beginning.
+	/// </summary>
+	/// <param name="trim">The character to skip over.</param>
+	public StringSegment TrimStart(in char trim)
+	{
+		if (!IsValid || Length == 0) return this;
+
+		var trimmed = TrimStartCore(Source.AsSpan(), in trim);
+		return trimmed == 0 ? this
+			: Create(Source, Index + trimmed, Length - trimmed);
+	}
+
+	/// <summary>
+	/// Returns the StringSegment of this segment that does not have the trim character at the end.
+	/// </summary>
+	/// <inheritdoc cref="TrimStart(in char)"/>
+	public StringSegment TrimEnd(in char trim)
+	{
+		if (!IsValid || Length == 0) return this;
+
+		var trimmed = TrimEndCore(Source.AsSpan(), in trim);
+		return trimmed == 0 ? this
+			: Create(Source, Index, Length - trimmed);
+	}
+
+	/// <summary>
+	/// Returns the StringSegment of this segment that does not have any of the trim characters at the beginning.
+	/// </summary>
+	/// <param name="trim">The characters to skip over.</param>
+	public StringSegment TrimStart(in ReadOnlySpan<char> trim)
+	{
+		if (!IsValid || Length == 0) return this;
+
+		var trimmed = TrimStartCore(Source.AsSpan(), in trim);
+		return trimmed == 0 ? this
+			: Create(Source, Index + trimmed, Length - trimmed);
+	}
+
+	/// <summary>
+	/// Returns the StringSegment of this segment that does not have any of the trim characters at the end.
+	/// </summary>
+	/// <inheritdoc cref="TrimStart(in ReadOnlySpan{char})"/>
+	public StringSegment TrimEnd(in ReadOnlySpan<char> trim)
+	{
+		if (!IsValid || Length == 0) return this;
+
+		var trimmed = TrimEndCore(Source.AsSpan(), in trim);
+		return trimmed == 0 ? this
+			: Create(Source, Index, Length - trimmed);
+	}
+
+	/// <summary>
+	/// Returns the StringSegment of this segment that does not have whitespace at the beginning nor the end.
+	/// </summary>
+	public StringSegment Trim()
+	{
+		if (!IsValid || Length == 0) return this;
+
+		var span = Source.AsSpan();
+		var trimmedEnd = TrimEndCore(in span);
+		if (trimmedEnd == Length) return Create(Source, Index, 0);
+		var trimmedStart = TrimStartCore(in span);
+		return trimmedEnd ==0 && trimmedStart==0 ? this
+			: Create(Source, Index + trimmedStart, Length - trimmedEnd - trimmedStart);
+	}
+
+	/// <summary>
+	/// Returns the StringSegment of this segment that does not have the trim character at the beginning nor the end.
+	/// </summary>
+	/// <inheritdoc cref="TrimStart(in char)"/>
+	public StringSegment Trim(in char trim)
+	{
+		if (!IsValid || Length == 0) return this;
+
+		var span = Source.AsSpan();
+		var trimmedEnd = TrimEndCore(in span, in trim);
+		if (trimmedEnd == Length) return Create(Source, Index, 0);
+		var trimmedStart = TrimStartCore(in span, in trim);
+		return trimmedEnd == 0 && trimmedStart == 0 ? this
+			: Create(Source, Index + trimmedStart, Length - trimmedEnd - trimmedStart);
+	}
+
+	/// <summary>
+	/// Returns the StringSegment of this segment that does not have the trim character at the beginning nor the end.
+	/// </summary>
+	/// <inheritdoc cref="TrimStart(in ReadOnlySpan{char})"/>
+	public StringSegment Trim(in ReadOnlySpan<char> trim)
+	{
+		if (!IsValid || Length == 0) return this;
+
+		var span = Source.AsSpan();
+		var trimmedEnd = TrimEndCore(in span, in trim);
+		if (trimmedEnd == Length) return Create(Source, Index, 0);
+		var trimmedStart = TrimStartCore(in span, in trim);
+		return trimmedEnd == 0 && trimmedStart == 0 ? this
+			: Create(Source, Index + trimmedStart, Length - trimmedEnd - trimmedStart);
+	}
+
 	/// <summary>
 	/// Returns true if the other string segment values match.
 	/// </summary>
 	public bool Equals(StringSegment other)
 		=> Index == other.Index & Length == other.Length && Source == other.Source;
 
-
-	/// <inheritdoc cref="string.Equals(string, StringComparison)">
+	/// <summary>
+	/// Determines whether this StringSegment and a specified System.String object have the same characters.
+	/// </summary>
+	/// <inheritdoc cref="string.Equals(string, StringComparison)"/>
 	public bool Equals(string? other, StringComparison stringComparison = StringComparison.Ordinal)
 		=> other is null ? !IsValid : other.Length == Length && AsSpan().Equals(other, stringComparison);
 
+	/// <summary>
+	/// Determines whether this StringSegment and a specified ReadOnlySpan have the same characters.
+	/// </summary>
+	/// <inheritdoc cref="string.Equals(string, StringComparison)"/>
 	public bool Equals(in ReadOnlySpan<char> other, StringComparison stringComparison = StringComparison.Ordinal)
 		=> other.Length == Length && AsSpan().Equals(other, stringComparison);
 
@@ -194,13 +474,25 @@ public readonly struct StringSegment : IEquatable<StringSegment>
 	}
 #endif
 
+	/// <summary>
+	/// Compares two StringSegments for equality.
+	/// </summary>
 	public static bool operator ==(StringSegment left, StringSegment right)
 		=> left.Equals(right);
 
+	/// <summary>
+	/// Compares two StringSegments for inequality.
+	/// </summary>
 	public static bool operator !=(StringSegment left, StringSegment right)
-		=> !(left == right);
+		=> !left.Equals(right);
 
+	/// <summary>
+	/// Implicitly converts a StringSegment to a ReadOnlySpan.
+	/// </summary>
 	public static implicit operator ReadOnlySpan<char>(StringSegment segment) => segment.AsSpan();
 
+	/// <summary>
+	/// Implicitly converts a StringSegment to a ReadOnlyMemory.
+	/// </summary>
 	public static implicit operator ReadOnlyMemory<char>(StringSegment segment) => segment.AsMemory();
 }

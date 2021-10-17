@@ -30,9 +30,11 @@ public static partial class Extensions
 		return source;
 	}
 
+	/// <param name="source">The source sequence of characters.</param>
+	/// <param name="pattern">The pattern to search for.</param>
 	/// <param name="comparisonType">The comparison type to use when searching.  Default is ordinal.</param>
 	/// <param name="max">The maximum number of times to remove the specified sequence.  -1 (default) = all instances.</param>
-	/// <inheritdoc cref="TrimStartPattern(string, Regex)"/>
+	/// <inheritdoc cref="TrimStartPattern(string, Regex, int)"/>
 	public static ReadOnlySpan<char> TrimStartPattern(this ReadOnlySpan<char> source,
 		in ReadOnlySpan<char> pattern,
 		StringComparison comparisonType = StringComparison.Ordinal,
@@ -184,7 +186,11 @@ public static partial class Extensions
 		return source;
 	}
 
+	/// <param name="source">The source sequence of characters.</param>
 	/// <param name="comparisonType">The comparison type to use when searching.  Default is ordinal.</param>
+	/// <param name="pattern">The pattern to search for.</param>
+	/// <param name="max">The maximum number of times to remove the specified sequence.  -1 (default) = all instances.</param>
+	/// <returns>The resultant trimmed span.</returns>
 	/// <inheritdoc cref="TrimEndPattern(string, Regex, int)"/>
 	public static ReadOnlySpan<char> TrimEndPattern(this ReadOnlySpan<char> source,
 		in ReadOnlySpan<char> pattern,

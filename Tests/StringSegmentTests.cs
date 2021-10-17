@@ -3,7 +3,7 @@ using Xunit;
 
 namespace Open.Text.Tests
 {
-	public static class BeforeAfterTests
+	public static class StringSegmentTests
 	{
 		[Fact]
 		public static void Validity()
@@ -113,6 +113,48 @@ namespace Open.Text.Tests
 			Assert.True(slice.Slice(1, 7, true).Equals("ell how"));
 			Assert.True(slice.Slice(1, 15, true).Equals("ell how are you"));
 			Assert.Throws<ArgumentOutOfRangeException>(() => slice.Slice(1, 16, true));
+		}
+
+		[Theory]
+		[InlineData("xyz")]
+		[InlineData(" xyz")]
+		[InlineData("  xyz ")]
+		[InlineData(" \t xyz ")]
+		public static void Trim(string input)
+		{
+			var segment = input.AsSegment();
+			Assert.Equal(input.TrimEnd(), segment.TrimEnd().ToString());
+			Assert.Equal(input.TrimStart(), segment.TrimStart().ToString());
+			Assert.Equal(input.Trim(), segment.Trim().ToString());
+		}
+
+		[Theory]
+		[InlineData("xyz", '*')]
+		[InlineData("*xyz", '*')]
+		[InlineData("**xyz*", '*')]
+		[InlineData("*xyz**", '*')]
+		public static void TrimChar(string input, char c)
+		{
+			var segment = input.AsSegment();
+			Assert.Equal(input.TrimEnd(c), segment.TrimEnd(c).ToString());
+			Assert.Equal(input.TrimStart(c), segment.TrimStart(c).ToString());
+			Assert.Equal(input.Trim(c), segment.Trim(c).ToString());
+		}
+
+		[Theory]
+		[InlineData("xyz", '*', '$')]
+		[InlineData("*xyz", '*', '$')]
+		[InlineData("**xyz*", '*', '$')]
+		[InlineData("*xyz**", '*', '$')]
+		[InlineData("*$*xyz*", '*', '$')]
+		[InlineData("*xyz*$", '*', '$')]
+		[InlineData("$*xyz*", '*', '$')]
+		public static void TrimChars(string input, params char[] c)
+		{
+			var segment = input.AsSegment();
+			Assert.Equal(input.TrimEnd(c), segment.TrimEnd(c).ToString());
+			Assert.Equal(input.TrimStart(c), segment.TrimStart(c).ToString());
+			Assert.Equal(input.Trim(c), segment.Trim(c).ToString());
 		}
 	}
 }

@@ -35,7 +35,7 @@ public struct EnumValue<TEnum>
 	}
 
 	/// <summary>
-	/// The actual enum value.
+	/// The enum value that this represents.
 	/// </summary>
 	public TEnum Value { get; }
 
@@ -99,14 +99,30 @@ public struct EnumValue<TEnum>
 	/// <summary>
 	/// Indicates whether this instance matches the enum value of <paramref name="other"/>.
 	/// </summary>
-	/// <returns>true if <paramref name="value"/>'s enum value and this instance's enum value are the same; otherwise false.</returns>
+	/// <returns>true if <paramref name="other"/>'s enum value and this instance's enum value are the same; otherwise false.</returns>
 	public bool Equals(EnumValue<TEnum> other) => Value.Equals(other.Value);
+
+	/// <summary>
+	/// Compares an EnumValue and EnumValueCaseIgnored for enum equality.
+	/// </summary>
 	public static bool operator ==(EnumValue<TEnum> left, EnumValue<TEnum> right) => left.Value.Equals(right.Value);
+
+	/// <summary>
+	/// Compares an EnumValue and EnumValueCaseIgnored for enum inequality.
+	/// </summary>
 	public static bool operator !=(EnumValue<TEnum> left, EnumValue<TEnum> right) => !left.Value.Equals(right.Value);
 
 	/// <inheritdoc cref="Equals(EnumValue{TEnum})"/>
 	public bool Equals(EnumValueCaseIgnored<TEnum> other) => Value.Equals(other.Value);
+
+	/// <summary>
+	/// Compares two EnumValue for enum equality.
+	/// </summary>
 	public static bool operator ==(EnumValue<TEnum> left, EnumValueCaseIgnored<TEnum> right) => left.Value.Equals(right.Value);
+
+	/// <summary>
+	/// Compares two EnumValue for enum inequality.
+	/// </summary>
 	public static bool operator !=(EnumValue<TEnum> left, EnumValueCaseIgnored<TEnum> right) => !left.Value.Equals(right.Value);
 
 	/// <summary>
@@ -114,7 +130,15 @@ public struct EnumValue<TEnum>
 	/// </summary>
 	/// <returns>true if <paramref name="other"/> and this instance's enum value are the same; otherwise false.</returns>
 	public bool Equals(TEnum other) => Value.Equals(other);
+
+	/// <summary>
+	/// Compares an EnumValue and an enum value for enum equality.
+	/// </summary>
 	public static bool operator ==(EnumValue<TEnum> left, TEnum right) => left.Value.Equals(right);
+
+	/// <summary>
+	/// Compares an EnumValue and an enum value for enum inequality.
+	/// </summary>
 	public static bool operator !=(EnumValue<TEnum> left, TEnum right) => !left.Value.Equals(right);
 
 	/// <inheritdoc />
@@ -126,10 +150,20 @@ public struct EnumValue<TEnum>
 	/// <inheritdoc />
 	public override int GetHashCode() => Value.GetHashCode();
 
+	/// <summary>
+	/// Implicitly converts an EnumValueCaseInsensitive to an EnumValue.
+	/// Before conversion they are already equivalent.
+	/// </summary>
 	public static implicit operator EnumValue<TEnum>(EnumValueCaseIgnored<TEnum> value) => new(value.Value);
 
+	/// <summary>
+	/// Implicitly returns the actual enum contained by the EnumValue.
+	/// </summary>
 	public static implicit operator TEnum(EnumValue<TEnum> value) => value.Value;
 
+	/// <summary>
+	/// Implicitly converts an string to an EnumValue of enum type TEnum.
+	/// </summary>
 	public static implicit operator EnumValue<TEnum>(string value) => new(value);
 
 	private string GetDebuggerDisplay()
@@ -165,6 +199,7 @@ public struct EnumValueCaseIgnored<TEnum>
 		Value = EnumValue.Parse<TEnum>(value, true);
 	}
 
+	/// <inheritdoc cref="EnumValue{TEnum}.Value"/>
 	public TEnum Value { get; }
 
 	/// <inheritdoc cref="EnumValue{TEnum}.ToString"/>
@@ -172,17 +207,41 @@ public struct EnumValueCaseIgnored<TEnum>
 
 	/// <inheritdoc cref="EnumValue{TEnum}.Equals(EnumValue{TEnum})"/>
 	public bool Equals(EnumValue<TEnum> other) => Value.Equals(other.Value);
+
+	/// <summary>
+	/// Compares an EnumValueCaseIgnored and EnumValue for enum equality.
+	/// </summary>
 	public static bool operator ==(EnumValueCaseIgnored<TEnum> left, EnumValue<TEnum> right) => left.Value.Equals(right.Value);
+
+	/// <summary>
+	/// Compares an EnumValueCaseIgnored and EnumValue for enum inequality.
+	/// </summary>
 	public static bool operator !=(EnumValueCaseIgnored<TEnum> left, EnumValue<TEnum> right) => !left.Value.Equals(right.Value);
 
 	/// <inheritdoc cref="EnumValue{TEnum}.Equals(EnumValue{TEnum})"/>
 	public bool Equals(EnumValueCaseIgnored<TEnum> other) => Value.Equals(other.Value);
+
+	/// <summary>
+	/// Compares two EnumValueCaseIgnored for enum equality.
+	/// </summary>
 	public static bool operator ==(EnumValueCaseIgnored<TEnum> left, EnumValueCaseIgnored<TEnum> right) => left.Value.Equals(right.Value);
+
+	/// <summary>
+	/// Compares two EnumValueCaseIgnored for enum inequality.
+	/// </summary>
 	public static bool operator !=(EnumValueCaseIgnored<TEnum> left, EnumValueCaseIgnored<TEnum> right) => !left.Value.Equals(right.Value);
 
 	/// <inheritdoc cref="EnumValue{TEnum}.Equals(TEnum)"/>
 	public bool Equals(TEnum other) => Value.Equals(other);
+
+	/// <summary>
+	/// Compares an EnumValueCaseIgnored and an enum value for enum equality.
+	/// </summary>
 	public static bool operator ==(EnumValueCaseIgnored<TEnum> left, TEnum right) => left.Value.Equals(right);
+
+	/// <summary>
+	/// Compares an EnumValueCaseIgnored and an enum value for enum inequality.
+	/// </summary>
 	public static bool operator !=(EnumValueCaseIgnored<TEnum> left, TEnum right) => !left.Value.Equals(right);
 
 	/// <inheritdoc />
@@ -194,10 +253,20 @@ public struct EnumValueCaseIgnored<TEnum>
 	/// <inheritdoc />
 	public override int GetHashCode() => Value.GetHashCode();
 
+	/// <summary>
+	/// Implicitly converts an EnumValue to an EnumValueCaseInsensitive.
+	/// Before conversion they are already equivalent.
+	/// </summary>
 	public static implicit operator EnumValueCaseIgnored<TEnum>(EnumValue<TEnum> value) => new(value.Value);
 
+	/// <summary>
+	/// Implicitly returns the actual enum contained by the EnumValueCaseIgnored.
+	/// </summary>
 	public static implicit operator TEnum(EnumValueCaseIgnored<TEnum> value) => value.Value;
 
+	/// <summary>
+	/// Implicitly converts an string to an EnumValueCaseIgnored of enum type TEnum.
+	/// </summary>
 	public static implicit operator EnumValueCaseIgnored<TEnum>(string value) => new(value);
 
 	private string GetDebuggerDisplay()
@@ -207,45 +276,38 @@ public struct EnumValueCaseIgnored<TEnum>
 	}
 }
 
+/// <summary>
+/// Fast utilties and extensions for parsing enums and retreiving the name of an enum value. 
+/// </summary>
 public static class EnumValue
 {
-	/// <summary>
-	/// Converts the string representation of the name of one or more enumerated constants to an equivalent enumerated object.
-	/// A parameter specifies whether the operation is case-insensitive.
-	/// </summary>
-	/// <param name="value">The string representing the enum value to search for.</param>
 	/// <returns>The enum that represents the string <paramref name="value"/> provided.</returns>
 	/// <exception cref="ArgumentNullException"><paramref name="value"/> is null.</exception>
 	/// <exception cref="ArgumentException">Requested <paramref name="value"/> was not found.</exception>
+	/// <inheritdoc cref="TryParse{TEnum}(string, bool, out TEnum)"/>
 	public static TEnum Parse<TEnum>(string value)
 		where TEnum : Enum
 		=> TryParse<TEnum>(value, false, out var e) ? e
 		: throw new ArgumentException($"Requested value '{value}' was not found.", nameof(value));
 
-	/// <summary>
-	/// Converts the string representation of the name of one or more enumerated constants to an equivalent enumerated object.
-	/// A parameter specifies whether the operation is case-insensitive.
-	/// </summary>
-	/// <param name="ignoreCase">If true, will ignore case differences when looking for a match.</param>
-	/// <inheritdoc cref="Parse{TEnum}(string)"/>
+	/// <inheritdoc cref="TryParse{TEnum}(string, bool, out TEnum)"/>
 	public static TEnum Parse<TEnum>(string value, bool ignoreCase)
 		where TEnum : Enum
 		=> TryParse<TEnum>(value, ignoreCase, out var e) ? e
 		: throw new ArgumentException($"Requested value '{value}' was not found.", nameof(value));
 
-	/// <summary>
-	/// Converts the string representation of the name of one or more enumerated constants to an equivalent enumerated object.
-	/// A parameter specifies whether the operation is case-insensitive.
-	/// </summary>
-	/// <param name="value">The string representing the enum value to search for.</param>
-	/// <param name="e">The enum that represents the string <paramref name="value"/> provided.</param>
-	/// <returns>true if the value was found; otherwise false.</returns>
+	/// <inheritdoc cref="TryParse{TEnum}(string, bool, out TEnum)"/>
 	public static bool TryParse<TEnum>(string value, out TEnum e)
 		where TEnum : Enum
 		=> TryParse(value, false, out e);
 
+	/// <summary>
+	/// Converts the string representation of the name of one or more enumerated constants to an equivalent enumerated object.
+	/// </summary>
+	/// <param name="value">The string representing the enum value to search for.</param>
 	/// <param name="ignoreCase">If true, will ignore case differences when looking for a match.</param>
-	/// <inheritdoc cref="TryParse{TEnum}(string, out TEnum)"/>
+	/// <param name="e">The enum that represents the string <paramref name="value"/> provided.</param>
+	/// <returns>true if the value was found; otherwise false.</returns>
 	public static bool TryParse<TEnum>(string value, bool ignoreCase, out TEnum e)
 		where TEnum : Enum
 	{
@@ -272,11 +334,12 @@ public static class EnumValue
 	}
 
 	/// <summary>
-	/// Uses a dictionary to lookup the name of the enum value.
+	/// Uses an expression tree to do an fast lookup the name of the enum value.
 	/// </summary>
+	/// <remarks>Is faster than calling .ToString() on a value.</remarks>
 	/// <typeparam name="TEnum">The enum type.</typeparam>
 	/// <param name="value">The enum value to get the name for.</param>
 	/// <returns>The name of the enum.</returns>
-	public static string GetName<TEnum>(TEnum value) where TEnum : Enum
+	public static string GetName<TEnum>(this TEnum value) where TEnum : Enum
 		=> EnumValue<TEnum>.NameLookup(value);
 }

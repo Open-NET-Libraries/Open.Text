@@ -99,13 +99,7 @@ public static partial class Extensions
         };
 	}
 
-	/// <summary>
-	/// Optimized equals for comparing trimmed string with span.
-	/// </summary>
-	/// <param name="source">The source string.</param>
-	/// <param name="other">The span to compare to.</param>
-	/// <param name="stringComparison">The string comparison type.</param>
-	/// <returns>True if the are contents equal.</returns>
+	/// <inheritdoc cref="TrimmedEquals(string?, in ReadOnlySpan{char}, char, StringComparison)"/>
 	public static bool TrimmedEquals(this string? source, in ReadOnlySpan<char> other, StringComparison stringComparison = StringComparison.Ordinal)
 	{
 		if (source is null) return false;
@@ -121,11 +115,7 @@ public static partial class Extensions
         };
 	}
 
-	/// <summary>
-	/// Optimized equals for comparing a trimmed string with another string.
-	/// </summary>
-	/// <param name="other">The string to compare to.</param>
-	/// <inheritdoc cref="TrimmedEquals(string, in ReadOnlySpan{char}, StringComparison)"/>
+	/// <inheritdoc cref="TrimmedEquals(string?, string?, char, StringComparison)"/>
 	public static bool TrimmedEquals(this string? source, string? other, StringComparison stringComparison = StringComparison.Ordinal)
 	{
 		if (source is null) return other is null;
@@ -142,8 +132,11 @@ public static partial class Extensions
         };
 	}
 
+	/// <param name="source">The source string to virtually trim.</param>
+	/// <param name="other">The span to compare to.</param>
 	/// <param name="trimChar">The character to trim.</param>
-	/// <inheritdoc cref="TrimmedEquals(string, in ReadOnlySpan{char}, StringComparison)"/>
+	/// <param name="stringComparison">The string comparison type.</param>
+	/// <inheritdoc cref="TrimmedEquals(string?, string?, in ReadOnlySpan{char}, StringComparison)"/>
 	public static bool TrimmedEquals(this string? source, in ReadOnlySpan<char> other, char trimChar, StringComparison stringComparison = StringComparison.Ordinal)
 	{
 		if (source is null) return false;
@@ -159,8 +152,11 @@ public static partial class Extensions
         };
 	}
 
+	/// <param name="source">The source string to virtually trim.</param>
+	/// <param name="other">The string to compare to.</param>
 	/// <param name="trimChar">The character to trim.</param>
-	/// <inheritdoc cref="TrimmedEquals(string?, string?, StringComparison)"/>
+	/// <param name="stringComparison">The string comparison type.</param>
+	/// <inheritdoc cref="TrimmedEquals(string?, string?, in ReadOnlySpan{char}, StringComparison)"/>
 	public static bool TrimmedEquals(this string? source, string? other, char trimChar, StringComparison stringComparison = StringComparison.Ordinal)
 	{
 		if (source is null) return other is null;
@@ -177,8 +173,14 @@ public static partial class Extensions
         };
 	}
 
+	/// <summary>
+	/// Optimized equals for comparing trimmed string with span.
+	/// </summary>
+	/// <param name="source">The source string to virtually trim.</param>
+	/// <param name="other">The span to compare to.</param>
 	/// <param name="trimChars">The characters to trim.</param>
-	/// <inheritdoc cref="TrimmedEquals(string, in ReadOnlySpan{char}, StringComparison)"/>
+	/// <param name="stringComparison">The string comparison type.</param>
+	/// <inheritdoc cref="TrimmedEquals(string?, string?, in ReadOnlySpan{char}, StringComparison)"/>
 	public static bool TrimmedEquals(this string? source, in ReadOnlySpan<char> other, in ReadOnlySpan<char> trimChars, StringComparison stringComparison = StringComparison.Ordinal)
 	{
 		if (source is null) return false;
@@ -194,8 +196,14 @@ public static partial class Extensions
         };
 	}
 
+	/// <summary>
+	/// Optimized equals for comparing a trimmed string with another string.
+	/// </summary>
+	/// <param name="source">The source string to virtually trim.</param>
+	/// <param name="other">The string to compare to.</param>
 	/// <param name="trimChars">The characters to trim.</param>
-	/// <inheritdoc cref="TrimmedEquals(string?, string?, StringComparison)"/>
+	/// <param name="stringComparison">The string comparison type.</param>
+	/// <returns>True if the are contents equal.</returns>
 	public static bool TrimmedEquals(this string? source, string? other, in ReadOnlySpan<char> trimChars, StringComparison stringComparison = StringComparison.Ordinal)
 	{
 		if (source is null) return other is null;

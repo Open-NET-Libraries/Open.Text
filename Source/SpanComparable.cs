@@ -4,6 +4,9 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Open.Text;
 
+/// <summary>
+/// A StringComparison variable struct for comparing a ReadOnlySpan&lt;char&gt; against other values.
+/// </summary>
 public readonly ref struct SpanComparable
 {
 	/// <summary>
@@ -32,7 +35,7 @@ public readonly ref struct SpanComparable
 	public int Length => Source.Length;
 
 	/// <summary>
-	/// Compares <paramref name="other"/> if its value matches this instance.
+	/// Compares <paramref name="other"/> if its characters matches this instance.
 	/// </summary>
 	/// <returns>true if the value of <paramref name="other"/> matches; otherwise false. </returns>
 	public bool Equals(string? other)
@@ -52,7 +55,11 @@ public readonly ref struct SpanComparable
 		=> Source.Equals(other.Source, Type)
 		|| Type != other.Type && other.Equals(Source);
 
+	/// <inheritdoc cref="Equals(string?)"/>
+	public bool Equals(StringSegment other)
+		=> Equals(other.AsSpan());
 
+	/// <summary />
 	[Obsolete("Equals() on ReadOnlySpan will always throw an exception. Use == instead.")]
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	[SuppressMessage("Design", "CA1065:Do not raise exceptions in unexpected locations", Justification = "<Pending>")]
@@ -74,62 +81,134 @@ public readonly ref struct SpanComparable
 #pragma warning restore IDE0070 // Use 'System.HashCode'
 #pragma warning restore IDE0079 // Remove unnecessary suppression
 
+	/// <summary>
+	/// Compares two SpanComparables for equality.
+	/// </summary>
 	public static bool operator ==(SpanComparable a, SpanComparable b) => a.Equals(b);
+
+	/// <summary>
+	/// Compares two SpanComparables for inequality.
+	/// </summary>
 	public static bool operator !=(SpanComparable a, SpanComparable b) => !a.Equals(b);
 
+	/// <summary>
+	/// Compares a SpanComparable with a string for equality.
+	/// </summary>
 	public static bool operator ==(SpanComparable a, string? b) => a.Equals(b);
+
+	/// <summary>
+	/// Compares a SpanComparable with a string for inequality.
+	/// </summary>
 	public static bool operator !=(SpanComparable a, string? b) => !a.Equals(b);
 
+	/// <summary>
+	/// Compares a SpanComparable with a span for equality.
+	/// </summary>
 	public static bool operator ==(SpanComparable a, ReadOnlySpan<char> b) => a.Equals(b);
+
+	/// <summary>
+	/// Compares a SpanComparable with a span for inequality.
+	/// </summary>
 	public static bool operator !=(SpanComparable a, ReadOnlySpan<char> b) => !a.Equals(b);
 
+	/// <summary>
+	/// Compares a SpanComparable with a StringComparable for equality.
+	/// </summary>
 	public static bool operator ==(SpanComparable a, StringComparable b) => a.Equals(b);
+
+	/// <summary>
+	/// Compares a SpanComparable with a StringComparable for inequality.
+	/// </summary>
 	public static bool operator !=(SpanComparable a, StringComparable b) => !a.Equals(b);
 
 
 }
 
+/// <summary/>
 public static class SpanComparableExtensions
 {
 	/// <summary>
 	/// Prepares a span for a specific StringComparison operation.
 	/// </summary>
-	/// <inheritdoc cref="AsCaseInsensitive(string)"/>
+	/// <inheritdoc cref="AsCaseInsensitive(ReadOnlySpan{char})"/>
 	public static SpanComparable AsComparable(this ReadOnlySpan<char> source, StringComparison type)
 		=> new(source, type);
 
 	/// <summary>
 	/// Prepares a span to be case insensitive when comparing equality.
 	/// </summary>
-	/// <returns>A SpanComparable that can be compared (== or !=) against other SpanComparable, StringComparables, strings, and ReadOnlySpan&lt;char&gt;.</returns>
+	/// <inheritdoc cref="StringComparableExtensions.AsCaseInsensitive(string)"/>
 	public static SpanComparable AsCaseInsensitive(this ReadOnlySpan<char> source)
 		=> new(source, StringComparison.OrdinalIgnoreCase);
 
 	/// <summary>
 	/// Prepares a span to be invariant culture and case insensitive when comparing equality.
 	/// </summary>
-	/// <inheritdoc cref="AsCaseInsensitive(string)"/>
+	/// <inheritdoc cref="AsCaseInsensitive(ReadOnlySpan{char})"/>
 	public static SpanComparable AsCaseInsensitiveInvariantCulture(this ReadOnlySpan<char> source)
 		=> new(source, StringComparison.InvariantCultureIgnoreCase);
 
 	/// <summary>
 	/// Prepares a span to be invariant culture and case insensitive when comparing equality.
 	/// </summary>
-	/// <inheritdoc cref="AsCaseInsensitive(string)"/>
+	/// <inheritdoc cref="AsCaseInsensitive(ReadOnlySpan{char})"/>
 	public static SpanComparable AsCaseInsensitiveCurrentCulture(this ReadOnlySpan<char> source)
 		=> new(source, StringComparison.CurrentCultureIgnoreCase);
 
 	/// <summary>
 	/// Prepares a span to be current culture and case sensitive when comparing equality.
 	/// </summary>
-	/// <inheritdoc cref="AsCaseInsensitive(string)"/>
+	/// <inheritdoc cref="AsCaseInsensitive(ReadOnlySpan{char})"/>
 	public static SpanComparable AsCurrentCulture(this ReadOnlySpan<char> source)
 		=> new(source, StringComparison.CurrentCulture);
 
 	/// <summary>
 	/// Prepares a span to be invariant culture and case sensitive when comparing equality.
 	/// </summary>
+	/// <inheritdoc cref="AsCaseInsensitive(ReadOnlySpan{char})"/>
 	public static SpanComparable AsInvariantCulture(this ReadOnlySpan<char> source)
+		=> new(source, StringComparison.InvariantCulture);
+
+	/// <summary>
+	/// Prepares a StringSegment for a specific StringComparison operation.
+	/// </summary>
+	/// <inheritdoc cref="AsCaseInsensitive(ReadOnlySpan{char})"/>
+	public static SpanComparable AsComparable(this StringSegment source, StringComparison type)
+		=> new(source, type);
+
+	/// <summary>
+	/// Prepares a StringSegment to be case insensitive when comparing equality.
+	/// </summary>
+	/// <inheritdoc cref="AsCaseInsensitive(ReadOnlySpan{char})"/>
+	public static SpanComparable AsCaseInsensitive(this StringSegment source)
+		=> new(source, StringComparison.OrdinalIgnoreCase);
+
+	/// <summary>
+	/// Prepares a StringSegment to be invariant culture and case insensitive when comparing equality.
+	/// </summary>
+	/// <inheritdoc cref="AsCaseInsensitive(ReadOnlySpan{char})"/>
+	public static SpanComparable AsCaseInsensitiveInvariantCulture(this StringSegment source)
+		=> new(source, StringComparison.InvariantCultureIgnoreCase);
+
+	/// <summary>
+	/// Prepares a StringSegment to be invariant culture and case insensitive when comparing equality.
+	/// </summary>
+	/// <inheritdoc cref="AsCaseInsensitive(ReadOnlySpan{char})"/>
+	public static SpanComparable AsCaseInsensitiveCurrentCulture(this StringSegment source)
+		=> new(source, StringComparison.CurrentCultureIgnoreCase);
+
+	/// <summary>
+	/// Prepares a StringSegment to be current culture and case sensitive when comparing equality.
+	/// </summary>
+	/// <inheritdoc cref="AsCaseInsensitive(ReadOnlySpan{char})"/>
+	public static SpanComparable AsCurrentCulture(this StringSegment source)
+		=> new(source, StringComparison.CurrentCulture);
+
+	/// <summary>
+	/// Prepares a StringSegment to be invariant culture and case sensitive when comparing equality.
+	/// </summary>
+	/// <inheritdoc cref="AsCaseInsensitive(ReadOnlySpan{char})"/>
+	public static SpanComparable AsInvariantCulture(this StringSegment source)
 		=> new(source, StringComparison.InvariantCulture);
 
 }

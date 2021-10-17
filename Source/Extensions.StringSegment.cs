@@ -6,19 +6,15 @@ namespace Open.Text;
 
 public static partial class Extensions
 {
-	/// <summary>
-	/// Returns a StringSegment representing the source string.
-	/// </summary>
+	/// <inheritdoc cref="StringSegment.Create(string)"/>
 	public static StringSegment AsSegment(this string source)
 		=> StringSegment.Create(source);
 
-	/// <param name="start">The index to start the segment.</param>
-	/// <inheritdoc cref="AsSegment(string)"/>
+	/// <inheritdoc cref="StringSegment.Create(string, int)"/>
 	public static StringSegment AsSegment(this string source, int start)
 		=> StringSegment.Create(source, start);
 
-	/// <param name="length">The length of the segment.</param>
-	/// <inheritdoc cref="AsSegment(string, int)"/>
+	/// <inheritdoc cref="StringSegment.Create(string, int, int)"/>
 	public static StringSegment AsSegment(this string source, int start, int length)
 		=> StringSegment.Create(source, start, length);
 

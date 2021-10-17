@@ -10,6 +10,9 @@ using System.Text;
 
 namespace Open.Text;
 
+/// <summary>
+/// Useful extensions for working with StringBuilders.
+/// </summary>
 public static class StringBuilderExtensions
 {
 	/// <summary>
@@ -29,7 +32,7 @@ public static class StringBuilderExtensions
 		return sb;
 	}
 
-	/// <inheritdoc cref="ToStringBuilder{T}(in ReadOnlySpan{T})">
+	/// <inheritdoc cref="ToStringBuilder{T}(in ReadOnlySpan{T})" />
 	public static StringBuilder ToStringBuilder<T>(this in Span<T> source)
 	{
 		var len = source.Length;
@@ -83,7 +86,7 @@ public static class StringBuilderExtensions
 	}
 
 
-	/// <inheritdoc cref="ToStringBuilder{T}(in ReadOnlySpan{T}, string)">
+	/// <inheritdoc cref="ToStringBuilder{T}(in ReadOnlySpan{T}, string)" />
 	public static StringBuilder ToStringBuilder<T>(this in Span<T> source, string? separator)
 	{
 		var len = source.Length;
@@ -126,7 +129,7 @@ public static class StringBuilderExtensions
 		return sb;
 	}
 
-	/// <inheritdoc cref="ToStringBuilder{T}(in ReadOnlySpan{T}, char)">
+	/// <inheritdoc cref="ToStringBuilder{T}(in ReadOnlySpan{T}, char)" />
 	public static StringBuilder ToStringBuilder<T>(this in Span<T> source, char separator)
 	{
 		var len = source.Length;

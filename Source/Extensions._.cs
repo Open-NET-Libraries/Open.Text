@@ -14,12 +14,21 @@ using System.Text.RegularExpressions;
 [assembly: CLSCompliant(true)]
 namespace Open.Text;
 
+/// <summary />
 public static partial class Extensions
 {
 	private const uint BYTE_RED = 1024;
 	private static readonly string[] _byte_labels = new[] { "KB", "MB", "GB", "TB", "PB" };
 	private static readonly string[] _number_labels = new[] { "K", "M", "B" };
+
+	/// <summary>
+	/// Compiled pattern for finding alpha-numeric sequences.
+	/// </summary>
 	public static readonly Regex ValidAlphaNumericOnlyPattern = new(@"^\w+$", RegexOptions.Compiled);
+
+	/// <summary>
+	/// Compiled pattern for finding alpha-numeric sequences and possible surrounding white-space.
+	/// </summary>
 	public static readonly Regex ValidAlphaNumericOnlyUntrimmedPattern = new(@"^\s*\w+\s*$", RegexOptions.Compiled);
 
 	/// <summary>
@@ -156,6 +165,16 @@ public static partial class Extensions
 		? throw new ArgumentNullException(nameof(capture))
 		: _textDelegate.Invoke(capture).AsSpan(capture.Index, capture.Length);
 
+	/// <summary>
+	/// Gets a group by name.
+	/// </summary>
+	/// <remarks>If throwIfInvalid = false then will return null if not found; otherwise an ArgumentException will be thrown.</remarks>
+	/// <param name="groups">The group collection to get the group from.</param>
+	/// <param name="groupName">The declared name of the group.</param>
+	/// <param name="throwIfInvalid">Causes an exception if true and a group is not found.</param>
+	/// <returns>The value of the requested group.</returns>
+	/// <exception cref="ArgumentNullException">Groups or groupName is null.</exception>
+	/// <exception cref="ArgumentException">If throwIfInvalid is true and no group is found.</exception>
 	public static string? GetValue(this GroupCollection groups, string groupName, bool throwIfInvalid = false)
 	{
 		if (groups is null)
@@ -166,10 +185,12 @@ public static partial class Extensions
 
 		var group = groups[groupName];
 		return group is null
-			? throwIfInvalid ? throw new ArgumentException("Group not found.", nameof(groupName)) : null
-			: group.Success ? group.Value : null;
+			? (throwIfInvalid ? throw new ArgumentException("Group not found.", nameof(groupName)) : null)
+			: (group.Success ? group.Value : null);
 	}
 
+	/// <remarks>If throwIfInvalid = false then will return an empty span if not found; otherwise an ArgumentException will be thrown.</remarks>
+	/// <inheritdoc cref="GetValue(GroupCollection, string, bool)" />
 	public static ReadOnlySpan<char> GetValueSpan(this GroupCollection groups, string groupName, bool throwIfInvalid = false)
 	{
 		if (groups is null)
@@ -284,7 +305,10 @@ public static partial class Extensions
 		=> ToMetricString((double)number, decimalFormat, cultureInfo);
 	#endregion
 
-	public static readonly Regex WHITESPACE = new(@"\s+", RegexOptions.Compiled);
+	/// <summary>
+	/// Compiled Regex for finding white-space.
+	/// </summary>
+	public static readonly Regex WhiteSpacePattern = new(@"\s+", RegexOptions.Compiled);
 
 	/// <summary>
 	/// Replaces any white-space with the specified string.
@@ -299,11 +323,14 @@ public static partial class Extensions
 		if (replace is null) throw new ArgumentNullException(nameof(replace));
 		Contract.EndContractBlock();
 
-		return WHITESPACE.Replace(source, replace);
+		return WhiteSpacePattern.Replace(source, replace);
 	}
 
+	/// <summary>
+	/// String constant for carriage return and then newline.
+	/// </summary>
+	public const string Newline = "\r\n";
 
-	public const string NEWLINE = "\r\n";
 	/// <summary>
 	/// Shortcut for WriteLineNoTabs on a TextWriter. Mimimcs similar classes.
 	/// </summary>
@@ -313,7 +340,7 @@ public static partial class Extensions
 		Contract.EndContractBlock();
 
 		if (s is not null) writer.Write(s);
-		writer.Write(NEWLINE);
+		writer.Write(Newline);
 	}
 
 	/// <summary>
