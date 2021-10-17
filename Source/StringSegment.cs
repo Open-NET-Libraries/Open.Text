@@ -22,6 +22,11 @@ public readonly struct StringSegment : IEquatable<StringSegment>
 	}
 
 	/// <summary>
+	/// A StringSegment representing an empty string.
+	/// </summary>
+	public static readonly StringSegment Empty = new(string.Empty, 0, 0);
+
+	/// <summary>
 	/// Creates a StringSegment representing the provided string.
 	/// </summary>
 	/// <param name="source">The string the segment belongs to.</param>

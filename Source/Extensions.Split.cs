@@ -151,8 +151,6 @@ public static partial class Extensions
 		return FirstSplitSpan(source, i, splitSequence.Length, out nextIndex);
 	}
 
-#pragma warning disable CS8524 // The switch expression does not handle some values of its input type (it is not exhaustive) involving an unnamed enum value.
-
 	/// <summary>
 	/// Enumerates a string by segments that are separated by the split character.
 	/// </summary>
@@ -175,7 +173,7 @@ public static partial class Extensions
 			StringSplitOptions.RemoveEmptyEntries => source.Length == 0
 				? Enumerable.Empty<string>()
 				: SplitAsEnumerableCoreOmitEmpty(),
-			// _ => throw new System.ComponentModel.InvalidEnumArgumentException(),
+			_ => throw new System.ComponentModel.InvalidEnumArgumentException(),
 		};
 
 		IEnumerable<string> SplitAsEnumerableCore()
@@ -225,14 +223,14 @@ public static partial class Extensions
 		{
 			StringSplitOptions.None => source.Length == 0
 				? Enumerable.Repeat(string.Empty, 1)
-				: SplitAsEnumerableCore(),
+				: SplitAsEnumerableCore(source, splitSequence, comparisonType),
 			StringSplitOptions.RemoveEmptyEntries => source.Length == 0
 				? Enumerable.Empty<string>()
-				: SplitAsEnumerableCoreOmitEmpty(),
-			// _ => throw new System.ComponentModel.InvalidEnumArgumentException(),
+				: SplitAsEnumerableCoreOmitEmpty(source, splitSequence, comparisonType),
+			_ => throw new System.ComponentModel.InvalidEnumArgumentException(),
 		};
 
-		IEnumerable<string> SplitAsEnumerableCore()
+		static IEnumerable<string> SplitAsEnumerableCore(string source, string splitSequence, StringComparison comparisonType)
 		{
 			var startIndex = 0;
 			do
@@ -243,7 +241,7 @@ public static partial class Extensions
 			while (startIndex != -1);
 		}
 
-		IEnumerable<string> SplitAsEnumerableCoreOmitEmpty()
+		static IEnumerable<string> SplitAsEnumerableCoreOmitEmpty(string source, string splitSequence, StringComparison comparisonType)
 		{
 			var startIndex = 0;
 			do
@@ -255,7 +253,6 @@ public static partial class Extensions
 			while (startIndex != -1);
 		}
 	}
-
 
 	/// <inheritdoc cref="SplitToEnumerable(string, char, StringSplitOptions)" />
 	public static IEnumerable<ReadOnlyMemory<char>> SplitAsMemory(this string source,
@@ -269,14 +266,14 @@ public static partial class Extensions
 		{
 			StringSplitOptions.None => source.Length == 0
 				? Enumerable.Repeat(ReadOnlyMemory<char>.Empty, 1)
-				: SplitAsMemoryCore(),
+				: SplitAsMemoryCore1(source, splitCharacter),
 			StringSplitOptions.RemoveEmptyEntries => source.Length == 0
 				? Enumerable.Empty<ReadOnlyMemory<char>>()
-				: SplitAsMemoryOmitEmpty(),
-			// _ => throw new System.ComponentModel.InvalidEnumArgumentException(),
+				: SplitAsMemoryOmitEmpty1(source, splitCharacter),
+			_ => throw new System.ComponentModel.InvalidEnumArgumentException(),
 		};
 
-		IEnumerable<ReadOnlyMemory<char>> SplitAsMemoryCore()
+		static IEnumerable<ReadOnlyMemory<char>> SplitAsMemoryCore1(string source, char splitCharacter)
 		{
 			var startIndex = 0;
 			do
@@ -287,7 +284,7 @@ public static partial class Extensions
 			while (startIndex != -1);
 		}
 
-		IEnumerable<ReadOnlyMemory<char>> SplitAsMemoryOmitEmpty()
+		static IEnumerable<ReadOnlyMemory<char>> SplitAsMemoryOmitEmpty1(string source, char splitCharacter)
 		{
 			var startIndex = 0;
 			do
@@ -317,26 +314,14 @@ public static partial class Extensions
 		{
 			StringSplitOptions.None => source.Length == 0
 				? Enumerable.Repeat(ReadOnlyMemory<char>.Empty, 1)
-				: SplitAsMemoryCore(),
+				: SplitAsMemoryCore(source, splitSequence, comparisonType),
 			StringSplitOptions.RemoveEmptyEntries => source.Length == 0
 				? Enumerable.Empty<ReadOnlyMemory<char>>()
-				: SplitAsMemoryOmitEmpty(),
-			//_ => throw new System.ComponentModel.InvalidEnumArgumentException(),
+				: SplitAsMemoryOmitEmpty(source, splitSequence, comparisonType),
+			_ => throw new System.ComponentModel.InvalidEnumArgumentException(),
 		};
 
-		IEnumerable<ReadOnlyMemory<char>> SplitAsMemoryCore()
-		{
-			var startIndex = 0;
-			var splitLen = splitSequence.Length;
-			do
-			{
-				yield return FirstSplitMemory(source, startIndex, source.IndexOf(splitSequence, startIndex, comparisonType), splitLen, out var nextIndex);
-				startIndex = nextIndex;
-			}
-			while (startIndex != -1);
-		}
-
-		IEnumerable<ReadOnlyMemory<char>> SplitAsMemoryOmitEmpty()
+		static IEnumerable<ReadOnlyMemory<char>> SplitAsMemoryOmitEmpty(string source, string splitSequence, StringComparison comparisonType)
 		{
 			var startIndex = 0;
 			var splitLen = splitSequence.Length;
@@ -348,9 +333,19 @@ public static partial class Extensions
 			}
 			while (startIndex != -1);
 		}
-	}
 
-#pragma warning restore CS8524 // The switch expression does not handle some values of its input type (it is not exhaustive) involving an unnamed enum value.
+		static IEnumerable<ReadOnlyMemory<char>> SplitAsMemoryCore(string source, string splitSequence, StringComparison comparisonType)
+		{
+			var startIndex = 0;
+			var splitLen = splitSequence.Length;
+			do
+			{
+				yield return FirstSplitMemory(source, startIndex, source.IndexOf(splitSequence, startIndex, comparisonType), splitLen, out var nextIndex);
+				startIndex = nextIndex;
+			}
+			while (startIndex != -1);
+		}
+	}
 
 	static readonly ImmutableArray<string> SingleEmpty = ImmutableArray.Create(string.Empty);
 

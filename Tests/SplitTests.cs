@@ -15,7 +15,7 @@ namespace Open.Text.Tests
 			Assert.Throws<ArgumentException>(() => DefaultTestString.FirstSplit(string.Empty, out _));
 			Assert.Throws<ArgumentException>(() => DefaultTestString.SplitToEnumerable(string.Empty));
 			Assert.Throws<ArgumentException>(() => DefaultTestString.SplitAsMemory(string.Empty));
-
+			Assert.Throws<ArgumentException>(() => DefaultTestString.SplitAsSegments(string.Empty));
 		}
 
 		[Fact]
@@ -37,7 +37,9 @@ namespace Open.Text.Tests
 			Assert.Throws<ArgumentNullException>(() => Extensions.SplitAsMemory(default!, ','));
 			Assert.Throws<ArgumentNullException>(() => Extensions.SplitAsMemory(default!, ","));
 			Assert.Throws<ArgumentNullException>(() => Extensions.SplitAsMemory(DefaultTestString, default(string)!));
-
+			Assert.Throws<ArgumentNullException>(() => Extensions.SplitAsSegments(default!, ','));
+			Assert.Throws<ArgumentNullException>(() => Extensions.SplitAsSegments(default!, ","));
+			Assert.Throws<ArgumentNullException>(() => Extensions.SplitAsSegments(DefaultTestString, default(string)!));
 		}
 
 		[Theory]
@@ -76,6 +78,8 @@ namespace Open.Text.Tests
 			Assert.Equal(segments, sequence.SplitToEnumerable(",", options: options));
 			Assert.Equal(segments, sequence.SplitAsMemory(',', options).Select(m => m.Span.ToString()));
 			Assert.Equal(segments, sequence.SplitAsMemory(",", options: options).Select(m => m.Span.ToString()));
+			Assert.Equal(segments, sequence.SplitAsSegments(',', options).Select(m => m.ToString()));
+			Assert.Equal(segments, sequence.SplitAsSegments(",", options: options).Select(m => m.ToString()));
 			var span = sequence.AsSpan();
 			Assert.Equal(segments, span.Split(',', options));
 			Assert.Equal(segments, span.Split(",", options));
@@ -92,6 +96,7 @@ namespace Open.Text.Tests
 			var segments = expected.Split(',');
 			Assert.Equal(segments, sequence.SplitToEnumerable(split, options, StringComparison.OrdinalIgnoreCase));
 			Assert.Equal(segments, sequence.SplitAsMemory(split, options, StringComparison.OrdinalIgnoreCase).Select(m => m.Span.ToString()));
+			Assert.Equal(segments, sequence.SplitAsSegments(split, options, StringComparison.OrdinalIgnoreCase).Select(m => m.ToString()));
 			var span = sequence.AsSpan();
 			Assert.Equal(segments, span.Split(split, options, StringComparison.OrdinalIgnoreCase));
 		}

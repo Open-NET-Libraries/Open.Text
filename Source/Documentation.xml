@@ -424,6 +424,12 @@
         <member name="M:Open.Text.Extensions.Last(Open.Text.StringSegment,System.String,System.StringComparison)">
             <inheritdoc cref="M:Open.Text.Extensions.Last(System.String,System.String,System.StringComparison)" />
         </member>
+        <member name="M:Open.Text.Extensions.SplitAsSegments(System.String,System.Char,System.StringSplitOptions)">
+            <inheritdoc cref="M:Open.Text.Extensions.SplitToEnumerable(System.String,System.Char,System.StringSplitOptions)"/>
+        </member>
+        <member name="M:Open.Text.Extensions.SplitAsSegments(System.String,System.String,System.StringSplitOptions,System.StringComparison)">
+            <inheritdoc cref="M:Open.Text.Extensions.SplitToEnumerable(System.String,System.String,System.StringSplitOptions,System.StringComparison)"/>
+        </member>
         <member name="M:Open.Text.Extensions.TrimStartPattern(System.ReadOnlySpan{System.Char},System.ReadOnlySpan{System.Char}@,System.StringComparison,System.Int32)">
             <param name="source">The source sequence of characters.</param>
             <param name="pattern">The pattern to search for.</param>
@@ -1067,6 +1073,11 @@
             <summary>
             Similar to an ArraySegment but specifically for strings.<br/>
             Provides a reference to the original string.
+            </summary>
+        </member>
+        <member name="F:Open.Text.StringSegment.Empty">
+            <summary>
+            A StringSegment representing an empty string.
             </summary>
         </member>
         <member name="M:Open.Text.StringSegment.Create(System.String,System.Int32,System.Int32)">
