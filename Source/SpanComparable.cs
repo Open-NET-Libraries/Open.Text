@@ -46,7 +46,7 @@ public readonly ref struct SpanComparable
 		=> Source.Equals(other, Type);
 
 	/// <inheritdoc cref="Equals(string?)"/>
-	public bool Equals(StringComparable other)
+	public bool Equals(in StringComparable other)
 		=> Source.Equals(other.Source, Type)
 		|| Type != other.Type && other.Equals(Source);
 
@@ -56,7 +56,7 @@ public readonly ref struct SpanComparable
 		|| Type != other.Type && other.Equals(Source);
 
 	/// <inheritdoc cref="Equals(string?)"/>
-	public bool Equals(StringSegment other)
+	public bool Equals(in StringSegment other)
 		=> Equals(other.AsSpan());
 
 	/// <summary />

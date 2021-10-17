@@ -12,7 +12,7 @@ public static partial class Extensions
 	/// <param name="other">The string to compare to.</param>
 	/// <param name="stringComparison">The string comparison type.</param>
 	/// <returns>True if the are contents equal.</returns>
-	public static bool Equals(this in ReadOnlySpan<char> source, string? other, StringComparison stringComparison)
+	public static bool Equals(this ReadOnlySpan<char> source, string? other, StringComparison stringComparison)
 	{
 		if (other is null) return false;
 		var len = source.Length;
@@ -24,8 +24,8 @@ public static partial class Extensions
         };
 	}
 
-	/// <inheritdoc cref="Equals(in ReadOnlySpan{char}, string?, StringComparison)"/>
-	public static bool Equals(this in Span<char> source, string? other, StringComparison stringComparison)
+	/// <inheritdoc cref="Equals(ReadOnlySpan{char}, string?, StringComparison)"/>
+	public static bool Equals(this Span<char> source, string? other, StringComparison stringComparison)
 	{
 		if (other is null) return false;
 		var len = source.Length;
@@ -44,7 +44,7 @@ public static partial class Extensions
 	/// <param name="other">The span to compare to.</param>
 	/// <param name="stringComparison">The string comparison type.</param>
 	/// <returns>True if the are contents equal.</returns>
-	public static bool Equals(this in Span<char> source, in ReadOnlySpan<char> other, StringComparison stringComparison)
+	public static bool Equals(this Span<char> source, ReadOnlySpan<char> other, StringComparison stringComparison)
 	{
 		var len = source.Length;
 		return len == other.Length && len switch
@@ -55,8 +55,8 @@ public static partial class Extensions
         };
 	}
 
-	/// <inheritdoc cref="Equals(in Span{char}, in ReadOnlySpan{char}, StringComparison)" />
-	public static bool Equals(this in Span<char> source, in Span<char> other, StringComparison stringComparison)
+	/// <inheritdoc cref="Equals(Span{char}, ReadOnlySpan{char}, StringComparison)" />
+	public static bool Equals(this Span<char> source, Span<char> other, StringComparison stringComparison)
 	{
 		var len = source.Length;
 		return len == other.Length && len switch
@@ -74,7 +74,7 @@ public static partial class Extensions
 	/// <param name="other">The span to compare to.</param>
 	/// <param name="stringComparison">The string comparison type.</param>
 	/// <returns>True if the are contents equal.</returns>
-	public static bool Equals(this string? source, in ReadOnlySpan<char> other, StringComparison stringComparison)
+	public static bool Equals(this string? source, ReadOnlySpan<char> other, StringComparison stringComparison)
 	{
 		if (source is null) return false;
 		var len = source.Length;
@@ -86,8 +86,8 @@ public static partial class Extensions
         };
 	}
 
-	/// <inheritdoc cref="Equals(string, in ReadOnlySpan{char}, StringComparison)" />
-	public static bool Equals(this string? source, in Span<char> other, StringComparison stringComparison)
+	/// <inheritdoc cref="Equals(string, ReadOnlySpan{char}, StringComparison)" />
+	public static bool Equals(this string? source, Span<char> other, StringComparison stringComparison)
 	{
 		if (source is null) return false;
 		var len = source.Length;
@@ -99,8 +99,8 @@ public static partial class Extensions
         };
 	}
 
-	/// <inheritdoc cref="TrimmedEquals(string?, in ReadOnlySpan{char}, char, StringComparison)"/>
-	public static bool TrimmedEquals(this string? source, in ReadOnlySpan<char> other, StringComparison stringComparison = StringComparison.Ordinal)
+	/// <inheritdoc cref="TrimmedEquals(string?, ReadOnlySpan{char}, char, StringComparison)"/>
+	public static bool TrimmedEquals(this string? source, ReadOnlySpan<char> other, StringComparison stringComparison = StringComparison.Ordinal)
 	{
 		if (source is null) return false;
 		int slen = source.Length, olen = other.Length;
@@ -136,8 +136,8 @@ public static partial class Extensions
 	/// <param name="other">The span to compare to.</param>
 	/// <param name="trimChar">The character to trim.</param>
 	/// <param name="stringComparison">The string comparison type.</param>
-	/// <inheritdoc cref="TrimmedEquals(string?, string?, in ReadOnlySpan{char}, StringComparison)"/>
-	public static bool TrimmedEquals(this string? source, in ReadOnlySpan<char> other, char trimChar, StringComparison stringComparison = StringComparison.Ordinal)
+	/// <inheritdoc cref="TrimmedEquals(string?, string?, ReadOnlySpan{char}, StringComparison)"/>
+	public static bool TrimmedEquals(this string? source, ReadOnlySpan<char> other, char trimChar, StringComparison stringComparison = StringComparison.Ordinal)
 	{
 		if (source is null) return false;
 		int slen = source.Length, olen = other.Length;
@@ -156,7 +156,7 @@ public static partial class Extensions
 	/// <param name="other">The string to compare to.</param>
 	/// <param name="trimChar">The character to trim.</param>
 	/// <param name="stringComparison">The string comparison type.</param>
-	/// <inheritdoc cref="TrimmedEquals(string?, string?, in ReadOnlySpan{char}, StringComparison)"/>
+	/// <inheritdoc cref="TrimmedEquals(string?, string?, ReadOnlySpan{char}, StringComparison)"/>
 	public static bool TrimmedEquals(this string? source, string? other, char trimChar, StringComparison stringComparison = StringComparison.Ordinal)
 	{
 		if (source is null) return other is null;
@@ -180,8 +180,8 @@ public static partial class Extensions
 	/// <param name="other">The span to compare to.</param>
 	/// <param name="trimChars">The characters to trim.</param>
 	/// <param name="stringComparison">The string comparison type.</param>
-	/// <inheritdoc cref="TrimmedEquals(string?, string?, in ReadOnlySpan{char}, StringComparison)"/>
-	public static bool TrimmedEquals(this string? source, in ReadOnlySpan<char> other, in ReadOnlySpan<char> trimChars, StringComparison stringComparison = StringComparison.Ordinal)
+	/// <inheritdoc cref="TrimmedEquals(string?, string?, ReadOnlySpan{char}, StringComparison)"/>
+	public static bool TrimmedEquals(this string? source, ReadOnlySpan<char> other, ReadOnlySpan<char> trimChars, StringComparison stringComparison = StringComparison.Ordinal)
 	{
 		if (source is null) return false;
 		int slen = source.Length, olen = other.Length;
@@ -204,7 +204,7 @@ public static partial class Extensions
 	/// <param name="trimChars">The characters to trim.</param>
 	/// <param name="stringComparison">The string comparison type.</param>
 	/// <returns>True if the are contents equal.</returns>
-	public static bool TrimmedEquals(this string? source, string? other, in ReadOnlySpan<char> trimChars, StringComparison stringComparison = StringComparison.Ordinal)
+	public static bool TrimmedEquals(this string? source, string? other, ReadOnlySpan<char> trimChars, StringComparison stringComparison = StringComparison.Ordinal)
 	{
 		if (source is null) return other is null;
 		if (other is null) return false;

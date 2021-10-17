@@ -404,7 +404,7 @@ public static partial class Extensions
 	/// <param name="comparisonType">The optional comparsion type.</param>
 	/// <returns>The resultant list of string segments.</returns>
 	public static IReadOnlyList<string> Split(this ReadOnlySpan<char> source,
-		in ReadOnlySpan<char> splitSequence,
+		ReadOnlySpan<char> splitSequence,
 		StringSplitOptions options = StringSplitOptions.None,
 		StringComparison comparisonType = StringComparison.Ordinal)
 	{

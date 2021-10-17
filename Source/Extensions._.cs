@@ -38,8 +38,8 @@ public static partial class Extensions
 	/// <param name="search">The search string to look for.  If the search is null or empty this method returns null.</param>
 	/// <param name="comparisonType">The comparison type to use when searching.</param>
 	/// <returns>The source of the string before the search string.  Returns null if search string is not found.</returns>
-	public static int LastIndexOf(this in ReadOnlySpan<char> source,
-		in ReadOnlySpan<char> search, StringComparison comparisonType)
+	public static int LastIndexOf(this ReadOnlySpan<char> source,
+		ReadOnlySpan<char> search, StringComparison comparisonType)
 	{
 		if (search.Length > source.Length)
 			return -1;

@@ -6,7 +6,7 @@ namespace Open.Text;
 
 public static partial class Extensions
 {
-	private static ReadOnlySpan<char> TrimStartPatternCore(ReadOnlySpan<char> source, in ReadOnlySpan<char> pattern, StringComparison comparisonType, int max)
+	private static ReadOnlySpan<char> TrimStartPatternCore(ReadOnlySpan<char> source, ReadOnlySpan<char> pattern, StringComparison comparisonType, int max)
 	{
 		var pLen = pattern.Length;
 
@@ -36,7 +36,7 @@ public static partial class Extensions
 	/// <param name="max">The maximum number of times to remove the specified sequence.  -1 (default) = all instances.</param>
 	/// <inheritdoc cref="TrimStartPattern(string, Regex, int)"/>
 	public static ReadOnlySpan<char> TrimStartPattern(this ReadOnlySpan<char> source,
-		in ReadOnlySpan<char> pattern,
+		ReadOnlySpan<char> pattern,
 		StringComparison comparisonType = StringComparison.Ordinal,
 		int max = -1)
 	{
@@ -45,10 +45,10 @@ public static partial class Extensions
 
 		return max == 0 || source.IsEmpty || pattern.IsEmpty || pattern.Length > source.Length
 			? source
-			: TrimStartPatternCore(source, in pattern, comparisonType, max);
+			: TrimStartPatternCore(source, pattern, comparisonType, max);
 	}
 
-	/// <inheritdoc cref="TrimStartPattern(ReadOnlySpan{char}, in ReadOnlySpan{char}, StringComparison, int)"/>
+	/// <inheritdoc cref="TrimStartPattern(ReadOnlySpan{char}, ReadOnlySpan{char}, StringComparison, int)"/>
 	public static ReadOnlySpan<char> TrimStartPattern(this ReadOnlySpan<char> source,
 		string pattern,
 		StringComparison comparisonType = StringComparison.Ordinal,
@@ -64,7 +64,7 @@ public static partial class Extensions
 	}
 
 	/// <remarks>To any allocations, call .AsSpan() before calling this method name.</remarks>
-	/// <inheritdoc cref="TrimStartPattern(ReadOnlySpan{char}, in ReadOnlySpan{char}, StringComparison, int)"/>
+	/// <inheritdoc cref="TrimStartPattern(ReadOnlySpan{char}, ReadOnlySpan{char}, StringComparison, int)"/>
 	public static string TrimStartPattern(this string source,
 		string pattern,
 		StringComparison comparisonType = StringComparison.Ordinal,
@@ -159,7 +159,7 @@ public static partial class Extensions
 		}
 	}
 
-	private static ReadOnlySpan<char> TrimEndPatternCore(ReadOnlySpan<char> source, in ReadOnlySpan<char> pattern, StringComparison comparisonType, int max)
+	private static ReadOnlySpan<char> TrimEndPatternCore(ReadOnlySpan<char> source, ReadOnlySpan<char> pattern, StringComparison comparisonType, int max)
 	{
 		var pLen = pattern.Length;
 		var expectedIndex = source.Length - pLen;
@@ -193,7 +193,7 @@ public static partial class Extensions
 	/// <returns>The resultant trimmed span.</returns>
 	/// <inheritdoc cref="TrimEndPattern(string, Regex, int)"/>
 	public static ReadOnlySpan<char> TrimEndPattern(this ReadOnlySpan<char> source,
-		in ReadOnlySpan<char> pattern,
+		ReadOnlySpan<char> pattern,
 		StringComparison comparisonType = StringComparison.Ordinal,
 		int max = -1)
 	{
@@ -202,10 +202,10 @@ public static partial class Extensions
 
 		return max == 0 || source.IsEmpty || pattern.Length == 0 || pattern.Length > source.Length
 			? source
-			: TrimEndPatternCore(source, in pattern, comparisonType, max);
+			: TrimEndPatternCore(source, pattern, comparisonType, max);
 	}
 
-	/// <inheritdoc cref="TrimEndPattern(ReadOnlySpan{char}, in ReadOnlySpan{char}, StringComparison, int)"/>
+	/// <inheritdoc cref="TrimEndPattern(ReadOnlySpan{char}, ReadOnlySpan{char}, StringComparison, int)"/>
 	public static ReadOnlySpan<char> TrimEndPattern(this ReadOnlySpan<char> source,
 		string pattern,
 		StringComparison comparisonType = StringComparison.Ordinal,
@@ -221,7 +221,7 @@ public static partial class Extensions
 	}
 
 	/// <remarks>To any allocations, call .AsSpan() before calling this method name.</remarks>
-	/// <inheritdoc cref="TrimEndPattern(ReadOnlySpan{char}, in ReadOnlySpan{char}, StringComparison, int)"/>
+	/// <inheritdoc cref="TrimEndPattern(ReadOnlySpan{char}, ReadOnlySpan{char}, StringComparison, int)"/>
 	public static string TrimEndPattern(this string source,
 		string pattern,
 		StringComparison comparisonType = StringComparison.Ordinal,

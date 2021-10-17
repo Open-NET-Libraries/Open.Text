@@ -221,7 +221,7 @@ public readonly struct StringSegment : IEquatable<StringSegment>
 
 	}
 
-	private int TrimStartCore(in ReadOnlySpan<char> span)
+	private int TrimStartCore(ReadOnlySpan<char> span)
 	{
 		int i = Index;
 		var end = End;
@@ -237,7 +237,7 @@ public readonly struct StringSegment : IEquatable<StringSegment>
 		return i - Index;
 	}
 
-	private int TrimStartCore(in ReadOnlySpan<char> span, in char trim)
+	private int TrimStartCore(ReadOnlySpan<char> span, char trim)
 	{
 		int i = Index;
 		var end = End;
@@ -245,15 +245,14 @@ public readonly struct StringSegment : IEquatable<StringSegment>
 
 		while (end != i)
 		{
-			ref readonly var c = ref span[i];
-			if (c != trim) break;
+			if (span[i] != trim) break;
 			++i;
 		}
 
 		return i - Index;
 	}
 
-	private int TrimStartCore(in ReadOnlySpan<char> span, in ReadOnlySpan<char> trim)
+	private int TrimStartCore(ReadOnlySpan<char> span, ReadOnlySpan<char> trim)
 	{
 		int i = Index;
 		var end = End;
@@ -269,7 +268,7 @@ public readonly struct StringSegment : IEquatable<StringSegment>
 		return i - Index;
 	}
 
-	private int TrimEndCore(in ReadOnlySpan<char> span)
+	private int TrimEndCore(ReadOnlySpan<char> span)
 	{
 		int i = Index;
 		var end = End;
@@ -285,7 +284,7 @@ public readonly struct StringSegment : IEquatable<StringSegment>
 		return End - end;
 	}
 
-	private int TrimEndCore(in ReadOnlySpan<char> span, in char trim)
+	private int TrimEndCore(ReadOnlySpan<char> span, char trim)
 	{
 		int i = Index;
 		var end = End;
@@ -293,15 +292,14 @@ public readonly struct StringSegment : IEquatable<StringSegment>
 
 		while (end != i)
 		{
-			ref readonly var c = ref span[end - 1];
-			if (c != trim) break;
+			if (span[end - 1] != trim) break;
 			--end;
 		}
 
 		return End - end;
 	}
 
-	private int TrimEndCore(in ReadOnlySpan<char> span, in ReadOnlySpan<char> trim)
+	private int TrimEndCore(ReadOnlySpan<char> span, ReadOnlySpan<char> trim)
 	{
 		int i = Index;
 		var end = End;
@@ -345,11 +343,11 @@ public readonly struct StringSegment : IEquatable<StringSegment>
 	/// Returns the StringSegment of this segment that does not have the trim character at the beginning.
 	/// </summary>
 	/// <param name="trim">The character to skip over.</param>
-	public StringSegment TrimStart(in char trim)
+	public StringSegment TrimStart(char trim)
 	{
 		if (!IsValid || Length == 0) return this;
 
-		var trimmed = TrimStartCore(Source.AsSpan(), in trim);
+		var trimmed = TrimStartCore(Source.AsSpan(), trim);
 		return trimmed == 0 ? this
 			: Create(Source, Index + trimmed, Length - trimmed);
 	}
@@ -357,12 +355,12 @@ public readonly struct StringSegment : IEquatable<StringSegment>
 	/// <summary>
 	/// Returns the StringSegment of this segment that does not have the trim character at the end.
 	/// </summary>
-	/// <inheritdoc cref="TrimStart(in char)"/>
-	public StringSegment TrimEnd(in char trim)
+	/// <inheritdoc cref="TrimStart(char)"/>
+	public StringSegment TrimEnd(char trim)
 	{
 		if (!IsValid || Length == 0) return this;
 
-		var trimmed = TrimEndCore(Source.AsSpan(), in trim);
+		var trimmed = TrimEndCore(Source.AsSpan(), trim);
 		return trimmed == 0 ? this
 			: Create(Source, Index, Length - trimmed);
 	}
@@ -371,11 +369,11 @@ public readonly struct StringSegment : IEquatable<StringSegment>
 	/// Returns the StringSegment of this segment that does not have any of the trim characters at the beginning.
 	/// </summary>
 	/// <param name="trim">The characters to skip over.</param>
-	public StringSegment TrimStart(in ReadOnlySpan<char> trim)
+	public StringSegment TrimStart(ReadOnlySpan<char> trim)
 	{
 		if (!IsValid || Length == 0) return this;
 
-		var trimmed = TrimStartCore(Source.AsSpan(), in trim);
+		var trimmed = TrimStartCore(Source.AsSpan(), trim);
 		return trimmed == 0 ? this
 			: Create(Source, Index + trimmed, Length - trimmed);
 	}
@@ -383,12 +381,12 @@ public readonly struct StringSegment : IEquatable<StringSegment>
 	/// <summary>
 	/// Returns the StringSegment of this segment that does not have any of the trim characters at the end.
 	/// </summary>
-	/// <inheritdoc cref="TrimStart(in ReadOnlySpan{char})"/>
-	public StringSegment TrimEnd(in ReadOnlySpan<char> trim)
+	/// <inheritdoc cref="TrimStart(ReadOnlySpan{char})"/>
+	public StringSegment TrimEnd(ReadOnlySpan<char> trim)
 	{
 		if (!IsValid || Length == 0) return this;
 
-		var trimmed = TrimEndCore(Source.AsSpan(), in trim);
+		var trimmed = TrimEndCore(Source.AsSpan(), trim);
 		return trimmed == 0 ? this
 			: Create(Source, Index, Length - trimmed);
 	}
@@ -401,9 +399,9 @@ public readonly struct StringSegment : IEquatable<StringSegment>
 		if (!IsValid || Length == 0) return this;
 
 		var span = Source.AsSpan();
-		var trimmedEnd = TrimEndCore(in span);
+		var trimmedEnd = TrimEndCore(span);
 		if (trimmedEnd == Length) return Create(Source, Index, 0);
-		var trimmedStart = TrimStartCore(in span);
+		var trimmedStart = TrimStartCore(span);
 		return trimmedEnd ==0 && trimmedStart==0 ? this
 			: Create(Source, Index + trimmedStart, Length - trimmedEnd - trimmedStart);
 	}
@@ -411,15 +409,15 @@ public readonly struct StringSegment : IEquatable<StringSegment>
 	/// <summary>
 	/// Returns the StringSegment of this segment that does not have the trim character at the beginning nor the end.
 	/// </summary>
-	/// <inheritdoc cref="TrimStart(in char)"/>
-	public StringSegment Trim(in char trim)
+	/// <inheritdoc cref="TrimStart(char)"/>
+	public StringSegment Trim(char trim)
 	{
 		if (!IsValid || Length == 0) return this;
 
 		var span = Source.AsSpan();
-		var trimmedEnd = TrimEndCore(in span, in trim);
+		var trimmedEnd = TrimEndCore(span, trim);
 		if (trimmedEnd == Length) return Create(Source, Index, 0);
-		var trimmedStart = TrimStartCore(in span, in trim);
+		var trimmedStart = TrimStartCore(span, trim);
 		return trimmedEnd == 0 && trimmedStart == 0 ? this
 			: Create(Source, Index + trimmedStart, Length - trimmedEnd - trimmedStart);
 	}
@@ -427,15 +425,15 @@ public readonly struct StringSegment : IEquatable<StringSegment>
 	/// <summary>
 	/// Returns the StringSegment of this segment that does not have the trim character at the beginning nor the end.
 	/// </summary>
-	/// <inheritdoc cref="TrimStart(in ReadOnlySpan{char})"/>
-	public StringSegment Trim(in ReadOnlySpan<char> trim)
+	/// <inheritdoc cref="TrimStart(ReadOnlySpan{char})"/>
+	public StringSegment Trim(ReadOnlySpan<char> trim)
 	{
 		if (!IsValid || Length == 0) return this;
 
 		var span = Source.AsSpan();
-		var trimmedEnd = TrimEndCore(in span, in trim);
+		var trimmedEnd = TrimEndCore(span, trim);
 		if (trimmedEnd == Length) return Create(Source, Index, 0);
-		var trimmedStart = TrimStartCore(in span, in trim);
+		var trimmedStart = TrimStartCore(span, trim);
 		return trimmedEnd == 0 && trimmedStart == 0 ? this
 			: Create(Source, Index + trimmedStart, Length - trimmedEnd - trimmedStart);
 	}
@@ -457,7 +455,7 @@ public readonly struct StringSegment : IEquatable<StringSegment>
 	/// Determines whether this StringSegment and a specified ReadOnlySpan have the same characters.
 	/// </summary>
 	/// <inheritdoc cref="string.Equals(string, StringComparison)"/>
-	public bool Equals(in ReadOnlySpan<char> other, StringComparison stringComparison = StringComparison.Ordinal)
+	public bool Equals(ReadOnlySpan<char> other, StringComparison stringComparison = StringComparison.Ordinal)
 		=> other.Length == Length && AsSpan().Equals(other, stringComparison);
 
 	/// <inheritdoc />

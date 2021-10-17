@@ -52,7 +52,7 @@ public static class StringBuilderExtensions
 	/// <typeparam name="T">The type of the source.</typeparam>
 	/// <param name="source">The source span.</param>
 	/// <returns>The resultant StringBuilder.</returns>
-	public static StringBuilder ToStringBuilder<T>(this in ReadOnlySpan<T> source)
+	public static StringBuilder ToStringBuilder<T>(this ReadOnlySpan<T> source)
 	{
 		var len = source.Length;
 		var sb = new StringBuilder(len);
@@ -63,8 +63,8 @@ public static class StringBuilderExtensions
 		return sb;
 	}
 
-	/// <inheritdoc cref="ToStringBuilder{T}(in ReadOnlySpan{T})" />
-	public static StringBuilder ToStringBuilder<T>(this in Span<T> source)
+	/// <inheritdoc cref="ToStringBuilder{T}(ReadOnlySpan{T})" />
+	public static StringBuilder ToStringBuilder<T>(this Span<T> source)
 	{
 		var len = source.Length;
 		var sb = new StringBuilder(len);
@@ -98,7 +98,7 @@ public static class StringBuilderExtensions
 	/// <param name="source">The source span.</param>
 	/// <param name="separator">The separator sequence.</param>
 	/// <returns>The resultant StringBuilder.</returns>
-	public static StringBuilder ToStringBuilder<T>(this in ReadOnlySpan<T> source, string? separator)
+	public static StringBuilder ToStringBuilder<T>(this ReadOnlySpan<T> source, string? separator)
 	{
 		var len = source.Length;
 		if (len < 2 || string.IsNullOrEmpty(separator))
@@ -117,8 +117,8 @@ public static class StringBuilderExtensions
 	}
 
 
-	/// <inheritdoc cref="ToStringBuilder{T}(in ReadOnlySpan{T}, string)" />
-	public static StringBuilder ToStringBuilder<T>(this in Span<T> source, string? separator)
+	/// <inheritdoc cref="ToStringBuilder{T}(ReadOnlySpan{T}, string)" />
+	public static StringBuilder ToStringBuilder<T>(this Span<T> source, string? separator)
 	{
 		var len = source.Length;
 		if (len < 2 || string.IsNullOrEmpty(separator))
@@ -143,7 +143,7 @@ public static class StringBuilderExtensions
 	/// <param name="source">The source span.</param>
 	/// <param name="separator">The separator character.</param>
 	/// <returns>The resultant StringBuilder.</returns>
-	public static StringBuilder ToStringBuilder<T>(this in ReadOnlySpan<T> source, char separator)
+	public static StringBuilder ToStringBuilder<T>(this ReadOnlySpan<T> source, char separator)
 	{
 		var len = source.Length;
 		if (len < 2) return ToStringBuilder(source);
@@ -160,8 +160,8 @@ public static class StringBuilderExtensions
 		return sb;
 	}
 
-	/// <inheritdoc cref="ToStringBuilder{T}(in ReadOnlySpan{T}, char)" />
-	public static StringBuilder ToStringBuilder<T>(this in Span<T> source, char separator)
+	/// <inheritdoc cref="ToStringBuilder{T}(ReadOnlySpan{T}, char)" />
+	public static StringBuilder ToStringBuilder<T>(this Span<T> source, char separator)
 	{
 		var len = source.Length;
 		if (len < 2) return ToStringBuilder(source);
@@ -271,7 +271,7 @@ public static class StringBuilderExtensions
 	/// <summary>
 	/// Shortcut for adding an array of values to a StringBuilder.
 	/// </summary>
-	public static StringBuilder AppendAll<T>(this StringBuilder target, in ReadOnlySpan<T> values)
+	public static StringBuilder AppendAll<T>(this StringBuilder target, ReadOnlySpan<T> values)
 	{
 		if (target is null)
 			throw new ArgumentNullException(nameof(values));
@@ -285,7 +285,7 @@ public static class StringBuilderExtensions
 	/// <summary>
 	/// Shortcut for adding an array of values to a StringBuilder.
 	/// </summary>
-	public static StringBuilder AppendAll<T>(this StringBuilder target, in ReadOnlySpan<T> values, string? separator)
+	public static StringBuilder AppendAll<T>(this StringBuilder target, ReadOnlySpan<T> values, string? separator)
 	{
 		if (target is null)
 			throw new ArgumentNullException(nameof(values));
@@ -307,7 +307,7 @@ public static class StringBuilderExtensions
 	/// <summary>
 	/// Shortcut for adding an array of values to a StringBuilder.
 	/// </summary>
-	public static StringBuilder AppendAll<T>(this StringBuilder target, in ReadOnlySpan<T> values, char separator)
+	public static StringBuilder AppendAll<T>(this StringBuilder target, ReadOnlySpan<T> values, char separator)
 	{
 		if (target is null)
 			throw new ArgumentNullException(nameof(values));

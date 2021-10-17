@@ -64,7 +64,7 @@ public static partial class Extensions
 	}
 
 	/// <inheritdoc cref="First(string, string, StringComparison)" />
-	public static StringSegment First(this StringSegment source, in ReadOnlySpan<char> search, StringComparison comparisonType = StringComparison.Ordinal)
+	public static StringSegment First(this StringSegment source, ReadOnlySpan<char> search, StringComparison comparisonType = StringComparison.Ordinal)
 	{
 		if (!source.IsValid) throw new ArgumentException("Must be a valid segment.", nameof(source));
 		Contract.EndContractBlock();
@@ -120,7 +120,7 @@ public static partial class Extensions
 	}
 
 	/// <inheritdoc cref="Last(string, string, StringComparison)" />
-	public static StringSegment Last(this StringSegment source, in ReadOnlySpan<char> search, StringComparison comparisonType = StringComparison.Ordinal)
+	public static StringSegment Last(this StringSegment source, ReadOnlySpan<char> search, StringComparison comparisonType = StringComparison.Ordinal)
 	{
 		if (!source.IsValid) throw new ArgumentException("Must be a valid segment.", nameof(source));
 		Contract.EndContractBlock();
