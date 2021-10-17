@@ -9,14 +9,8 @@ namespace Open.Text.Tests
 		[Fact]
 		public static void NullReferences()
 		{
-			Assert.Throws<ArgumentNullException>(() => ReadOnlySpan<char>.Empty.TrimStartPattern(default!));
-			Assert.Throws<ArgumentNullException>(() => ReadOnlySpan<char>.Empty.TrimEndPattern(default!));
-
 			Assert.Throws<ArgumentNullException>(() => default(string)!.TrimStartPattern(string.Empty));
 			Assert.Throws<ArgumentNullException>(() => default(string)!.TrimEndPattern(string.Empty));
-
-			Assert.Throws<ArgumentNullException>(() => string.Empty.TrimStartPattern(default(string)!));
-			Assert.Throws<ArgumentNullException>(() => string.Empty.TrimEndPattern(default(string)!));
 
 			var rgx = new Regex("");
 			Assert.Throws<ArgumentNullException>(() => default(string)!.TrimStartPattern(rgx));

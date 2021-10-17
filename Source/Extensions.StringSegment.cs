@@ -1,24 +1,40 @@
-﻿using System;
+﻿using Microsoft.Extensions.Primitives;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Open.Text;
 
-public static partial class Extensions
+public static partial class TextExtensions
 {
-	/// <inheritdoc cref="StringSegment.Create(string)"/>
-	public static StringSegment AsSegment(this string source)
-		=> StringSegment.Create(source);
+	private const string MustBeSegmentWithValue = "Must be a StringSegment that has a value (is not null).";
 
-	/// <inheritdoc cref="StringSegment.Create(string, int)"/>
-	public static StringSegment AsSegment(this string source, int start)
-		=> StringSegment.Create(source, start);
+	/// <inheritdoc cref="AsSegment(string, int, int)"/>
+	public static StringSegment AsSegment(this string buffer)
+		=> buffer is null ? default : new(buffer);
 
-	/// <inheritdoc cref="StringSegment.Create(string, int, int)"/>
-	public static StringSegment AsSegment(this string source, int start, int length)
-		=> StringSegment.Create(source, start, length);
+	/// <inheritdoc cref="AsSegment(string, int, int)"/>
+	public static StringSegment AsSegment(this string buffer, int start)
+		=> AsSegment(buffer, start, (buffer?.Length ?? 0) - start);
+
+	/// <summary>
+	/// Creates a StringSegment representing the provided string.
+	/// </summary>
+	/// <param name="buffer">The string the segment belongs to.</param>
+	/// <param name="offset">The starting point of the string to use as the index of the segment.</param>
+	/// <param name="length">The length of the segment.</param>
+	/// <exception cref="ArgumentNullException">If the source is null.</exception>
+	public static StringSegment AsSegment(this string buffer, int offset, int length)
+	{
+		if (buffer is null) throw new ArgumentNullException(nameof(buffer));
+		//Debug.Assert(offset >= 0);
+		//Debug.Assert(length >= 0);
+		//Debug.Assert(buffer.Length >= offset + length);
+		return new(buffer, offset, length);
+	}
 
 	/// <summary>
 	/// Finds the first instance of a string and returns a StringSegment for subsequent use.
@@ -40,7 +56,7 @@ public static partial class Extensions
 			return default;
 
 		var i = source.IndexOf(search, comparisonType);
-		return i == -1 ? default : StringSegment.Create(source, i, search.Length);
+		return i == -1 ? default : new(source, i, search.Length);
 	}
 
 	/// <summary>
@@ -60,20 +76,20 @@ public static partial class Extensions
 		Contract.EndContractBlock();
 
 		var match = pattern.Match(source);
-		return match.Success ? StringSegment.Create(source, match.Index, match.Length) : default;
+		return match.Success ? new(source, match.Index, match.Length) : default;
 	}
 
 	/// <inheritdoc cref="First(string, string, StringComparison)" />
 	public static StringSegment First(this StringSegment source, ReadOnlySpan<char> search, StringComparison comparisonType = StringComparison.Ordinal)
 	{
-		if (!source.IsValid) throw new ArgumentException("Must be a valid segment.", nameof(source));
+		if (!source.HasValue) throw new ArgumentException(MustBeSegmentWithValue, nameof(source));
 		Contract.EndContractBlock();
 
 		if (search.IsEmpty)
 			return default;
 
 		var i = source.AsSpan().IndexOf(search, comparisonType);
-		return i == -1 ? default : StringSegment.Create(source.Source, source.Index + i, search.Length);
+		return i == -1 ? default : new(source.Buffer, source.Offset + i, search.Length);
 	}
 
 	/// <inheritdoc cref="First(string, string, StringComparison)" />
@@ -99,7 +115,7 @@ public static partial class Extensions
 			return default;
 
 		var i = source.LastIndexOf(search, comparisonType);
-		return i == -1 ? default : StringSegment.Create(source, i, search.Length);
+		return i == -1 ? default : new(source, i, search.Length);
 	}
 
 	/// <summary>
@@ -116,19 +132,19 @@ public static partial class Extensions
 		var matches = pattern.Matches(source);
 		if (matches.Count == 0) return default;
 		var match = matches[matches.Count - 1];
-		return StringSegment.Create(source, match.Index, match.Length);
+		return new(source, match.Index, match.Length);
 	}
 
 	/// <inheritdoc cref="Last(string, string, StringComparison)" />
 	public static StringSegment Last(this StringSegment source, ReadOnlySpan<char> search, StringComparison comparisonType = StringComparison.Ordinal)
 	{
-		if (!source.IsValid) throw new ArgumentException("Must be a valid segment.", nameof(source));
+		if (!source.HasValue) throw new ArgumentException(MustBeSegmentWithValue, nameof(source));
 		Contract.EndContractBlock();
 		if (search.IsEmpty)
 			return default;
 
 		var i = source.AsSpan().LastIndexOf(search, comparisonType);
-		return i == -1 ? default : StringSegment.Create(source.Source, source.Index + i, search.Length);
+		return i == -1 ? default : new(source.Buffer, source.Offset + i, search.Length);
 	}
 
 	/// <inheritdoc cref="Last(string, string, StringComparison)" />
@@ -175,12 +191,12 @@ public static partial class Extensions
 			}
 			else if (nextIndex == len)
 			{
-				yield return source.AsSegment(nextIndex, 0);
+				yield return new(source, nextIndex, 0);
 				yield break;
 			}
 			else
 			{
-				yield return source.AsSegment(startIndex, nextIndex - startIndex);
+				yield return new(source, startIndex, nextIndex - startIndex);
 				++nextIndex;
 			}
 			startIndex = nextIndex;
@@ -208,7 +224,7 @@ public static partial class Extensions
 				else
 				{
 					var length = nextIndex - startIndex;
-					if (length != 0) yield return source.AsSegment(startIndex, length);
+					if (length != 0) yield return new (source, startIndex, length);
 					++nextIndex;
 				}
 				startIndex = nextIndex;
@@ -260,12 +276,12 @@ public static partial class Extensions
 			}
 			else if (nextIndex == len)
 			{
-				yield return source.AsSegment(nextIndex, 0);
+				yield return new(source, nextIndex, 0);
 				yield break;
 			}
 			else
 			{
-				yield return source.AsSegment(startIndex, nextIndex - startIndex);
+				yield return new(source, startIndex, nextIndex - startIndex);
 				nextIndex += s;
 			}
 			startIndex = nextIndex;
@@ -295,7 +311,7 @@ public static partial class Extensions
 				else
 				{
 					var length = nextIndex - startIndex;
-					if (length != 0) yield return source.AsSegment(startIndex, length);
+					if (length != 0) yield return new(source, startIndex, length);
 					nextIndex += s;
 				}
 				startIndex = nextIndex;
@@ -304,5 +320,286 @@ public static partial class Extensions
 		}
 
 	}
+
+
+	/// <inheritdoc cref="Preceding(StringSegment, int, bool)"/>
+	public static StringSegment Preceding(this StringSegment source, bool includeSegment = false)
+		=> source.HasValue
+		? new(source.Buffer, 0, includeSegment ? source.Offset + source.Length : source.Offset)
+		: default;
+
+	/// <inheritdoc cref="Following(StringSegment, int, bool)"/>
+	public static StringSegment Following(this StringSegment source, bool includeSegment = false)
+		=> source.HasValue
+		? source.Buffer.AsSegment(includeSegment ? source.Offset : source.Offset + source.Length)
+		: default;
+
+	/// <summary>
+	/// Gets the string segment that precedes this one.
+	/// </summary>
+	/// <param name="source">The segment to work from.</param>
+	/// <param name="maxCharacters">The max number of characters to get.</param>
+	/// <param name="includeSegment">When true, will include this segment.</param>
+	public static StringSegment Preceding(this StringSegment source,int maxCharacters, bool includeSegment = false)
+	{
+		if (maxCharacters < 0) throw new ArgumentOutOfRangeException(nameof(maxCharacters), maxCharacters, "Must be at least zero.");
+		if (!source.HasValue) return source;
+		if (maxCharacters == 0) return includeSegment ? source : new(source.Buffer, source.Offset, 0);
+		var start = Math.Max(0, source.Offset - maxCharacters);
+		return new(source.Buffer, start, includeSegment ? (source.Offset + source.Length - start) : (source.Offset - start));
+	}
+
+	/// <summary>
+	/// Gets the string segment that follows this one.
+	/// </summary>
+	/// <param name="source">The segment to work from.</param>
+	/// <param name="maxCharacters">The max number of characters to get.</param>
+	/// <param name="includeSegment">When true, will include this segment.</param>
+	public static StringSegment Following(this StringSegment source, int maxCharacters, bool includeSegment = false)
+	{
+		if (maxCharacters < 0) throw new ArgumentOutOfRangeException(nameof(maxCharacters), maxCharacters, "Must be at least zero.");
+		if (!source.HasValue) return source;
+		var start = includeSegment ? source.Offset : source.Offset + source.Length;
+		if (maxCharacters == 0) return includeSegment ? source : new(source.Buffer, start, 0);
+		var len = Math.Min(includeSegment ? (maxCharacters + source.Length) : maxCharacters, source.Buffer.Length - start);
+		return new(source.Buffer, start, len);
+	}
+
+
+	/// <summary>
+	/// Creates a StringSegment with the offset adjusted by the value provided.
+	/// </summary>
+	/// <param name="segment">The segment to work from.</param>
+	/// <param name="offset">The value (positive or negative) to move the index by and adjust the length.</param>
+	public static StringSegment OffsetStart(this StringSegment segment, int offset)
+	{
+		if (!segment.HasValue) return segment;
+		var newIndex = segment.Offset + offset;
+		var sLen = segment.Length;
+		return newIndex < 0
+			? throw new ArgumentOutOfRangeException(nameof(offset), offset, "Cannot index less than the start of the string.")
+			: offset > sLen
+			? throw new ArgumentOutOfRangeException(nameof(offset), offset, "Cannot index greater than the length of the segment.")
+			: (new(segment.Buffer, newIndex, sLen - offset));
+	}
+
+	/// <summary>
+	/// Creates a StringSegment with the length adjusted by the value provided.
+	/// </summary>
+	/// <param name="segment">The segment to work from.</param>
+	/// <param name="offset">The value (positive or negative) to adjust the length.</param>
+	public static StringSegment OffsetEnd(this StringSegment segment, int offset)
+	{
+		if (!segment.HasValue) return segment;
+		var sLen = segment.Length;
+		var sOff = segment.Offset;
+		var newLength = sLen + offset;
+		return newLength < 0
+			? throw new ArgumentOutOfRangeException(nameof(offset), offset, "Cannot shrink less than the start of the string.")
+			: sOff + newLength > segment.Buffer.Length
+			? throw new ArgumentOutOfRangeException(nameof(offset), offset, "Cannot expand greater than the length of the source.")
+			: (new(segment.Buffer, sOff, newLength));
+	}
+
+
+	/// <summary>
+	/// Creates a StringSegment that starts offset by the value provided and extends by the length provided.
+	/// </summary>
+	/// <param name="segment">The segment to work from.</param>
+	/// <param name="offset">The value (positive or negative) to move the index by.</param>
+	/// <param name="length">The length desired.</param>
+	/// <param name="ignoreLengthBoundary">
+	///	If true, the length can exceed the segment length but not past the full length of the source string.
+	///	If false (default), an ArgumentOutOfRangeException will be thrown if the expected length exeeds the segment.
+	///	</param>
+	public static StringSegment Slice(this StringSegment segment, int offset, int length, bool ignoreLengthBoundary = false)
+	{
+		if (!segment.HasValue)
+		{
+			return offset == 0 && length == 0 ? segment
+				: throw new InvalidOperationException("Cannot slice a segment with no value.");
+		}
+		var newIndex = segment.Offset + offset;
+		if (newIndex < 0) throw new ArgumentOutOfRangeException(nameof(offset), offset, "Cannot index less than the start of the string.");
+		var newEnd = newIndex + length;
+		if (ignoreLengthBoundary)
+		{
+			var end = segment.Buffer.Length;
+			if (newEnd > end)
+			{
+				if (newIndex > end) throw new ArgumentOutOfRangeException(nameof(offset), offset, "Index is greater than the end of the source string.");
+				throw new ArgumentOutOfRangeException(nameof(length), length, "Desired length will extend greater than the end of the source string.");
+			}
+			return new(segment.Buffer, newIndex, length);
+		}
+		else
+		{
+			var end = segment.Offset + segment.Length;
+			if (newEnd > end)
+			{
+				if (newIndex > end) throw new ArgumentOutOfRangeException(nameof(offset), offset, "Index is greater than the length of the segment.");
+				throw new ArgumentOutOfRangeException(nameof(length), length, "Desired length will extend greater than the length of the segment.");
+			}
+			return new(segment.Buffer, newIndex, length);
+		}
+
+	}
+
+	private static int TrimStartCore(StringSegment segment, ReadOnlySpan<char> span, char trim)
+	{
+		int o = segment.Offset, i = o;
+		int end = i + segment.Length;
+
+		while (end != i)
+		{
+			if (span[i] != trim) break;
+			++i;
+		}
+
+		return i - o;
+	}
+
+	private static int TrimStartCore(StringSegment segment, ReadOnlySpan<char> span, ReadOnlySpan<char> trim)
+	{
+		int o = segment.Offset, i = o;
+		int end = i + segment.Length;
+
+		while (end != i)
+		{
+			if (trim.IndexOf(span[i]) == -1) break;
+			++i;
+		}
+
+		return i - o;
+	}
+
+	private static int TrimEndCore(StringSegment segment, ReadOnlySpan<char> span, char trim)
+	{
+		int o = segment.Offset;
+		int end = o + segment.Length, e = end;
+
+		while (e != o)
+		{
+			if (span[e - 1] != trim) break;
+			--e;
+		}
+
+		return end - e;
+	}
+
+	private static int TrimEndCore(StringSegment segment, ReadOnlySpan<char> span, ReadOnlySpan<char> trim)
+	{
+		int o = segment.Offset;
+		int end = o + segment.Length, e = end;
+
+		while (e != o)
+		{
+			if (trim.IndexOf(span[e - 1]) == -1) break;
+			--e;
+		}
+
+		return end - e;
+	}
+
+
+	/// <summary>
+	/// Returns the StringSegment of this segment that does not have the trim character at the beginning.
+	/// </summary>
+	/// <param name="segment">The segment to work from.</param>
+	/// <param name="trim">The character to skip over.</param>
+	public static StringSegment TrimStart(this StringSegment segment, char trim)
+	{
+		var length = segment.Length;
+		if (segment.Length == 0) return segment;
+
+		var trimmed = TrimStartCore(segment, segment.Buffer.AsSpan(), trim);
+		return trimmed == 0 ? segment
+			: new(segment.Buffer, segment.Offset + trimmed, length - trimmed);
+	}
+
+	/// <summary>
+	/// Returns the StringSegment of this segment that does not have the trim character at the end.
+	/// </summary>
+	/// <inheritdoc cref="TrimStart(StringSegment, char)"/>
+	public static StringSegment TrimEnd(this StringSegment segment, char trim)
+	{
+		var length = segment.Length;
+		if (segment.Length == 0) return segment;
+
+		var trimmed = TrimEndCore(segment, segment.Buffer.AsSpan(), trim);
+		return trimmed == 0 ? segment
+			: new(segment.Buffer, segment.Offset, length - trimmed);
+	}
+
+	/// <summary>
+	/// Returns the StringSegment of this segment that does not have any of the trim characters at the beginning.
+	/// </summary>
+	/// <param name="segment">The segment to work from.</param>
+	/// <param name="trim">The characters to skip over.</param>
+	public static StringSegment TrimStart(this StringSegment segment, ReadOnlySpan<char> trim)
+	{
+		var length = segment.Length;
+		if (segment.Length == 0) return segment;
+
+		var trimmed = TrimStartCore(segment, segment.Buffer.AsSpan(), trim);
+		return trimmed == 0 ? segment
+			: new(segment.Buffer, segment.Offset + trimmed, length - trimmed);
+	}
+
+	/// <summary>
+	/// Returns the StringSegment of this segment that does not have any of the trim characters at the end.
+	/// </summary>
+	/// <inheritdoc cref="TrimStart(StringSegment, char)"/>
+	public static StringSegment TrimEnd(this StringSegment segment, ReadOnlySpan<char> trim)
+	{
+		var length = segment.Length;
+		if (segment.Length == 0) return segment;
+
+		var trimmed = TrimEndCore(segment, segment.Buffer.AsSpan(), trim);
+		return trimmed == 0 ? segment
+			: new(segment.Buffer, segment.Offset, length - trimmed);
+	}
+
+	/// <summary>
+	/// Returns the StringSegment of this segment that does not have the trim character at the beginning nor the end.
+	/// </summary>
+	/// <inheritdoc cref="TrimStart(StringSegment, char)"/>
+	public static StringSegment Trim(this StringSegment segment, char trim)
+	{
+		var length = segment.Length;
+		if (segment.Length == 0) return segment;
+
+		var span = segment.Buffer.AsSpan();
+		var trimmedEnd = TrimEndCore(segment, span, trim);
+		if (trimmedEnd == length) return new(segment.Buffer, segment.Offset, 0);
+		var trimmedStart = TrimStartCore(segment, span, trim);
+		return trimmedEnd == 0 && trimmedStart == 0 ? segment
+			: new(segment.Buffer, segment.Offset + trimmedStart, length - trimmedEnd - trimmedStart);
+	}
+
+	/// <summary>
+	/// Returns the StringSegment of this segment that does not have the trim character at the beginning nor the end.
+	/// </summary>
+	/// <inheritdoc cref="TrimStart(StringSegment, ReadOnlySpan{char})"/>
+	public static StringSegment Trim(this StringSegment segment, ReadOnlySpan<char> trim)
+	{
+		var length = segment.Length;
+		if (segment.Length == 0) return segment;
+
+		var span = segment.Buffer.AsSpan();
+		var trimmedEnd = TrimEndCore(segment, span, trim);
+		if (trimmedEnd == length) return new(segment.Buffer, segment.Offset, 0);
+		var trimmedStart = TrimStartCore(segment, span, trim);
+		return trimmedEnd == 0 && trimmedStart == 0 ? segment
+			: new(segment.Buffer, segment.Offset + trimmedStart, length - trimmedEnd - trimmedStart);
+	}
+
+
+	/// <summary>
+	/// Determines whether this StringSegment and a specified ReadOnlySpan have the same characters.
+	/// </summary>
+	/// <inheritdoc cref="string.Equals(string, StringComparison)"/>
+	public static bool Equals(this StringSegment source, ReadOnlySpan<char> other, StringComparison stringComparison = StringComparison.Ordinal)
+		=> other.Length == source.Length && source.AsSpan().Equals(other, stringComparison);
 
 }

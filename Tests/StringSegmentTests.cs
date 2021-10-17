@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Primitives;
+using System;
 using Xunit;
 
 namespace Open.Text.Tests
@@ -9,12 +10,11 @@ namespace Open.Text.Tests
 		public static void Validity()
 		{
 			var s = default(StringSegment);
-			Assert.False(s.IsValid);
-			Assert.Equal(s, s.SourceSegment);
-			Assert.True(s.Slice(0, 0) == s);
-			Assert.Throws<InvalidOperationException>(() => s.Slice(1, 1));
-			Assert.True(s == s.SourceSegment);
-			Assert.NotEqual(0, s.ToString().Length); // base string.
+			Assert.False(s.HasValue);
+			Assert.Equal(s, s.Buffer.AsSegment());
+			Assert.Throws<ArgumentOutOfRangeException>(() => s.Subsegment(0, 0));
+			Assert.Throws<ArgumentOutOfRangeException>(() => s.Subsegment(1, 1));
+			Assert.True(s == s.Buffer.AsSegment());
 			Assert.Equal(0, ((ReadOnlySpan<char>)s).Length);
 			Assert.Equal(0, ((ReadOnlyMemory<char>)s).Length);
 		}
@@ -28,7 +28,7 @@ namespace Open.Text.Tests
 		public static void BeforeFirst(string source, string pattern, string? expected, StringComparison comparisonType = StringComparison.Ordinal)
 		{
 			var first = source.First(pattern, comparisonType);
-			if (expected is null) Assert.False(first.IsValid);
+			if (expected is null) Assert.False(first.HasValue);
 			else
 			{
 				var p = first.Preceding();
@@ -48,7 +48,7 @@ namespace Open.Text.Tests
 		public static void AfterFirst(string source, string pattern, string? expected, StringComparison comparisonType = StringComparison.Ordinal)
 		{
 			var first = source.First(pattern, comparisonType);
-			if (expected is null) Assert.False(first.IsValid);
+			if (expected is null) Assert.False(first.HasValue);
 			else Assert.Equal(expected, first.Following().ToString());
 		}
 
@@ -61,7 +61,7 @@ namespace Open.Text.Tests
 		public static void BeforeLast(string source, string pattern, string? expected, StringComparison comparisonType = StringComparison.Ordinal)
 		{
 			var last = source.Last(pattern, comparisonType);
-			if (expected is null) Assert.False(last.IsValid);
+			if (expected is null) Assert.False(last.HasValue);
 			else Assert.Equal(expected, last.Preceding().ToString());
 		}
 
@@ -74,7 +74,7 @@ namespace Open.Text.Tests
 		public static void AfterLast(string source, string pattern, string? expected, StringComparison comparisonType = StringComparison.Ordinal)
 		{
 			var last = source.Last(pattern, comparisonType);
-			if (expected is null) Assert.False(last.IsValid);
+			if (expected is null) Assert.False(last.HasValue);
 			else Assert.Equal(expected, last.Following().ToString());
 		}
 
@@ -91,12 +91,14 @@ namespace Open.Text.Tests
 			Assert.Equal("well how are you", segment.Following(100, true).ToString());
 			Assert.Equal("well how a", segment.Following(2, true).ToString());
 			Assert.Equal("well how", segment.ToString());
-			Assert.Equal("well", segment.OffsetLength(-4).ToString());
-			Assert.Equal("how", segment.OffsetIndex(+5).ToString());
-			Assert.Equal("well how are", segment.OffsetLength(+4).ToString());
-			Assert.Equal("Hello well how", segment.OffsetIndex(-6).ToString());
-			Assert.Throws<ArgumentOutOfRangeException>(() => segment.OffsetIndex(-7));
-			Assert.Throws<ArgumentOutOfRangeException>(() => segment.OffsetLength(9));
+			Assert.Equal("well", segment.OffsetEnd(-4).ToString());
+			Assert.Equal("how", segment.Subsegment(+5).ToString());
+			Assert.Equal("well", segment.OffsetEnd(-4).ToString());
+			Assert.Equal("how", segment.OffsetStart(+5).ToString());
+			Assert.Equal("well how are", segment.OffsetEnd(+4).ToString());
+			Assert.Equal("Hello well how", segment.OffsetStart(-6).ToString());
+			Assert.Throws<ArgumentOutOfRangeException>(() => segment.OffsetStart(-7));
+			Assert.Throws<ArgumentOutOfRangeException>(() => segment.OffsetEnd(9));
 		}
 
 		[Fact]
@@ -104,11 +106,11 @@ namespace Open.Text.Tests
 		{
 			var segment = "Hello well how are you".First("well how");
 			Assert.Equal("well how", segment.ToString());
-			var slice = segment.Slice(0, 4);
+			var slice = segment.Subsegment(0, 4);
 			Assert.Equal("well", slice.ToString());
 			Assert.True(slice.Equals("well".AsSpan()));
-			Assert.Throws<ArgumentOutOfRangeException>(() => slice.Slice(5, 5));
-			Assert.Throws<ArgumentOutOfRangeException>(() => slice.Slice(0, 5));
+			Assert.Throws<ArgumentException>(() => slice.Subsegment(5, 5));
+			Assert.Throws<ArgumentException>(() => slice.Subsegment(0, 5));
 			Assert.True(slice.Slice(1, 6, true).Equals("ell ho"));
 			Assert.True(slice.Slice(1, 7, true).Equals("ell how"));
 			Assert.True(slice.Slice(1, 15, true).Equals("ell how are you"));
@@ -123,9 +125,9 @@ namespace Open.Text.Tests
 		public static void Trim(string input)
 		{
 			var segment = input.AsSegment();
-			Assert.Equal(input.TrimEnd(), segment.TrimEnd().ToString());
-			Assert.Equal(input.TrimStart(), segment.TrimStart().ToString());
-			Assert.Equal(input.Trim(), segment.Trim().ToString());
+			Assert.Equal(input.TrimEnd(), segment.TrimEnd().Value);
+			Assert.Equal(input.TrimStart(), segment.TrimStart().Value);
+			Assert.Equal(input.Trim(), segment.Trim().Value);
 		}
 
 		[Theory]
@@ -136,9 +138,9 @@ namespace Open.Text.Tests
 		public static void TrimChar(string input, char c)
 		{
 			var segment = input.AsSegment();
-			Assert.Equal(input.TrimEnd(c), segment.TrimEnd(c).ToString());
-			Assert.Equal(input.TrimStart(c), segment.TrimStart(c).ToString());
-			Assert.Equal(input.Trim(c), segment.Trim(c).ToString());
+			Assert.Equal(input.TrimEnd(c), segment.TrimEnd(c).Value);
+			Assert.Equal(input.TrimStart(c), segment.TrimStart(c).Value);
+			Assert.Equal(input.Trim(c), segment.Trim(c).Value);
 		}
 
 		[Theory]
@@ -152,9 +154,9 @@ namespace Open.Text.Tests
 		public static void TrimChars(string input, params char[] c)
 		{
 			var segment = input.AsSegment();
-			Assert.Equal(input.TrimEnd(c), segment.TrimEnd(c).ToString());
-			Assert.Equal(input.TrimStart(c), segment.TrimStart(c).ToString());
-			Assert.Equal(input.Trim(c), segment.Trim(c).ToString());
+			Assert.Equal(input.TrimEnd(c), segment.TrimEnd(c).Value);
+			Assert.Equal(input.TrimStart(c), segment.TrimStart(c).Value);
+			Assert.Equal(input.Trim(c), segment.Trim(c).Value);
 		}
 	}
 }

@@ -1,11 +1,64 @@
-﻿using System;
+﻿using Microsoft.Extensions.Primitives;
+using System;
 using System.Diagnostics.Contracts;
 using System.Text.RegularExpressions;
 
 namespace Open.Text;
 
-public static partial class Extensions
+public static partial class TextExtensions
 {
+	private const string CannotTrimDefaultSegment = "Cannot trim a segment with no value.";
+	private const string MustBeAtleastNegativeOne = "Must be -1 or greater.";
+
+	private static StringSegment TrimStartPatternCore(StringSegment source, ReadOnlySpan<char> pattern, StringComparison comparisonType, int max)
+	{
+		var pLen = pattern.Length;
+		if (max == -1)
+		{
+			while (source.AsSpan().IndexOf(pattern, comparisonType) == 0)
+			{
+				source = source.Subsegment(pLen);
+				if (pattern.Length > source.Length) break;
+			}
+		}
+		else
+		{
+			while (0 != max-- && source.AsSpan().IndexOf(pattern, comparisonType) == 0)
+			{
+				source = source.Subsegment(pLen);
+				if (pattern.Length > source.Length) break;
+			}
+		}
+
+		return source;
+	}
+
+	private static StringSegment TrimEndPatternCore(StringSegment source, ReadOnlySpan<char> pattern, StringComparison comparisonType, int max)
+	{
+		var pLen = pattern.Length;
+		var expectedIndex = source.Length - pLen;
+		if (max == -1)
+		{
+			while (source.AsSpan().LastIndexOf(pattern, comparisonType) == expectedIndex)
+			{
+				source = source.Subsegment(0, expectedIndex);
+				expectedIndex = source.Length - pattern.Length;
+				if (expectedIndex < 0) break;
+			}
+		}
+		else
+		{
+			while (0 != max-- && source.AsSpan().LastIndexOf(pattern, comparisonType) == expectedIndex)
+			{
+				source = source.Subsegment(0, expectedIndex);
+				expectedIndex = source.Length - pattern.Length;
+				if (expectedIndex < 0) break;
+			}
+		}
+
+		return source;
+	}
+
 	private static ReadOnlySpan<char> TrimStartPatternCore(ReadOnlySpan<char> source, ReadOnlySpan<char> pattern, StringComparison comparisonType, int max)
 	{
 		var pLen = pattern.Length;
@@ -30,6 +83,34 @@ public static partial class Extensions
 		return source;
 	}
 
+	private static ReadOnlySpan<char> TrimEndPatternCore(ReadOnlySpan<char> source, ReadOnlySpan<char> pattern, StringComparison comparisonType, int max)
+	{
+		var pLen = pattern.Length;
+		var expectedIndex = source.Length - pLen;
+
+		if (max == -1)
+		{
+			while (source.LastIndexOf(pattern, comparisonType) == expectedIndex)
+			{
+				source = source.Slice(0, expectedIndex);
+				expectedIndex = source.Length - pattern.Length;
+				if (expectedIndex < 0) break;
+			}
+		}
+		else
+		{
+			while (0 != max-- && source.LastIndexOf(pattern, comparisonType) == expectedIndex)
+			{
+				source = source.Slice(0, expectedIndex);
+				expectedIndex = source.Length - pattern.Length;
+				if (expectedIndex < 0) break;
+			}
+		}
+
+		return source;
+	}
+
+
 	/// <param name="source">The source sequence of characters.</param>
 	/// <param name="pattern">The pattern to search for.</param>
 	/// <param name="comparisonType">The comparison type to use when searching.  Default is ordinal.</param>
@@ -40,7 +121,7 @@ public static partial class Extensions
 		StringComparison comparisonType = StringComparison.Ordinal,
 		int max = -1)
 	{
-		if (max < -1) throw new ArgumentOutOfRangeException(nameof(max), max, "Must be -1 or greater.");
+		if (max < -1) throw new ArgumentOutOfRangeException(nameof(max), max, MustBeAtleastNegativeOne);
 		Contract.EndContractBlock();
 
 		return max == 0 || source.IsEmpty || pattern.IsEmpty || pattern.Length > source.Length
@@ -50,12 +131,11 @@ public static partial class Extensions
 
 	/// <inheritdoc cref="TrimStartPattern(ReadOnlySpan{char}, ReadOnlySpan{char}, StringComparison, int)"/>
 	public static ReadOnlySpan<char> TrimStartPattern(this ReadOnlySpan<char> source,
-		string pattern,
+		StringSegment pattern,
 		StringComparison comparisonType = StringComparison.Ordinal,
 		int max = -1)
 	{
-		if (pattern is null) throw new ArgumentNullException(nameof(pattern));
-		if (max < -1) throw new ArgumentOutOfRangeException(nameof(max), max, "Must be -1 or greater.");
+		if (max < -1) throw new ArgumentOutOfRangeException(nameof(max), max, MustBeAtleastNegativeOne);
 		Contract.EndContractBlock();
 
 		return max == 0 || source.IsEmpty || pattern.Length == 0 || pattern.Length > source.Length
@@ -63,26 +143,45 @@ public static partial class Extensions
 			: TrimStartPatternCore(source, pattern.AsSpan(), comparisonType, max);
 	}
 
-	/// <remarks>To any allocations, call .AsSpan() before calling this method name.</remarks>
 	/// <inheritdoc cref="TrimStartPattern(ReadOnlySpan{char}, ReadOnlySpan{char}, StringComparison, int)"/>
-	public static string TrimStartPattern(this string source,
-		string pattern,
+	public static StringSegment TrimStartPattern(this StringSegment source,
+		ReadOnlySpan<char> pattern,
 		StringComparison comparisonType = StringComparison.Ordinal,
 		int max = -1)
 	{
-		if (source is null) throw new ArgumentNullException(nameof(source));
-		if (pattern is null) throw new ArgumentNullException(nameof(pattern));
-		if (max < -1) throw new ArgumentOutOfRangeException(nameof(max), max, "Must be -1 or greater.");
+		if (!source.HasValue) throw new ArgumentException(CannotTrimDefaultSegment, nameof(source));
+		if (max < -1) throw new ArgumentOutOfRangeException(nameof(max), max, MustBeAtleastNegativeOne);
 		Contract.EndContractBlock();
 
 		return max == 0 || source.Length == 0 || pattern.Length == 0 || pattern.Length > source.Length
 			? source
-			: max != 1
-            ? TrimStartPatternCore(source.AsSpan(), pattern.AsSpan(), comparisonType, max).ToString()
-            : source.IndexOf(pattern, comparisonType) == 0
-            ? source.Substring(pattern.Length)
-            : source;
+			: TrimStartPatternCore(source, pattern, comparisonType, max);
 	}
+
+	/// <inheritdoc cref="TrimStartPattern(ReadOnlySpan{char}, ReadOnlySpan{char}, StringComparison, int)"/>
+	public static StringSegment TrimStartPattern(this StringSegment source,
+		StringSegment pattern,
+		StringComparison comparisonType = StringComparison.Ordinal,
+		int max = -1)
+		=> TrimStartPattern(source, pattern.AsSpan(), comparisonType, max);	
+
+	/// <inheritdoc cref="TrimStartPattern(ReadOnlySpan{char}, ReadOnlySpan{char}, StringComparison, int)"/>
+	public static StringSegment TrimStartPattern(this string source,
+		StringSegment pattern,
+		StringComparison comparisonType = StringComparison.Ordinal,
+		int max = -1)
+		=> source is null
+		? throw new ArgumentNullException(nameof(source))
+		: TrimStartPattern(source.AsSegment(), pattern, comparisonType, max);
+
+	/// <inheritdoc cref="TrimStartPattern(ReadOnlySpan{char}, ReadOnlySpan{char}, StringComparison, int)"/>
+	public static StringSegment TrimStartPattern(this string source,
+		ReadOnlySpan<char> pattern,
+		StringComparison comparisonType = StringComparison.Ordinal,
+		int max = -1)
+		=> source is null
+		? throw new ArgumentNullException(nameof(source))
+		: TrimStartPattern(source.AsSegment(), pattern, comparisonType, max);
 
 	/// <summary>
 	/// Trims (omits) a matching pattern from the start of a sequence of characters.
@@ -91,20 +190,20 @@ public static partial class Extensions
 	/// <param name="pattern">The pattern to search for.</param>
 	/// <param name="max">The maximum number of times to remove the specified sequence.  -1 (default) = all instances.</param>
 	/// <returns>The resultant trimmed string.</returns>
-	public static string TrimStartPattern(this string source,
+	public static StringSegment TrimStartPattern(this string source,
 		Regex pattern,
 		int max = -1)
 	{
 		if (source is null) throw new ArgumentNullException(nameof(source));
 		if (pattern is null) throw new ArgumentNullException(nameof(pattern));
-		if (max < -1) throw new ArgumentOutOfRangeException(nameof(max), max, "Must be -1 or greater.");
+		if (max < -1) throw new ArgumentOutOfRangeException(nameof(max), max, MustBeAtleastNegativeOne);
 		Contract.EndContractBlock();
 
 		if (max == 0 || source.Length == 0)
 			return source;
 
 		var i = pattern.RightToLeft ? RightToLeft() : LeftToRight();
-		return i == 0 ? source : source.Substring(i);
+		return i == 0 ? source : source.AsSegment(i);
 
 		int RightToLeft()
 		{
@@ -159,33 +258,6 @@ public static partial class Extensions
 		}
 	}
 
-	private static ReadOnlySpan<char> TrimEndPatternCore(ReadOnlySpan<char> source, ReadOnlySpan<char> pattern, StringComparison comparisonType, int max)
-	{
-		var pLen = pattern.Length;
-		var expectedIndex = source.Length - pLen;
-
-		if (max == -1)
-		{
-			while (source.LastIndexOf(pattern, comparisonType) == expectedIndex)
-			{
-				source = source.Slice(0, expectedIndex);
-				expectedIndex = source.Length - pattern.Length;
-				if (expectedIndex < 0) break;
-			}
-		}
-		else
-		{
-			while (0 != max-- && source.LastIndexOf(pattern, comparisonType) == expectedIndex)
-			{
-				source = source.Slice(0, expectedIndex);
-				expectedIndex = source.Length - pattern.Length;
-				if (expectedIndex < 0) break;
-			}
-		}
-
-		return source;
-	}
-
 	/// <param name="source">The source sequence of characters.</param>
 	/// <param name="comparisonType">The comparison type to use when searching.  Default is ordinal.</param>
 	/// <param name="pattern">The pattern to search for.</param>
@@ -197,7 +269,7 @@ public static partial class Extensions
 		StringComparison comparisonType = StringComparison.Ordinal,
 		int max = -1)
 	{
-		if (max < -1) throw new ArgumentOutOfRangeException(nameof(max), max, "Must be -1 or greater.");
+		if (max < -1) throw new ArgumentOutOfRangeException(nameof(max), max, MustBeAtleastNegativeOne);
 		Contract.EndContractBlock();
 
 		return max == 0 || source.IsEmpty || pattern.Length == 0 || pattern.Length > source.Length
@@ -207,12 +279,11 @@ public static partial class Extensions
 
 	/// <inheritdoc cref="TrimEndPattern(ReadOnlySpan{char}, ReadOnlySpan{char}, StringComparison, int)"/>
 	public static ReadOnlySpan<char> TrimEndPattern(this ReadOnlySpan<char> source,
-		string pattern,
+		StringSegment pattern,
 		StringComparison comparisonType = StringComparison.Ordinal,
 		int max = -1)
 	{
-		if (pattern is null) throw new ArgumentNullException(nameof(pattern));
-		if (max < -1) throw new ArgumentOutOfRangeException(nameof(max), max, "Must be -1 or greater.");
+		if (max < -1) throw new ArgumentOutOfRangeException(nameof(max), max, MustBeAtleastNegativeOne);
 		Contract.EndContractBlock();
 
 		return max == 0 || source.IsEmpty || pattern.Length == 0 || pattern.Length > source.Length
@@ -220,27 +291,45 @@ public static partial class Extensions
 			: TrimEndPatternCore(source, pattern.AsSpan(), comparisonType, max);
 	}
 
-	/// <remarks>To any allocations, call .AsSpan() before calling this method name.</remarks>
 	/// <inheritdoc cref="TrimEndPattern(ReadOnlySpan{char}, ReadOnlySpan{char}, StringComparison, int)"/>
-	public static string TrimEndPattern(this string source,
-		string pattern,
+	public static StringSegment TrimEndPattern(this StringSegment source,
+		ReadOnlySpan<char> pattern,
 		StringComparison comparisonType = StringComparison.Ordinal,
 		int max = -1)
 	{
-		if (source is null) throw new ArgumentNullException(nameof(source));
-		if (pattern is null) throw new ArgumentNullException(nameof(pattern));
-		if (max < -1) throw new ArgumentOutOfRangeException(nameof(max), max, "Must be -1 or greater.");
+		if (max < -1) throw new ArgumentOutOfRangeException(nameof(max), max, MustBeAtleastNegativeOne);
 		Contract.EndContractBlock();
 
-		if (max == 0 || source.Length == 0 || pattern.Length == 0 || pattern.Length > source.Length) return source;
-		if (max != 1) return TrimEndPatternCore(source.AsSpan(), pattern.AsSpan(), comparisonType, max).ToString();
-
-		var expectedIndex = source.Length - pattern.Length;
-		var result = source.LastIndexOf(pattern, comparisonType);
-		return result == expectedIndex
-			? source.Substring(0, expectedIndex)
-			: source;
+		return max == 0 || source.Length == 0 || pattern.Length == 0 || pattern.Length > source.Length
+			? source
+			: TrimEndPatternCore(source, pattern, comparisonType, max);
 	}
+
+	/// <inheritdoc cref="TrimEndPattern(ReadOnlySpan{char}, ReadOnlySpan{char}, StringComparison, int)"/>
+	public static StringSegment TrimEndPattern(this StringSegment source,
+		StringSegment pattern,
+		StringComparison comparisonType = StringComparison.Ordinal,
+		int max = -1)
+		=> TrimEndPattern(source, pattern.AsSpan(), comparisonType, max);
+
+	/// <inheritdoc cref="TrimEndPattern(ReadOnlySpan{char}, ReadOnlySpan{char}, StringComparison, int)"/>
+	public static StringSegment TrimEndPattern(this string source,
+		StringSegment pattern,
+		StringComparison comparisonType = StringComparison.Ordinal,
+		int max = -1)
+		=> source is null
+		? throw new ArgumentNullException(nameof(source))
+		: TrimEndPattern(source.AsSegment(), pattern.AsSpan(), comparisonType, max);
+
+	/// <inheritdoc cref="TrimEndPattern(ReadOnlySpan{char}, ReadOnlySpan{char}, StringComparison, int)"/>
+	public static StringSegment TrimEndPattern(this string source,
+		ReadOnlySpan<char> pattern,
+		StringComparison comparisonType = StringComparison.Ordinal,
+		int max = -1)
+		=> source is null
+		? throw new ArgumentNullException(nameof(source))
+		: TrimEndPattern(source.AsSegment(), pattern, comparisonType, max);
+
 
 	/// <summary>
 	/// Trims (omits) a matching pattern from the end of a sequence of characters.
@@ -249,14 +338,13 @@ public static partial class Extensions
 	/// <param name="pattern">The pattern to search for.</param>
 	/// <param name="max">The maximum number of times to remove the specified sequence.  -1 (default) = all instances.</param>
 	/// <returns>The resultant trimmed string.</returns>
-	public static string TrimEndPattern(this string source,
+	public static StringSegment TrimEndPattern(this string source,
 		Regex pattern,
 		int max = -1)
 	{
-
 		if (source is null) throw new ArgumentNullException(nameof(source));
 		if (pattern is null) throw new ArgumentNullException(nameof(pattern));
-		if (max < -1) throw new ArgumentOutOfRangeException(nameof(max), max, "Must be -1 or greater.");
+		if (max < -1) throw new ArgumentOutOfRangeException(nameof(max), max, MustBeAtleastNegativeOne);
 		Contract.EndContractBlock();
 
 		int len;
@@ -264,7 +352,7 @@ public static partial class Extensions
 			return source;
 
 		var i = pattern.RightToLeft ? RightToLeft() : LeftToRight();
-		return i == len ? source : source.Substring(0, i);
+		return i == len ? source : source.AsSegment(0, i);
 
 		int RightToLeft()
 		{

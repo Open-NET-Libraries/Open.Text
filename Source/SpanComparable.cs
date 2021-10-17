@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Primitives;
+using System;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 
@@ -47,7 +48,7 @@ public readonly ref struct SpanComparable
 
 	/// <inheritdoc cref="Equals(string?)"/>
 	public bool Equals(StringComparable other)
-		=> Source.Equals(other.Source, Type)
+		=> Source.Equals(other.Segment, Type)
 		|| Type != other.Type && other.Equals(Source);
 
 	/// <inheritdoc cref="Equals(string?)"/>
@@ -175,40 +176,4 @@ public static class SpanComparableExtensions
 	/// <inheritdoc cref="AsCaseInsensitive(ReadOnlySpan{char})"/>
 	public static SpanComparable AsComparable(this StringSegment source, StringComparison type)
 		=> new(source, type);
-
-	/// <summary>
-	/// Prepares a StringSegment to be case insensitive when comparing equality.
-	/// </summary>
-	/// <inheritdoc cref="AsCaseInsensitive(ReadOnlySpan{char})"/>
-	public static SpanComparable AsCaseInsensitive(this StringSegment source)
-		=> new(source, StringComparison.OrdinalIgnoreCase);
-
-	/// <summary>
-	/// Prepares a StringSegment to be invariant culture and case insensitive when comparing equality.
-	/// </summary>
-	/// <inheritdoc cref="AsCaseInsensitive(ReadOnlySpan{char})"/>
-	public static SpanComparable AsCaseInsensitiveInvariantCulture(this StringSegment source)
-		=> new(source, StringComparison.InvariantCultureIgnoreCase);
-
-	/// <summary>
-	/// Prepares a StringSegment to be invariant culture and case insensitive when comparing equality.
-	/// </summary>
-	/// <inheritdoc cref="AsCaseInsensitive(ReadOnlySpan{char})"/>
-	public static SpanComparable AsCaseInsensitiveCurrentCulture(this StringSegment source)
-		=> new(source, StringComparison.CurrentCultureIgnoreCase);
-
-	/// <summary>
-	/// Prepares a StringSegment to be current culture and case sensitive when comparing equality.
-	/// </summary>
-	/// <inheritdoc cref="AsCaseInsensitive(ReadOnlySpan{char})"/>
-	public static SpanComparable AsCurrentCulture(this StringSegment source)
-		=> new(source, StringComparison.CurrentCulture);
-
-	/// <summary>
-	/// Prepares a StringSegment to be invariant culture and case sensitive when comparing equality.
-	/// </summary>
-	/// <inheritdoc cref="AsCaseInsensitive(ReadOnlySpan{char})"/>
-	public static SpanComparable AsInvariantCulture(this StringSegment source)
-		=> new(source, StringComparison.InvariantCulture);
-
 }

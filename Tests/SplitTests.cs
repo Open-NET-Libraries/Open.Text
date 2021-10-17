@@ -28,18 +28,18 @@ namespace Open.Text.Tests
 		[Fact]
 		public static void ThrowIfNull()
 		{
-			Assert.Throws<ArgumentNullException>(() => Extensions.FirstSplit(default!, ',', out _));
-			Assert.Throws<ArgumentNullException>(() => Extensions.FirstSplit(default!, ",", out _));
-			Assert.Throws<ArgumentNullException>(() => Extensions.FirstSplit(DefaultTestString, default(string)!, out _));
-			Assert.Throws<ArgumentNullException>(() => Extensions.SplitToEnumerable(default!, ','));
-			Assert.Throws<ArgumentNullException>(() => Extensions.SplitToEnumerable(default!, ","));
-			Assert.Throws<ArgumentNullException>(() => Extensions.SplitToEnumerable(DefaultTestString, default(string)!));
-			Assert.Throws<ArgumentNullException>(() => Extensions.SplitAsMemory(default!, ','));
-			Assert.Throws<ArgumentNullException>(() => Extensions.SplitAsMemory(default!, ","));
-			Assert.Throws<ArgumentNullException>(() => Extensions.SplitAsMemory(DefaultTestString, default(string)!));
-			Assert.Throws<ArgumentNullException>(() => Extensions.SplitAsSegments(default!, ','));
-			Assert.Throws<ArgumentNullException>(() => Extensions.SplitAsSegments(default!, ","));
-			Assert.Throws<ArgumentNullException>(() => Extensions.SplitAsSegments(DefaultTestString, default(string)!));
+			Assert.Throws<ArgumentNullException>(() => TextExtensions.FirstSplit(default!, ',', out _));
+			Assert.Throws<ArgumentNullException>(() => TextExtensions.FirstSplit(default!, ",", out _));
+			Assert.Throws<ArgumentNullException>(() => TextExtensions.FirstSplit(DefaultTestString, default(string)!, out _));
+			Assert.Throws<ArgumentNullException>(() => TextExtensions.SplitToEnumerable(default!, ','));
+			Assert.Throws<ArgumentNullException>(() => TextExtensions.SplitToEnumerable(default!, ","));
+			Assert.Throws<ArgumentNullException>(() => TextExtensions.SplitToEnumerable(DefaultTestString, default(string)!));
+			Assert.Throws<ArgumentNullException>(() => TextExtensions.SplitAsMemory(default!, ','));
+			Assert.Throws<ArgumentNullException>(() => TextExtensions.SplitAsMemory(default!, ","));
+			Assert.Throws<ArgumentNullException>(() => TextExtensions.SplitAsMemory(DefaultTestString, default(string)!));
+			Assert.Throws<ArgumentNullException>(() => TextExtensions.SplitAsSegments(default!, ','));
+			Assert.Throws<ArgumentNullException>(() => TextExtensions.SplitAsSegments(default!, ","));
+			Assert.Throws<ArgumentNullException>(() => TextExtensions.SplitAsSegments(DefaultTestString, default(string)!));
 		}
 
 		[Theory]

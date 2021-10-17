@@ -15,7 +15,7 @@ using System.Text.RegularExpressions;
 namespace Open.Text;
 
 /// <summary />
-public static partial class Extensions
+public static partial class TextExtensions
 {
 	private const uint BYTE_RED = 1024;
 	private static readonly string[] _byte_labels = new[] { "KB", "MB", "GB", "TB", "PB" };

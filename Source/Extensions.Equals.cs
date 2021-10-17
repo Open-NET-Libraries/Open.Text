@@ -2,7 +2,7 @@
 
 namespace Open.Text;
 
-public static partial class Extensions
+public static partial class TextExtensions
 {
 
 	/// <summary>
