@@ -57,7 +57,7 @@ Extensions for:
 Extensions for:
 
 * `.Trim(char)` and `.Trim(ReadOnlySpan<char>)`.
-* finding and pivoting from sequences.
+* finding and pivoting from sequences without allocation.
 
 ---
 
