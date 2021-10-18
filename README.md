@@ -57,8 +57,7 @@ Extensions for:
 Extensions for:
 
 * `.Trim(char)` and `.Trim(ReadOnlySpan<char>)`.
-* Extensions for adding spans without creating a string first.
-* Extensions for converting enumerables to a `StringBuilder`.
+* finding and pivoting from sequences.
 
 ---
 
