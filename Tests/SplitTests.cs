@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Xunit;
 
 namespace Open.Text.Tests
@@ -80,9 +81,20 @@ namespace Open.Text.Tests
 			Assert.Equal(segments, sequence.SplitAsMemory(",", options: options).Select(m => m.Span.ToString()));
 			Assert.Equal(segments, sequence.SplitAsSegments(',', options).Select(m => m.ToString()));
 			Assert.Equal(segments, sequence.SplitAsSegments(",", options: options).Select(m => m.ToString()));
+			Assert.Equal(segments, sequence.Split(new Regex(","), options: options).Select(m => m.ToString()));
 			var span = sequence.AsSpan();
 			Assert.Equal(segments, span.Split(',', options));
 			Assert.Equal(segments, span.Split(",", options));
+
+			Assert.Equal(
+				TextExtensions
+				.ValidAlphaNumericOnlyPattern
+				.Matches(sequence)
+				.Select(m => m.Value),
+				TextExtensions
+				.ValidAlphaNumericOnlyPattern
+				.AsSegments(sequence)
+				.Select(m => m.Value));
 		}
 
 		[Theory]

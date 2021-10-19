@@ -1,8 +1,4 @@
-﻿/*!
- * @author electricessence / https://github.com/electricessence/
- * Licensing: MIT
- */
-
+﻿using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
@@ -370,7 +366,7 @@ public static class StringBuilderExtensions
 	/// <summary>
 	/// Appends a key/value pair to StringBuilder using the provided separators.
 	/// </summary>
-	public static void AppendWithSeparator<T>(this StringBuilder target, IDictionary<string, T> source, string key, string itemSeparator, string keyValueSeparator)
+	public static StringBuilder AppendWithSeparator<T>(this StringBuilder target, IDictionary<string, T> source, string key, string itemSeparator, string keyValueSeparator)
 	{
 		if (target is null)
 			throw new ArgumentNullException(nameof(target));
@@ -389,5 +385,36 @@ public static class StringBuilderExtensions
 				.AppendWithSeparator(itemSeparator, key)
 				.Append(keyValueSeparator)
 				.Append<T>(result);
+		return target;
 	}
+
+#if NETSTANDARD2_0
+	/// <summary>
+	/// Appends the string representation of a specified read-only character span to this instance.
+	/// </summary>
+	/// <param name="target">The StringBuilder to append to.</param>
+	/// <param name="value">The read-only character span to append.</param>
+	/// <returns>A reference to this instance after the append operation is completed.</returns>
+	/// <exception cref="ArgumentNullException">If the target is null.</exception>
+	public static StringBuilder Append(this StringBuilder target, ReadOnlySpan<char> value)
+	{
+		if (target is null) throw new ArgumentNullException(nameof(target));
+		foreach (var v in value) target.Append(v);
+		return target;
+	}
+#endif
+
+	/// <summary>
+	/// Appends the string representation of a specified StringSegment to this instance.
+	/// </summary>
+	/// <param name="target">The StringBuilder to append to.</param>
+	/// <param name="value">The read-only character span to append.</param>
+	/// <returns>A reference to this instance after the append operation is completed.</returns>
+	/// <exception cref="ArgumentNullException">If the target is null.</exception>
+	public static StringBuilder Append(this StringBuilder target, StringSegment value)
+		=> target is null
+			? throw new ArgumentNullException(nameof(target))
+			: value.Length == 0
+			? target
+			: target.Append(value.AsSpan());
 }

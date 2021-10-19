@@ -12,6 +12,16 @@ A set of useful extensions for working with strings, string-segments, spans, enu
 
 ---
 
+### Regex Extensions
+
+* `ReadOnlySpan<char> Capture.AsSpan()`
+* `IEnumerable<StringSegment> Regex.AsSegments(string input)`
+* `string GroupCollection.GetValue(string groupName)`
+* `ReadOnlySpan<char> GroupCollection.GetValueSpan(string groupName)`
+* `IEnumerable<StringSegment> string.Split(Regex pattern)`
+
+---
+
 ### String vs Span Equality
 
 Optimized `.Equals(...)` extension methods for comparing spans and strings.
@@ -117,5 +127,30 @@ The performance is outstanding as it uses the length of the names to build a tre
 
 ### ... And more
 
-Various formatting and `Regex` extensions including `Capture.AsSpan()` for getting a `ReadOnlySpan<char>` instead of allocating a string.
+#### `string.Supplant(...)`
 
+An alternative to String.Format that takes an array of values.
+
+#### `string.ReplaceWhiteSpace(...)`
+
+A shortcut for replacing whitespace with a Regex.
+
+#### `string.ToMetricString(...)`
+
+Returns an abbreviated metric representation of a number.
+
+#### `ToByteString(...)`
+
+Returns an abbreviated metric representation of a quantity of bytes.
+
+#### `ToPercentString(...)`
+
+Shortcut for formating to a percent.
+
+#### `ToNullIfWhiteSpace()`
+
+Allows for simple null operators if a string is empty or whitespace.
+
+---
+
+And more...

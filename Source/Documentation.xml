@@ -433,6 +433,15 @@
         <member name="M:Open.Text.TextExtensions.SplitAsSegments(System.String,System.Char,System.StringSplitOptions)">
             <inheritdoc cref="M:Open.Text.TextExtensions.SplitToEnumerable(System.String,System.Char,System.StringSplitOptions)"/>
         </member>
+        <member name="M:Open.Text.TextExtensions.Split(System.String,System.Text.RegularExpressions.Regex,System.StringSplitOptions)">
+            <summary>
+            Enumerates a string by segments that are separated by the regular expression matches.
+            </summary>
+            <param name="source">The source characters to look through.</param>
+            <param name="pattern">The pattern to split by.</param>
+            <param name="options">Can specify to omit empty entries.</param>
+            <returns>An enumerable of the segments.</returns>
+        </member>
         <member name="M:Open.Text.TextExtensions.SplitAsSegments(System.String,System.String,System.StringSplitOptions,System.StringComparison)">
             <inheritdoc cref="M:Open.Text.TextExtensions.SplitToEnumerable(System.String,System.String,System.StringSplitOptions,System.StringComparison)"/>
         </member>
@@ -691,6 +700,15 @@
         <member name="M:Open.Text.TextExtensions.GetValueSpan(System.Text.RegularExpressions.GroupCollection,System.String,System.Boolean)">
             <remarks>If throwIfInvalid = false then will return an empty span if not found; otherwise an ArgumentException will be thrown.</remarks>
             <inheritdoc cref="M:Open.Text.TextExtensions.GetValue(System.Text.RegularExpressions.GroupCollection,System.String,System.Boolean)" />
+        </member>
+        <member name="M:Open.Text.TextExtensions.AsSegments(System.Text.RegularExpressions.Regex,System.String)">
+            <summary>
+            Returns the available matches as StringSegments.
+            </summary>
+            <param name="pattern">The pattern to search with.</param>
+            <param name="input">The string to search.</param>
+            <returns>An enumerable containing the found segments.</returns>
+            <exception cref="T:System.ArgumentNullException">If the pattern or input is null.</exception>
         </member>
         <member name="M:Open.Text.TextExtensions.ToString``1(System.Nullable{``0},System.String,``0,System.Globalization.CultureInfo)">
             <summary>
@@ -1030,6 +1048,24 @@
             <summary>
             Appends a key/value pair to StringBuilder using the provided separators.
             </summary>
+        </member>
+        <member name="M:Open.Text.StringBuilderExtensions.Append(System.Text.StringBuilder,System.ReadOnlySpan{System.Char})">
+            <summary>
+            Appends the string representation of a specified read-only character span to this instance.
+            </summary>
+            <param name="target">The StringBuilder to append to.</param>
+            <param name="value">The read-only character span to append.</param>
+            <returns>A reference to this instance after the append operation is completed.</returns>
+            <exception cref="T:System.ArgumentNullException">If the target is null.</exception>
+        </member>
+        <member name="M:Open.Text.StringBuilderExtensions.Append(System.Text.StringBuilder,Microsoft.Extensions.Primitives.StringSegment)">
+            <summary>
+            Appends the string representation of a specified StringSegment to this instance.
+            </summary>
+            <param name="target">The StringBuilder to append to.</param>
+            <param name="value">The read-only character span to append.</param>
+            <returns>A reference to this instance after the append operation is completed.</returns>
+            <exception cref="T:System.ArgumentNullException">If the target is null.</exception>
         </member>
         <member name="T:Open.Text.StringComparable">
             <summary>

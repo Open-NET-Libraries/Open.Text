@@ -1,9 +1,6 @@
-﻿/*!
- * @author electricessence / https://github.com/electricessence/
- * Licensing: MIT
- */
-
+﻿using Microsoft.Extensions.Primitives;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.IO;
@@ -203,6 +200,26 @@ public static partial class TextExtensions
 		return group is null
 			? throwIfInvalid ? throw new ArgumentException("Group not found.", nameof(groupName)) : null
 			: group.Success ? group.AsSpan() : ReadOnlySpan<char>.Empty;
+	}
+
+	/// <summary>
+	/// Returns the available matches as StringSegments.
+	/// </summary>
+	/// <param name="pattern">The pattern to search with.</param>
+	/// <param name="input">The string to search.</param>
+	/// <returns>An enumerable containing the found segments.</returns>
+	/// <exception cref="ArgumentNullException">If the pattern or input is null.</exception>
+	public static IEnumerable<StringSegment> AsSegments(this Regex pattern, string input)
+	{
+		if (pattern is null) throw new ArgumentNullException(nameof(pattern));
+		if (input is null) throw new ArgumentNullException(nameof(input));
+		if (input.Length == 0) yield break;
+		var match = pattern.Match(input);
+		while (match.Success)
+		{
+			yield return new(input, match.Index, match.Length);
+			match = match.NextMatch();
+		}
 	}
 	#endregion
 

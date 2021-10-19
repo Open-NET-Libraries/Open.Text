@@ -224,7 +224,7 @@ public static partial class TextExtensions
 				else
 				{
 					var length = nextIndex - startIndex;
-					if (length != 0) yield return new (source, startIndex, length);
+					if (length != 0) yield return new(source, startIndex, length);
 					++nextIndex;
 				}
 				startIndex = nextIndex;
@@ -234,6 +234,36 @@ public static partial class TextExtensions
 
 	}
 
+	/// <summary>
+	/// Enumerates a string by segments that are separated by the regular expression matches.
+	/// </summary>
+	/// <param name="source">The source characters to look through.</param>
+	/// <param name="pattern">The pattern to split by.</param>
+	/// <param name="options">Can specify to omit empty entries.</param>
+	/// <returns>An enumerable of the segments.</returns>
+	public static IEnumerable<StringSegment> Split(this string source,
+		Regex pattern,
+		StringSplitOptions options = StringSplitOptions.None)
+	{
+		if (source is null) throw new ArgumentNullException(nameof(source));
+		if (pattern is null) throw new ArgumentNullException(nameof(pattern));
+		Contract.EndContractBlock();
+
+		int len;
+		var nextStart = 0;
+		var match = pattern.Match(source);
+		while(match.Success)
+		{
+			len = match.Index - nextStart;
+			if (len != 0 || options==StringSplitOptions.None)
+				yield return new(source, nextStart, match.Index - nextStart);
+			nextStart = match.Index + match.Length;
+			match = match.NextMatch();
+		}
+		len = source.Length - nextStart;
+		if (len != 0 || options == StringSplitOptions.None)
+			yield return source.AsSegment(nextStart, len);
+	}
 
 	/// <inheritdoc cref="SplitToEnumerable(string, string, StringSplitOptions, StringComparison)"/>
 	public static IEnumerable<StringSegment> SplitAsSegments(this string source,
@@ -340,7 +370,7 @@ public static partial class TextExtensions
 	/// <param name="source">The segment to work from.</param>
 	/// <param name="maxCharacters">The max number of characters to get.</param>
 	/// <param name="includeSegment">When true, will include this segment.</param>
-	public static StringSegment Preceding(this StringSegment source,int maxCharacters, bool includeSegment = false)
+	public static StringSegment Preceding(this StringSegment source, int maxCharacters, bool includeSegment = false)
 	{
 		if (maxCharacters < 0) throw new ArgumentOutOfRangeException(nameof(maxCharacters), maxCharacters, "Must be at least zero.");
 		if (!source.HasValue) return source;
