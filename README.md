@@ -127,7 +127,7 @@ The performance is outstanding as it uses the length of the names to build a tre
 
 ---
 
-### ... And more
+### And more ...
 
 #### `string.Supplant(...)`
 
@@ -152,7 +152,3 @@ Shortcut for formating to a percent.
 #### `ToNullIfWhiteSpace()`
 
 Allows for simple null operators if a string is empty or whitespace.
-
----
-
-And more...
