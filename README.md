@@ -14,11 +14,13 @@ A set of useful extensions for working with strings, string-segments, spans, enu
 
 ### Regex Extensions
 
-* `ReadOnlySpan<char> Capture.AsSpan()`
-* `IEnumerable<StringSegment> Regex.AsSegments(string input)`
-* `string GroupCollection.GetValue(string groupName)`
-* `ReadOnlySpan<char> GroupCollection.GetValueSpan(string groupName)`
-* `IEnumerable<StringSegment> string.Split(Regex pattern)`
+```cs
+ReadOnlySpan<char> Capture.AsSpan()
+Enumerable<StringSegment> Regex.AsSegments(string input)
+string GroupCollection.GetValue(string groupName)
+ReadOnlySpan<char> GroupCollection.GetValueSpan(string groupName)
+IEnumerable<StringSegment> string.Split(Regex pattern)
+```
 
 ---
 
