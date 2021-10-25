@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -347,7 +346,7 @@ public static partial class TextExtensions
 		}
 	}
 
-	static readonly ImmutableArray<string> SingleEmpty = ImmutableArray.Create(string.Empty);
+	static readonly IReadOnlyList<string> SingleEmpty = Array.AsReadOnly(new[] { string.Empty });
 
 	/// <summary>
 	/// Splits a sequence of characters into strings using the character provided.
@@ -366,7 +365,7 @@ public static partial class TextExtensions
 				return SingleEmpty;
 
 			case StringSplitOptions.RemoveEmptyEntries when source.Length == 0:
-				return ImmutableArray<string>.Empty;
+				return Array.Empty<string>();
 
 			case StringSplitOptions.RemoveEmptyEntries:
 				{
@@ -414,7 +413,7 @@ public static partial class TextExtensions
 				return SingleEmpty;
 
 			case StringSplitOptions.RemoveEmptyEntries when source.IsEmpty:
-				return ImmutableArray<string>.Empty;
+				return Array.Empty<string>();
 
 			case StringSplitOptions.RemoveEmptyEntries:
 				{
