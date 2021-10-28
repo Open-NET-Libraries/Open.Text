@@ -404,17 +404,4 @@ public static class StringBuilderExtensions
 	}
 #endif
 
-	/// <summary>
-	/// Appends the string representation of a specified StringSegment to this instance.
-	/// </summary>
-	/// <param name="target">The StringBuilder to append to.</param>
-	/// <param name="value">The read-only character span to append.</param>
-	/// <returns>A reference to this instance after the append operation is completed.</returns>
-	/// <exception cref="ArgumentNullException">If the target is null.</exception>
-	public static StringBuilder Append(this StringBuilder target, StringSegment value)
-		=> target is null
-			? throw new ArgumentNullException(nameof(target))
-			: value.Length == 0
-			? target
-			: target.Append(value.AsSpan());
 }

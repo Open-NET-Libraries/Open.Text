@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Open.Text;
@@ -164,22 +165,22 @@ public static partial class TextExtensions
 	/// <param name="segment">The source segment to seek through.</param>
 	/// <param name="value">The segment to look for.</param>
 	/// <param name="startIndex">The search starting position.</param>
-	/// <param name="comparison">One of the enumeration values that specifies the rules for the search.</param>
+	/// <param name="comparisonType">One of the enumeration values that specifies the rules for the search.</param>
 	/// <exception cref="ArgumentOutOfRangeException">If start index is less than zero.</exception>
 	public static int IndexOf(
 		this StringSegment segment,
 		StringSegment value,
 		int startIndex = 0,
-		StringComparison comparison = StringComparison.Ordinal)
+		StringComparison comparisonType = StringComparison.Ordinal)
 	{
 		if (startIndex < 0) throw new ArgumentOutOfRangeException(nameof(startIndex), startIndex, "Must be at least zero.");
 
 		var len = value.Length;
 		if (len==0 || startIndex + len > segment.Length) return -1;
 		if (startIndex == 0 && len == segment.Length)
-			return segment.Equals(value, comparison) ? 0 : -1;
+			return segment.Equals(value, comparisonType) ? 0 : -1;
 
-		if (comparison == StringComparison.Ordinal)
+		if (comparisonType == StringComparison.Ordinal)
 		{
 			startIndex = segment.IndexOf(value[0], startIndex);
 			if (startIndex == -1) return -1;
@@ -188,7 +189,7 @@ public static partial class TextExtensions
 		var max = segment.Length - len;
 		for (var i = startIndex; i <= max; i++)
 		{
-			if(segment.Subsegment(i, len).Equals(value, comparison))
+			if(segment.Subsegment(i, len).Equals(value, comparisonType))
 				return i;
 		}
 
@@ -199,8 +200,8 @@ public static partial class TextExtensions
 	public static int IndexOf(
 		this StringSegment segment,
 		StringSegment value,
-		StringComparison comparison = StringComparison.Ordinal)
-		=> IndexOf(segment, value, 0, comparison);
+		StringComparison comparisonType = StringComparison.Ordinal)
+		=> IndexOf(segment, value, 0, comparisonType);
 
 	/// <inheritdoc cref="SplitToEnumerable(string, char, StringSplitOptions)"/>
 	public static IEnumerable<StringSegment> SplitAsSegments(this string source,
@@ -287,7 +288,8 @@ public static partial class TextExtensions
 	/// <param name="pattern">The pattern to split by.</param>
 	/// <param name="options">Can specify to omit empty entries.</param>
 	/// <returns>An enumerable of the segments.</returns>
-	public static IEnumerable<StringSegment> Split(this string source,
+	public static IEnumerable<StringSegment> Split(
+		this string source,
 		Regex pattern,
 		StringSplitOptions options = StringSplitOptions.None)
 	{
@@ -311,8 +313,10 @@ public static partial class TextExtensions
 			yield return source.AsSegment(nextStart, len);
 	}
 
+	/// <returns>An IEnumerable&lt;StringSegment&gt; of the segments.</returns>
 	/// <inheritdoc cref="SplitToEnumerable(string, string, StringSplitOptions, StringComparison)"/>
-	public static IEnumerable<StringSegment> SplitAsSegments(this string source,
+	public static IEnumerable<StringSegment> SplitAsSegments(
+		this string source,
 		string splitSequence,
 		StringSplitOptions options = StringSplitOptions.None,
 		StringComparison comparisonType = StringComparison.Ordinal)
@@ -397,6 +401,7 @@ public static partial class TextExtensions
 
 	}
 
+	/// <inheritdoc cref="SplitAsSegments(string, string, StringSplitOptions, StringComparison)"/>
 	public static IEnumerable<StringSegment> Split(
 		this StringSegment source,
 		StringSegment splitSequence,
@@ -481,6 +486,103 @@ public static partial class TextExtensions
 
 	}
 
+	/// <summary>
+	/// Joins a sequence of segments with a separator sequence.
+	/// </summary>
+	/// <param name="source">The segments to join.</param>
+	/// <param name="between">The segment to place between each segment.</param>
+	/// <returns>An IEnumerable&lt;StringSegment&gt; of the segments.</returns>
+	/// <exception cref="ArgumentNullException">The source is null.</exception>
+	public static IEnumerable<StringSegment> Join(this IEnumerable<StringSegment> source, StringSegment between)
+	{
+		if (source is null) throw new ArgumentNullException(nameof(source));
+		using var e = source.GetEnumerator();
+		var ok = e.MoveNext();
+		Debug.Assert(ok);
+		var c = e.Current;
+		if (c.Length != 0) yield return c;
+		while (e.MoveNext())
+		{
+			if(between.HasValue) yield return between;
+			c = e.Current;
+			if (c.Length != 0) yield return c;
+		}
+	}
+
+
+	/// <summary>
+	/// Joins a sequence of segments with an optional separator sequence.
+	/// </summary>
+	/// <returns>A StringBuilder of the segments.</returns>
+	/// <inheritdoc cref="Join(IEnumerable{StringSegment}, StringSegment)"/>
+	public static StringBuilder JoinToStringBuilder(this IEnumerable<StringSegment> source, StringSegment between = default)
+	{
+		var sb = new StringBuilder();
+		foreach (var segment in Join(source, between))
+			sb.Append((object)segment);
+		return sb;
+	}
+
+	/// <returns>A joined string of the segments.</returns>
+	/// <inheritdoc cref="JoinToStringBuilder(IEnumerable{StringSegment}, StringSegment)"/>
+	public static string JoinToString(this IEnumerable<StringSegment> source, StringSegment between = default)
+		=> JoinToStringBuilder(source, between).ToString();
+
+	/// <summary>
+	/// Splits a sequence and replaces the removed sequendces with the replacement sequence.
+	/// </summary>
+	/// <inheritdoc cref="SplitAsSegments(string, string, StringSplitOptions, StringComparison)"/>
+	public static IEnumerable<StringSegment> Replace(
+		this StringSegment source,
+		StringSegment splitSequence,
+		StringSegment replacement,
+		StringComparison comparisonType = StringComparison.Ordinal)
+		=> Join(Split(source, splitSequence, comparisonType: comparisonType), replacement);
+
+	/// <returns>The resultant string.</returns>
+	/// <inheritdoc cref="Replace(StringSegment, StringSegment, StringSegment, StringComparison)"/>
+	public static string ReplaceToString(this StringSegment source,
+		StringSegment splitSequence,
+		StringSegment replacement,
+		StringComparison comparisonType = StringComparison.Ordinal)
+		=> JoinToString(Split(source, splitSequence, comparisonType: comparisonType), replacement);
+
+
+	/// <inheritdoc cref="Replace(StringSegment, StringSegment, StringSegment, StringComparison)"/>
+	public static IEnumerable<StringSegment> ReplaceAsSegments(
+		this string source,
+		Regex splitSequence,
+		StringSegment replacement)
+		=> Join(Split(source, splitSequence), replacement);
+
+	/// <inheritdoc cref="Replace(StringSegment, StringSegment, StringSegment, StringComparison)"/>
+	public static IEnumerable<StringSegment> ReplaceAsSegments(
+		this string source,
+		StringSegment splitSequence,
+		StringSegment replacement,
+		StringComparison comparisonType = StringComparison.Ordinal)
+		=> Replace(source, splitSequence, replacement, comparisonType);
+
+	/// <summary>
+	/// Splits each sequence and replaces the removed sequendces with the replacement sequence.
+	/// </summary>
+	/// <inheritdoc cref="SplitAsSegments(string, string, StringSplitOptions, StringComparison)"/>
+	public static IEnumerable<StringSegment> ReplaceEach(
+		this IEnumerable<StringSegment> source,
+		StringSegment splitSequence,
+		StringSegment replacement,
+		StringComparison comparisonType = StringComparison.Ordinal)
+	{
+		if (source is null) throw new ArgumentNullException(nameof(source));
+
+		// Instead of source.SelectMany(s => s.Replace(splitSequence, replacement, comparisonType));
+		// we manually yield to reduce allocations.
+		foreach (var s in source)
+		{
+			foreach (var e in Replace(s, splitSequence, replacement, comparisonType))
+				yield return e;
+		}
+	}
 
 	/// <inheritdoc cref="Preceding(StringSegment, int, bool)"/>
 	public static StringSegment Preceding(this StringSegment source, bool includeSegment = false)

@@ -200,14 +200,15 @@ public static partial class TextExtensions
 	}
 
 	/// <summary>
-	/// Enumerates a string by segments that are separated by the split character.
+	/// Enumerates a string by segments that are separated by the split sequence.
 	/// </summary>
 	/// <param name="source">The source characters to look through.</param>
 	/// <param name="splitSequence">The sequence to find.</param>
 	/// <param name="options">Can specify to omit empty entries.</param>
 	/// <param name="comparisonType">The string comparison type to use.</param>
-	/// <returns>The portion of the source up to and excluding the sequence searched for.</returns>
-	public static IEnumerable<string> SplitToEnumerable(this string source,
+	/// <returns>An IEnumerable&lt;string&gt; of the segments.</returns>
+	public static IEnumerable<string> SplitToEnumerable(
+		this string source,
 		string splitSequence,
 		StringSplitOptions options = StringSplitOptions.None,
 		StringComparison comparisonType = StringComparison.Ordinal)
@@ -253,8 +254,10 @@ public static partial class TextExtensions
 		}
 	}
 
+	/// <returns>An IEnumerable&lt;ReadOnlyMemory&lt;char&gt;&gt; of the segments.</returns>
 	/// <inheritdoc cref="SplitToEnumerable(string, char, StringSplitOptions)" />
-	public static IEnumerable<ReadOnlyMemory<char>> SplitAsMemory(this string source,
+	public static IEnumerable<ReadOnlyMemory<char>> SplitAsMemory(
+		this string source,
 		char splitCharacter,
 		StringSplitOptions options = StringSplitOptions.None)
 	{
@@ -296,7 +299,7 @@ public static partial class TextExtensions
 		}
 	}
 
-
+	/// <returns>An IEnumerable&lt;ReadOnlyMemory&lt;char&gt;&gt; of the segments.</returns>
 	/// <inheritdoc cref="SplitToEnumerable(string, string, StringSplitOptions, StringComparison)"/>
 	public static IEnumerable<ReadOnlyMemory<char>> SplitAsMemory(this string source,
 		string splitSequence,

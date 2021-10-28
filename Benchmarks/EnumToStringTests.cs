@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 
 namespace Open.Text.Benchmarks;
 
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Benchmarking.")]
 public class EnumToStringTests
 {
 	static readonly ImmutableArray<Greek> Values = Enum.GetValues(typeof(Greek)).Cast<Greek>().ToImmutableArray();

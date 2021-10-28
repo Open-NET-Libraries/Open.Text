@@ -333,18 +333,20 @@
         </member>
         <member name="M:Open.Text.TextExtensions.SplitToEnumerable(System.String,System.String,System.StringSplitOptions,System.StringComparison)">
             <summary>
-            Enumerates a string by segments that are separated by the split character.
+            Enumerates a string by segments that are separated by the split sequence.
             </summary>
             <param name="source">The source characters to look through.</param>
             <param name="splitSequence">The sequence to find.</param>
             <param name="options">Can specify to omit empty entries.</param>
             <param name="comparisonType">The string comparison type to use.</param>
-            <returns>The portion of the source up to and excluding the sequence searched for.</returns>
+            <returns>An IEnumerable&lt;string&gt; of the segments.</returns>
         </member>
         <member name="M:Open.Text.TextExtensions.SplitAsMemory(System.String,System.Char,System.StringSplitOptions)">
+            <returns>An IEnumerable&lt;ReadOnlyMemory&lt;char&gt;&gt; of the segments.</returns>
             <inheritdoc cref="M:Open.Text.TextExtensions.SplitToEnumerable(System.String,System.Char,System.StringSplitOptions)" />
         </member>
         <member name="M:Open.Text.TextExtensions.SplitAsMemory(System.String,System.String,System.StringSplitOptions,System.StringComparison)">
+            <returns>An IEnumerable&lt;ReadOnlyMemory&lt;char&gt;&gt; of the segments.</returns>
             <inheritdoc cref="M:Open.Text.TextExtensions.SplitToEnumerable(System.String,System.String,System.StringSplitOptions,System.StringComparison)"/>
         </member>
         <member name="M:Open.Text.TextExtensions.Split(System.ReadOnlySpan{System.Char},System.Char,System.StringSplitOptions)">
@@ -439,7 +441,7 @@
             <param name="segment">The source segment to seek through.</param>
             <param name="value">The segment to look for.</param>
             <param name="startIndex">The search starting position.</param>
-            <param name="comparison">One of the enumeration values that specifies the rules for the search.</param>
+            <param name="comparisonType">One of the enumeration values that specifies the rules for the search.</param>
             <exception cref="T:System.ArgumentOutOfRangeException">If start index is less than zero.</exception>
         </member>
         <member name="M:Open.Text.TextExtensions.IndexOf(Microsoft.Extensions.Primitives.StringSegment,Microsoft.Extensions.Primitives.StringSegment,System.StringComparison)">
@@ -458,7 +460,53 @@
             <returns>An enumerable of the segments.</returns>
         </member>
         <member name="M:Open.Text.TextExtensions.SplitAsSegments(System.String,System.String,System.StringSplitOptions,System.StringComparison)">
+            <returns>An IEnumerable&lt;StringSegment&gt; of the segments.</returns>
             <inheritdoc cref="M:Open.Text.TextExtensions.SplitToEnumerable(System.String,System.String,System.StringSplitOptions,System.StringComparison)"/>
+        </member>
+        <member name="M:Open.Text.TextExtensions.Split(Microsoft.Extensions.Primitives.StringSegment,Microsoft.Extensions.Primitives.StringSegment,System.StringSplitOptions,System.StringComparison)">
+            <inheritdoc cref="M:Open.Text.TextExtensions.SplitAsSegments(System.String,System.String,System.StringSplitOptions,System.StringComparison)"/>
+        </member>
+        <member name="M:Open.Text.TextExtensions.Join(System.Collections.Generic.IEnumerable{Microsoft.Extensions.Primitives.StringSegment},Microsoft.Extensions.Primitives.StringSegment)">
+            <summary>
+            Joins a sequence of segments with a separator sequence.
+            </summary>
+            <param name="source">The segments to join.</param>
+            <param name="between">The segment to place between each segment.</param>
+            <returns>An IEnumerable&lt;StringSegment&gt; of the segments.</returns>
+            <exception cref="T:System.ArgumentNullException">The source is null.</exception>
+        </member>
+        <member name="M:Open.Text.TextExtensions.JoinToStringBuilder(System.Collections.Generic.IEnumerable{Microsoft.Extensions.Primitives.StringSegment},Microsoft.Extensions.Primitives.StringSegment)">
+            <summary>
+            Joins a sequence of segments with an optional separator sequence.
+            </summary>
+            <returns>A StringBuilder of the segments.</returns>
+            <inheritdoc cref="M:Open.Text.TextExtensions.Join(System.Collections.Generic.IEnumerable{Microsoft.Extensions.Primitives.StringSegment},Microsoft.Extensions.Primitives.StringSegment)"/>
+        </member>
+        <member name="M:Open.Text.TextExtensions.JoinToString(System.Collections.Generic.IEnumerable{Microsoft.Extensions.Primitives.StringSegment},Microsoft.Extensions.Primitives.StringSegment)">
+            <returns>A joined string of the segments.</returns>
+            <inheritdoc cref="M:Open.Text.TextExtensions.JoinToStringBuilder(System.Collections.Generic.IEnumerable{Microsoft.Extensions.Primitives.StringSegment},Microsoft.Extensions.Primitives.StringSegment)"/>
+        </member>
+        <member name="M:Open.Text.TextExtensions.Replace(Microsoft.Extensions.Primitives.StringSegment,Microsoft.Extensions.Primitives.StringSegment,Microsoft.Extensions.Primitives.StringSegment,System.StringComparison)">
+            <summary>
+            Splits a sequence and replaces the removed sequendces with the replacement sequence.
+            </summary>
+            <inheritdoc cref="M:Open.Text.TextExtensions.SplitAsSegments(System.String,System.String,System.StringSplitOptions,System.StringComparison)"/>
+        </member>
+        <member name="M:Open.Text.TextExtensions.ReplaceToString(Microsoft.Extensions.Primitives.StringSegment,Microsoft.Extensions.Primitives.StringSegment,Microsoft.Extensions.Primitives.StringSegment,System.StringComparison)">
+            <returns>The resultant string.</returns>
+            <inheritdoc cref="M:Open.Text.TextExtensions.Replace(Microsoft.Extensions.Primitives.StringSegment,Microsoft.Extensions.Primitives.StringSegment,Microsoft.Extensions.Primitives.StringSegment,System.StringComparison)"/>
+        </member>
+        <member name="M:Open.Text.TextExtensions.ReplaceAsSegments(System.String,System.Text.RegularExpressions.Regex,Microsoft.Extensions.Primitives.StringSegment)">
+            <inheritdoc cref="M:Open.Text.TextExtensions.Replace(Microsoft.Extensions.Primitives.StringSegment,Microsoft.Extensions.Primitives.StringSegment,Microsoft.Extensions.Primitives.StringSegment,System.StringComparison)"/>
+        </member>
+        <member name="M:Open.Text.TextExtensions.ReplaceAsSegments(System.String,Microsoft.Extensions.Primitives.StringSegment,Microsoft.Extensions.Primitives.StringSegment,System.StringComparison)">
+            <inheritdoc cref="M:Open.Text.TextExtensions.Replace(Microsoft.Extensions.Primitives.StringSegment,Microsoft.Extensions.Primitives.StringSegment,Microsoft.Extensions.Primitives.StringSegment,System.StringComparison)"/>
+        </member>
+        <member name="M:Open.Text.TextExtensions.ReplaceEach(System.Collections.Generic.IEnumerable{Microsoft.Extensions.Primitives.StringSegment},Microsoft.Extensions.Primitives.StringSegment,Microsoft.Extensions.Primitives.StringSegment,System.StringComparison)">
+            <summary>
+            Splits each sequence and replaces the removed sequendces with the replacement sequence.
+            </summary>
+            <inheritdoc cref="M:Open.Text.TextExtensions.SplitAsSegments(System.String,System.String,System.StringSplitOptions,System.StringComparison)"/>
         </member>
         <member name="M:Open.Text.TextExtensions.Preceding(Microsoft.Extensions.Primitives.StringSegment,System.Boolean)">
             <inheritdoc cref="M:Open.Text.TextExtensions.Preceding(Microsoft.Extensions.Primitives.StringSegment,System.Int32,System.Boolean)"/>
@@ -1067,15 +1115,6 @@
         <member name="M:Open.Text.StringBuilderExtensions.Append(System.Text.StringBuilder,System.ReadOnlySpan{System.Char})">
             <summary>
             Appends the string representation of a specified read-only character span to this instance.
-            </summary>
-            <param name="target">The StringBuilder to append to.</param>
-            <param name="value">The read-only character span to append.</param>
-            <returns>A reference to this instance after the append operation is completed.</returns>
-            <exception cref="T:System.ArgumentNullException">If the target is null.</exception>
-        </member>
-        <member name="M:Open.Text.StringBuilderExtensions.Append(System.Text.StringBuilder,Microsoft.Extensions.Primitives.StringSegment)">
-            <summary>
-            Appends the string representation of a specified StringSegment to this instance.
             </summary>
             <param name="target">The StringBuilder to append to.</param>
             <param name="value">The read-only character span to append.</param>
