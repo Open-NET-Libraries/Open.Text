@@ -430,6 +430,21 @@
         <member name="M:Open.Text.TextExtensions.Last(Microsoft.Extensions.Primitives.StringSegment,System.String,System.StringComparison)">
             <inheritdoc cref="M:Open.Text.TextExtensions.Last(System.String,System.String,System.StringComparison)" />
         </member>
+        <member name="M:Open.Text.TextExtensions.IndexOf(Microsoft.Extensions.Primitives.StringSegment,Microsoft.Extensions.Primitives.StringSegment,System.Int32,System.StringComparison)">
+            <summary>
+            Reports the zero-based index of the first occurrence of the specified string
+            in the current System.String object. Parameters specify the starting search position
+            in the current string and the type of search to use for the specified string.
+            </summary>
+            <param name="segment">The source segment to seek through.</param>
+            <param name="value">The segment to look for.</param>
+            <param name="startIndex">The search starting position.</param>
+            <param name="comparison">One of the enumeration values that specifies the rules for the search.</param>
+            <exception cref="T:System.ArgumentOutOfRangeException">If start index is less than zero.</exception>
+        </member>
+        <member name="M:Open.Text.TextExtensions.IndexOf(Microsoft.Extensions.Primitives.StringSegment,Microsoft.Extensions.Primitives.StringSegment,System.StringComparison)">
+            <inheritdoc cref="M:Open.Text.TextExtensions.IndexOf(Microsoft.Extensions.Primitives.StringSegment,Microsoft.Extensions.Primitives.StringSegment,System.Int32,System.StringComparison)"/>
+        </member>
         <member name="M:Open.Text.TextExtensions.SplitAsSegments(System.String,System.Char,System.StringSplitOptions)">
             <inheritdoc cref="M:Open.Text.TextExtensions.SplitToEnumerable(System.String,System.Char,System.StringSplitOptions)"/>
         </member>
@@ -1048,6 +1063,15 @@
             <summary>
             Appends a key/value pair to StringBuilder using the provided separators.
             </summary>
+        </member>
+        <member name="M:Open.Text.StringBuilderExtensions.Append(System.Text.StringBuilder,System.ReadOnlySpan{System.Char})">
+            <summary>
+            Appends the string representation of a specified read-only character span to this instance.
+            </summary>
+            <param name="target">The StringBuilder to append to.</param>
+            <param name="value">The read-only character span to append.</param>
+            <returns>A reference to this instance after the append operation is completed.</returns>
+            <exception cref="T:System.ArgumentNullException">If the target is null.</exception>
         </member>
         <member name="M:Open.Text.StringBuilderExtensions.Append(System.Text.StringBuilder,Microsoft.Extensions.Primitives.StringSegment)">
             <summary>

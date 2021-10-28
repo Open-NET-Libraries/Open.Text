@@ -95,6 +95,10 @@ namespace Open.Text.Tests
 				.ValidAlphaNumericOnlyPattern
 				.AsSegments(sequence)
 				.Select(m => m.Value));
+
+			var ss = sequence.AsSegment().Split(",", options).Select(s=>s.Value).ToArray();
+			Assert.Equal(segments, ss);
+
 		}
 
 		[Theory]

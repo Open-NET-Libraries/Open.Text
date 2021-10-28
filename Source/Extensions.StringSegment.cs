@@ -156,6 +156,52 @@ public static partial class TextExtensions
 		return Last(source, search.AsSpan(), comparisonType);
 	}
 
+	/// <summary>
+	/// Reports the zero-based index of the first occurrence of the specified string
+	/// in the current System.String object. Parameters specify the starting search position
+	/// in the current string and the type of search to use for the specified string.
+	/// </summary>
+	/// <param name="segment">The source segment to seek through.</param>
+	/// <param name="value">The segment to look for.</param>
+	/// <param name="startIndex">The search starting position.</param>
+	/// <param name="comparison">One of the enumeration values that specifies the rules for the search.</param>
+	/// <exception cref="ArgumentOutOfRangeException">If start index is less than zero.</exception>
+	public static int IndexOf(
+		this StringSegment segment,
+		StringSegment value,
+		int startIndex = 0,
+		StringComparison comparison = StringComparison.Ordinal)
+	{
+		if (startIndex < 0) throw new ArgumentOutOfRangeException(nameof(startIndex), startIndex, "Must be at least zero.");
+
+		var len = value.Length;
+		if (len==0 || startIndex + len > segment.Length) return -1;
+		if (startIndex == 0 && len == segment.Length)
+			return segment.Equals(value, comparison) ? 0 : -1;
+
+		if (comparison == StringComparison.Ordinal)
+		{
+			startIndex = segment.IndexOf(value[0], startIndex);
+			if (startIndex == -1) return -1;
+		}
+
+		var max = segment.Length - len;
+		for (var i = startIndex; i <= max; i++)
+		{
+			if(segment.Subsegment(i, len).Equals(value, comparison))
+				return i;
+		}
+
+		return -1;
+	}
+
+	/// <inheritdoc cref="IndexOf(StringSegment, StringSegment, int, StringComparison)"/>
+	public static int IndexOf(
+		this StringSegment segment,
+		StringSegment value,
+		StringComparison comparison = StringComparison.Ordinal)
+		=> IndexOf(segment, value, 0, comparison);
+
 	/// <inheritdoc cref="SplitToEnumerable(string, char, StringSplitOptions)"/>
 	public static IEnumerable<StringSegment> SplitAsSegments(this string source,
 		char splitCharacter,
@@ -342,6 +388,90 @@ public static partial class TextExtensions
 				{
 					var length = nextIndex - startIndex;
 					if (length != 0) yield return new(source, startIndex, length);
+					nextIndex += s;
+				}
+				startIndex = nextIndex;
+			}
+			while (startIndex != len);
+		}
+
+	}
+
+	public static IEnumerable<StringSegment> Split(
+		this StringSegment source,
+		StringSegment splitSequence,
+		StringSplitOptions options = StringSplitOptions.None,
+		StringComparison comparisonType = StringComparison.Ordinal)
+	{
+		if (splitSequence.Length == 0)
+			throw new ArgumentException("Cannot split using empty sequence.", nameof(splitSequence));
+		Contract.EndContractBlock();
+
+		return options switch
+		{
+			StringSplitOptions.None => source.Length == 0
+				? Enumerable.Repeat(StringSegment.Empty, 1)
+				: SplitAsSegmentsCore(source, splitSequence, comparisonType),
+			StringSplitOptions.RemoveEmptyEntries => source.Length == 0
+				? Enumerable.Empty<StringSegment>()
+				: SplitAsSegmentsCoreOmitEmpty(source, splitSequence, comparisonType),
+			_ => throw new System.ComponentModel.InvalidEnumArgumentException(),
+		};
+
+		static IEnumerable<StringSegment> SplitAsSegmentsCore(
+			StringSegment source,
+			StringSegment splitSequence,
+			StringComparison comparisonType = StringComparison.Ordinal)
+		{
+			var startIndex = 0;
+			var len = source.Length;
+			var s = splitSequence.Length;
+
+		loop:
+			var nextIndex = source.IndexOf(splitSequence, startIndex, comparisonType);
+			if (nextIndex == -1)
+			{
+				yield return source.Subsegment(startIndex);
+				yield break;
+			}
+			else if (nextIndex == len)
+			{
+				yield return source.Subsegment(nextIndex, 0);
+				yield break;
+			}
+			else
+			{
+				yield return source.Subsegment(startIndex, nextIndex - startIndex);
+				nextIndex += s;
+			}
+			startIndex = nextIndex;
+			goto loop;
+		}
+
+		static IEnumerable<StringSegment> SplitAsSegmentsCoreOmitEmpty(
+			StringSegment source,
+			StringSegment splitSequence,
+			StringComparison comparisonType = StringComparison.Ordinal)
+		{
+			var startIndex = 0;
+			var len = source.Length;
+			var s = splitSequence.Length;
+
+			do
+			{
+				var nextIndex = source.IndexOf(splitSequence, startIndex, comparisonType);
+				if (nextIndex == len)
+					yield break;
+
+				if (nextIndex == -1)
+				{
+					yield return source.Subsegment(startIndex);
+					yield break;
+				}
+				else
+				{
+					var length = nextIndex - startIndex;
+					if (length != 0) yield return source.Subsegment(startIndex, length);
 					nextIndex += s;
 				}
 				startIndex = nextIndex;
