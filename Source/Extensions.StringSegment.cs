@@ -519,7 +519,7 @@ public static partial class TextExtensions
 	{
 		var sb = new StringBuilder();
 		foreach (var segment in Join(source, between))
-			sb.Append((object)segment);
+			sb.Append(segment.AsSpan());
 		return sb;
 	}
 
