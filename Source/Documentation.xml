@@ -369,7 +369,10 @@
             <returns>The resultant list of string segments.</returns>
         </member>
         <member name="M:Open.Text.TextExtensions.AsSegment(System.String)">
-            <inheritdoc cref="M:Open.Text.TextExtensions.AsSegment(System.String,System.Int32,System.Int32)"/>
+            <summary>
+            Creates a StringSegment representing the provided string.
+            </summary>
+            <param name="buffer">The string the segment belongs to.</param>
         </member>
         <member name="M:Open.Text.TextExtensions.AsSegment(System.String,System.Int32)">
             <inheritdoc cref="M:Open.Text.TextExtensions.AsSegment(System.String,System.Int32,System.Int32)"/>
@@ -394,6 +397,10 @@
             The segment representing the found string.
             If not found, the StringSegment.IsValid property will be false.
             </returns>
+        </member>
+        <member name="M:Open.Text.TextExtensions.TrimAsSegment(System.String)">
+            <summary>Shortcut for .AsSegment().Trim().</summary>
+            <inheritdoc cref="M:Open.Text.TextExtensions.AsSegment(System.String)"/>
         </member>
         <member name="M:Open.Text.TextExtensions.First(System.String,System.Text.RegularExpressions.Regex)">
             <summary>
@@ -1284,6 +1291,19 @@
             <inheritdoc cref="M:Open.Text.StringComparableExtensions.AsCaseInsensitive(System.String)"/>
         </member>
         <member name="M:Open.Text.StringComparableExtensions.AsCurrentCulture(Microsoft.Extensions.Primitives.StringSegment)">
+            <summary>
+            Prepares a StringSegment to be current culture and case sensitive when comparing equality.
+            </summary>
+            <inheritdoc cref="M:Open.Text.StringComparableExtensions.AsCaseInsensitive(System.String)"/>
+        </member>
+        <member name="M:Open.Text.StringComparableExtensions.AsInvariantCulture(Microsoft.Extensions.Primitives.StringSegment)">
+            <summary>
+            Prepares a StringSegment to be invariant culture and case sensitive when comparing equality.
+            </summary>
+        </member>
+    </members>
+</doc>
+(Microsoft.Extensions.Primitives.StringSegment)">
             <summary>
             Prepares a StringSegment to be current culture and case sensitive when comparing equality.
             </summary>
