@@ -13,7 +13,10 @@ public static partial class TextExtensions
 {
 	private const string MustBeSegmentWithValue = "Must be a StringSegment that has a value (is not null).";
 
-	/// <inheritdoc cref="AsSegment(string, int, int)"/>
+	/// <summary>
+	/// Creates a StringSegment representing the provided string.
+	/// </summary>
+	/// <param name="buffer">The string the segment belongs to.</param>
 	public static StringSegment AsSegment(this string buffer)
 		=> buffer is null ? default : new(buffer);
 
@@ -59,6 +62,11 @@ public static partial class TextExtensions
 		var i = source.IndexOf(search, comparisonType);
 		return i == -1 ? default : new(source, i, search.Length);
 	}
+
+	/// <summary>Shortcut for .AsSegment().Trim().</summary>
+	/// <inheritdoc cref="AsSegment(string)"/>
+	public static StringSegment TrimAsSegment(this string buffer)
+		=> buffer is null ? default : new StringSegment(buffer).Trim();
 
 	/// <summary>
 	/// Finds the first instance of a pattern and returns a StringSegment for subsequent use.
