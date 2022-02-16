@@ -211,6 +211,13 @@ public static partial class TextExtensions
 		StringComparison comparisonType = StringComparison.Ordinal)
 		=> IndexOf(segment, value, 0, comparisonType);
 
+	/// <inheritdoc cref="IndexOf(StringSegment, StringSegment, int, StringComparison)"/>
+	public static int IndexOf(
+		this string segment,
+		StringSegment value,
+		StringComparison comparisonType = StringComparison.Ordinal)
+		=> IndexOf(segment.AsSegment(), value, 0, comparisonType);
+
 	/// <summary>
 	/// Checks if <paramref name="value"/> value is contained in the sequence using the comparison type.
 	/// </summary>
@@ -225,6 +232,12 @@ public static partial class TextExtensions
 		this StringSegment segment,
 		StringSegment value, StringComparison comparisonType = StringComparison.Ordinal)
 		=> segment.IndexOf(value, comparisonType) != -1;
+
+	/// <inheritdoc cref="Contains(StringSegment, string, StringComparison)"/>
+	public static bool Contains(
+		this string segment,
+		StringSegment value, StringComparison comparisonType = StringComparison.Ordinal)
+		=> segment.AsSegment().IndexOf(value, comparisonType) != -1;
 
 	/// <inheritdoc cref="SplitToEnumerable(string, char, StringSplitOptions)"/>
 	public static IEnumerable<StringSegment> SplitAsSegments(this string source,

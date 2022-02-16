@@ -454,6 +454,15 @@
         <member name="M:Open.Text.TextExtensions.IndexOf(Microsoft.Extensions.Primitives.StringSegment,Microsoft.Extensions.Primitives.StringSegment,System.StringComparison)">
             <inheritdoc cref="M:Open.Text.TextExtensions.IndexOf(Microsoft.Extensions.Primitives.StringSegment,Microsoft.Extensions.Primitives.StringSegment,System.Int32,System.StringComparison)"/>
         </member>
+        <member name="M:Open.Text.TextExtensions.Contains(Microsoft.Extensions.Primitives.StringSegment,System.String,System.StringComparison)">
+            <summary>
+            Checks if <paramref name="value"/> value is contained in the sequence using the comparison type.
+            </summary>
+            <returns>true if the value of <paramref name="value"/> is contained (using the comparison type); otherwise false. </returns>
+        </member>
+        <member name="M:Open.Text.TextExtensions.Contains(Microsoft.Extensions.Primitives.StringSegment,Microsoft.Extensions.Primitives.StringSegment,System.StringComparison)">
+            <inheritdoc cref="M:Open.Text.TextExtensions.Contains(Microsoft.Extensions.Primitives.StringSegment,System.String,System.StringComparison)"/>
+        </member>
         <member name="M:Open.Text.TextExtensions.SplitAsSegments(System.String,System.Char,System.StringSplitOptions)">
             <inheritdoc cref="M:Open.Text.TextExtensions.SplitToEnumerable(System.String,System.Char,System.StringSplitOptions)"/>
         </member>
@@ -1300,19 +1309,6 @@
             <inheritdoc cref="M:Open.Text.StringComparableExtensions.AsCaseInsensitive(System.String)"/>
         </member>
         <member name="M:Open.Text.StringComparableExtensions.AsCurrentCulture(Microsoft.Extensions.Primitives.StringSegment)">
-            <summary>
-            Prepares a StringSegment to be current culture and case sensitive when comparing equality.
-            </summary>
-            <inheritdoc cref="M:Open.Text.StringComparableExtensions.AsCaseInsensitive(System.String)"/>
-        </member>
-        <member name="M:Open.Text.StringComparableExtensions.AsInvariantCulture(Microsoft.Extensions.Primitives.StringSegment)">
-            <summary>
-            Prepares a StringSegment to be invariant culture and case sensitive when comparing equality.
-            </summary>
-        </member>
-    </members>
-</doc>
-(Microsoft.Extensions.Primitives.StringSegment)">
             <summary>
             Prepares a StringSegment to be current culture and case sensitive when comparing equality.
             </summary>
