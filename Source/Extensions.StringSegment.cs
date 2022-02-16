@@ -208,7 +208,7 @@ public static partial class TextExtensions
 	public static int IndexOf(
 		this StringSegment segment,
 		StringSegment value,
-		StringComparison comparisonType = StringComparison.Ordinal)
+		StringComparison comparisonType)
 		=> IndexOf(segment, value, 0, comparisonType);
 
 	/// <inheritdoc cref="IndexOf(StringSegment, StringSegment, int, StringComparison)"/>
