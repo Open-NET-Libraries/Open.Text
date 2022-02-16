@@ -1175,6 +1175,15 @@
             </summary>
             <returns>true if the value of <paramref name="obj"/> matches; otherwise false. </returns>
         </member>
+        <member name="M:Open.Text.StringComparable.Contains(System.String)">
+            <summary>
+            Checks if <paramref name="value"/> value is contained in the sequence using the comparison type.
+            </summary>
+            <returns>true if the value of <paramref name="value"/> is contained (using the comparison type); otherwise false. </returns>
+        </member>
+        <member name="M:Open.Text.StringComparable.Contains(Microsoft.Extensions.Primitives.StringSegment)">
+            <inheritdoc cref="M:Open.Text.StringComparable.Contains(System.String)"/>
+        </member>
         <member name="M:Open.Text.StringComparable.GetHashCode">
             <inheritdoc />
         </member>

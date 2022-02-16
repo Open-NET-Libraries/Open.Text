@@ -82,6 +82,17 @@ public readonly struct StringComparable
 		_ => false
 	};
 
+	/// <summary>
+	/// Checks if <paramref name="value"/> value is contained in the sequence using the comparison type.
+	/// </summary>
+	/// <returns>true if the value of <paramref name="value"/> is contained (using the comparison type); otherwise false. </returns>
+	public bool Contains(string value)
+		=> Segment.Contains(value, Type);
+
+	/// <inheritdoc cref="Contains(string)"/>
+	public bool Contains(StringSegment value)
+		=> Segment.Contains(value, Type);
+
 	/// <inheritdoc />
 #if NETSTANDARD2_1_OR_GREATER
 	public override int GetHashCode()
