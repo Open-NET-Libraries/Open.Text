@@ -17,11 +17,11 @@ public static partial class TextExtensions
 		if (other is null) return false;
 		var len = source.Length;
 		return len == other.Length && len switch
-        {
-            0 => true,
-            1 when stringComparison == StringComparison.Ordinal => source[0] == other[0],
-            _ => source.Equals(other.AsSpan(), stringComparison),
-        };
+		{
+			0 => true,
+			1 when stringComparison == StringComparison.Ordinal => source[0] == other[0],
+			_ => source.Equals(other.AsSpan(), stringComparison),
+		};
 	}
 
 	/// <inheritdoc cref="Equals(ReadOnlySpan{char}, string?, StringComparison)"/>
@@ -30,11 +30,11 @@ public static partial class TextExtensions
 		if (other is null) return false;
 		var len = source.Length;
 		return len == other.Length && len switch
-        {
-            0 => true,
-            1 when stringComparison == StringComparison.Ordinal => source[0] == other[0],
-            _ => MemoryExtensions.Equals(source, other.AsSpan(), stringComparison)
-        };
+		{
+			0 => true,
+			1 when stringComparison == StringComparison.Ordinal => source[0] == other[0],
+			_ => MemoryExtensions.Equals(source, other.AsSpan(), stringComparison)
+		};
 	}
 
 	/// <summary>
@@ -48,11 +48,11 @@ public static partial class TextExtensions
 	{
 		var len = source.Length;
 		return len == other.Length && len switch
-        {
-            0 => true,
-            1 when stringComparison == StringComparison.Ordinal => source[0] == other[0],
-            _ => MemoryExtensions.Equals(source, other, stringComparison)
-        };
+		{
+			0 => true,
+			1 when stringComparison == StringComparison.Ordinal => source[0] == other[0],
+			_ => MemoryExtensions.Equals(source, other, stringComparison)
+		};
 	}
 
 	/// <inheritdoc cref="Equals(Span{char}, ReadOnlySpan{char}, StringComparison)" />
@@ -60,11 +60,11 @@ public static partial class TextExtensions
 	{
 		var len = source.Length;
 		return len == other.Length && len switch
-        {
-            0 => true,
-            1 when stringComparison == StringComparison.Ordinal => source[0] == other[0],
-            _ => MemoryExtensions.Equals(source, other, stringComparison)
-        };
+		{
+			0 => true,
+			1 when stringComparison == StringComparison.Ordinal => source[0] == other[0],
+			_ => MemoryExtensions.Equals(source, other, stringComparison)
+		};
 	}
 
 	/// <summary>
@@ -79,11 +79,11 @@ public static partial class TextExtensions
 		if (source is null) return false;
 		var len = source.Length;
 		return len == other.Length && len switch
-        {
-            0 => true,
-            1 when stringComparison == StringComparison.Ordinal => source[0] == other[0],
-            _ => source.AsSpan().Equals(other, stringComparison),
-        };
+		{
+			0 => true,
+			1 when stringComparison == StringComparison.Ordinal => source[0] == other[0],
+			_ => source.AsSpan().Equals(other, stringComparison),
+		};
 	}
 
 	/// <inheritdoc cref="Equals(string, ReadOnlySpan{char}, StringComparison)" />
@@ -92,11 +92,11 @@ public static partial class TextExtensions
 		if (source is null) return false;
 		var len = source.Length;
 		return len == other.Length && len switch
-        {
-            0 => true,
-            1 when stringComparison == StringComparison.Ordinal => source[0] == other[0],
-            _ => source.AsSpan().Equals(other, stringComparison),
-        };
+		{
+			0 => true,
+			1 when stringComparison == StringComparison.Ordinal => source[0] == other[0],
+			_ => source.AsSpan().Equals(other, stringComparison),
+		};
 	}
 
 	/// <inheritdoc cref="TrimmedEquals(string?, ReadOnlySpan{char}, char, StringComparison)"/>
@@ -108,11 +108,11 @@ public static partial class TextExtensions
 		var span = source.AsSpan().Trim();
 		slen = span.Length;
 		return slen == olen && slen switch
-        {
-            0 => true,
-            1 when stringComparison == StringComparison.Ordinal => span[0] == other[0],
-            _ => span.Equals(other, stringComparison),
-        };
+		{
+			0 => true,
+			1 when stringComparison == StringComparison.Ordinal => span[0] == other[0],
+			_ => span.Equals(other, stringComparison),
+		};
 	}
 
 	/// <inheritdoc cref="TrimmedEquals(string?, string?, char, StringComparison)"/>
@@ -125,11 +125,11 @@ public static partial class TextExtensions
 		var span = source.AsSpan().Trim();
 		slen = span.Length;
 		return slen == olen && slen switch
-        {
-            0 => true,
-            1 when stringComparison == StringComparison.Ordinal => span[0] == other[0],
-            _ => span.Equals(other.AsSpan(), stringComparison),
-        };
+		{
+			0 => true,
+			1 when stringComparison == StringComparison.Ordinal => span[0] == other[0],
+			_ => span.Equals(other.AsSpan(), stringComparison),
+		};
 	}
 
 	/// <param name="source">The source string to virtually trim.</param>
@@ -145,11 +145,11 @@ public static partial class TextExtensions
 		var span = source.AsSpan().Trim(trimChar);
 		slen = span.Length;
 		return slen == olen && slen switch
-        {
-            0 => true,
-            1 when stringComparison == StringComparison.Ordinal => span[0] == other[0],
-            _ => span.Equals(other, stringComparison),
-        };
+		{
+			0 => true,
+			1 when stringComparison == StringComparison.Ordinal => span[0] == other[0],
+			_ => span.Equals(other, stringComparison),
+		};
 	}
 
 	/// <param name="source">The source string to virtually trim.</param>
@@ -166,11 +166,11 @@ public static partial class TextExtensions
 		var span = source.AsSpan().Trim(trimChar);
 		slen = span.Length;
 		return slen == olen && slen switch
-        {
-            0 => true,
-            1 when stringComparison == StringComparison.Ordinal => span[0] == other[0],
-            _ => span.Equals(other.AsSpan(), stringComparison),
-        };
+		{
+			0 => true,
+			1 when stringComparison == StringComparison.Ordinal => span[0] == other[0],
+			_ => span.Equals(other.AsSpan(), stringComparison),
+		};
 	}
 
 	/// <summary>
@@ -189,11 +189,11 @@ public static partial class TextExtensions
 		var span = source.AsSpan().Trim(trimChars);
 		slen = span.Length;
 		return slen == olen && slen switch
-        {
-            0 => true,
-            1 when stringComparison == StringComparison.Ordinal => span[0] == other[0],
-            _ => span.Equals(other, stringComparison),
-        };
+		{
+			0 => true,
+			1 when stringComparison == StringComparison.Ordinal => span[0] == other[0],
+			_ => span.Equals(other, stringComparison),
+		};
 	}
 
 	/// <summary>
@@ -213,10 +213,10 @@ public static partial class TextExtensions
 		var span = source.AsSpan().Trim(trimChars);
 		slen = span.Length;
 		return slen == olen && slen switch
-        {
-            0 => true,
-            1 when stringComparison == StringComparison.Ordinal => span[0] == other[0],
-            _ => span.Equals(other.AsSpan(), stringComparison),
-        };
+		{
+			0 => true,
+			1 when stringComparison == StringComparison.Ordinal => span[0] == other[0],
+			_ => span.Equals(other.AsSpan(), stringComparison),
+		};
 	}
 }

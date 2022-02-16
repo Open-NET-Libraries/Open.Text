@@ -184,7 +184,7 @@ public static partial class TextExtensions
 		if (startIndex < 0) throw new ArgumentOutOfRangeException(nameof(startIndex), startIndex, "Must be at least zero.");
 
 		var len = value.Length;
-		if (len==0 || startIndex + len > segment.Length) return -1;
+		if (len == 0 || startIndex + len > segment.Length) return -1;
 		if (startIndex == 0 && len == segment.Length)
 			return segment.Equals(value, comparisonType) ? 0 : -1;
 
@@ -197,7 +197,7 @@ public static partial class TextExtensions
 		var max = segment.Length - len;
 		for (var i = startIndex; i <= max; i++)
 		{
-			if(segment.Subsegment(i, len).Equals(value, comparisonType))
+			if (segment.Subsegment(i, len).Equals(value, comparisonType))
 				return i;
 		}
 
@@ -223,7 +223,7 @@ public static partial class TextExtensions
 	/// </summary>
 	/// <returns>true if the value of <paramref name="value"/> is contained (using the comparison type); otherwise false. </returns>
 	public static bool Contains(
-		this StringSegment segment, 
+		this StringSegment segment,
 		string value, StringComparison comparisonType = StringComparison.Ordinal)
 		=> segment.IndexOf(value, comparisonType) != -1;
 
@@ -336,10 +336,10 @@ public static partial class TextExtensions
 		int len;
 		var nextStart = 0;
 		var match = pattern.Match(source);
-		while(match.Success)
+		while (match.Success)
 		{
 			len = match.Index - nextStart;
-			if (len != 0 || options==StringSplitOptions.None)
+			if (len != 0 || options == StringSplitOptions.None)
 				yield return new(source, nextStart, match.Index - nextStart);
 			nextStart = match.Index + match.Length;
 			match = match.NextMatch();
@@ -539,7 +539,7 @@ public static partial class TextExtensions
 		if (c.Length != 0) yield return c;
 		while (e.MoveNext())
 		{
-			if(between.HasValue) yield return between;
+			if (between.HasValue) yield return between;
 			c = e.Current;
 			if (c.Length != 0) yield return c;
 		}

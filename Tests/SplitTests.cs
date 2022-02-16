@@ -97,7 +97,7 @@ namespace Open.Text.Tests
 				.Select(m => m.Value));
 
 			var stringSegment = sequence.AsSegment();
-			var ss = stringSegment.Split(",", options).Select(s=>s.Value).ToArray();
+			var ss = stringSegment.Split(",", options).Select(s => s.Value).ToArray();
 			Assert.Equal(segments, ss);
 
 			if (options == StringSplitOptions.RemoveEmptyEntries) return;

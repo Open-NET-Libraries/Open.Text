@@ -163,7 +163,7 @@ public static partial class TextExtensions
 		StringSegment pattern,
 		StringComparison comparisonType = StringComparison.Ordinal,
 		int max = -1)
-		=> TrimStartPattern(source, pattern.AsSpan(), comparisonType, max);	
+		=> TrimStartPattern(source, pattern.AsSpan(), comparisonType, max);
 
 	/// <inheritdoc cref="TrimStartPattern(ReadOnlySpan{char}, ReadOnlySpan{char}, StringComparison, int)"/>
 	public static StringSegment TrimStartPattern(this string source,

@@ -40,7 +40,7 @@ namespace Open.Text.Tests
 			Assert.True(sB == cA);
 			Assert.True(sB == cB);
 
-			
+
 		}
 
 		[Theory]
