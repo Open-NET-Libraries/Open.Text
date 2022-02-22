@@ -110,7 +110,6 @@ public static class StringBuilderExtensions
 		return sb;
 	}
 
-
 	/// <inheritdoc cref="ToStringBuilder{T}(ReadOnlySpan{T}, string)" />
 	public static StringBuilder ToStringBuilder<T>(this Span<T> source, string? separator)
 	{
@@ -380,10 +379,13 @@ public static class StringBuilderExtensions
 		Contract.EndContractBlock();
 
 		if (source.TryGetValue(key, out var result))
+		{
 			target
 				.AppendWithSeparator(itemSeparator, key)
 				.Append(keyValueSeparator)
 				.Append<T>(result);
+		}
+
 		return target;
 	}
 

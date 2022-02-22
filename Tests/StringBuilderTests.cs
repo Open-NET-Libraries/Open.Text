@@ -41,11 +41,9 @@ namespace Open.Text.Tests
 				sb.AppendAll(a);
 				Assert.Equal(source, sb.ToString());
 
-
 				sb.Clear();
 				sb.AppendAll(a);
 				Assert.Equal(source, sb.ToString());
-
 			}
 
 			{
@@ -65,7 +63,6 @@ namespace Open.Text.Tests
 				sb.AppendAll(a);
 				Assert.Equal(source, sb.ToString());
 			}
-
 		}
 
 		[Theory]
@@ -139,9 +136,7 @@ namespace Open.Text.Tests
 				if (source.Length == 0) Assert.Equal(suffix, sb.ToString());
 				else Assert.Equal(source + separator + suffix, sb.ToString());
 			}
-
 		}
-
 
 		[Theory]
 		[InlineData("Hello there.", ", ")]
@@ -154,8 +149,8 @@ namespace Open.Text.Tests
 		{
 			if (source is null)
 			{
-				Assert.Throws<ArgumentNullException>(() => source!.ToStringBuilder(separator!));
-				Assert.Throws<ArgumentNullException>(() => default(StringBuilder)!.AppendAll(source, separator!));
+				Assert.Throws<ArgumentNullException>(() => source!.ToStringBuilder(separator));
+				Assert.Throws<ArgumentNullException>(() => default(StringBuilder)!.AppendAll(source, separator));
 				Assert.Equal("hello", new StringBuilder("hello").AppendAll(source, separator).ToString());
 				return;
 			}
@@ -216,8 +211,6 @@ namespace Open.Text.Tests
 				if (source.Length == 0) Assert.Equal(suffix, sb.ToString());
 				else Assert.Equal(source + separator + suffix, sb.ToString());
 			}
-
 		}
-
 	}
 }

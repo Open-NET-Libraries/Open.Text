@@ -27,6 +27,7 @@ namespace Open.Text.Tests
 		}
 
 		[Fact]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Roslynator", "RCS1196:Call extension method as instance method.", Justification = "Preferred.")]
 		public static void ThrowIfNull()
 		{
 			Assert.Throws<ArgumentNullException>(() => TextExtensions.FirstSplit(default!, ',', out _));
@@ -102,11 +103,10 @@ namespace Open.Text.Tests
 
 			if (options == StringSplitOptions.RemoveEmptyEntries) return;
 
-			var sep = " YES ";
+			const string sep = " YES ";
 			Assert.Equal(
 				string.Join(sep, segments),
 				stringSegment.ReplaceToString(",", sep));
-
 		}
 
 		[Theory]
@@ -124,6 +124,5 @@ namespace Open.Text.Tests
 			var span = sequence.AsSpan();
 			Assert.Equal(segments, span.Split(split, options, StringComparison.OrdinalIgnoreCase));
 		}
-
 	}
 }

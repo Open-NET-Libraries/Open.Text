@@ -60,8 +60,8 @@ public readonly ref struct SpanComparable
 	public bool Equals(StringSegment other)
 		=> Equals(other.AsSpan());
 
-	/// <summary />
-	[Obsolete("Equals() on ReadOnlySpan will always throw an exception. Use == instead.")]
+	/// <inheritdoc cref="ReadOnlySpan{T}.Equals(object)" />
+	[Obsolete("Equals() on StringCompariable will always throw an exception. Use == instead.")]
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	[SuppressMessage("Design", "CA1065:Do not raise exceptions in unexpected locations", Justification = "<Pending>")]
 #pragma warning disable CS0809 // Obsolete member overrides non-obsolete member
@@ -121,11 +121,9 @@ public readonly ref struct SpanComparable
 	/// Compares a SpanComparable with a StringComparable for inequality.
 	/// </summary>
 	public static bool operator !=(SpanComparable a, StringComparable b) => !a.Equals(b);
-
-
 }
 
-/// <summary/>
+/// <summary>Extensions for SpanComparable.</summary>
 public static class SpanComparableExtensions
 {
 	/// <summary>

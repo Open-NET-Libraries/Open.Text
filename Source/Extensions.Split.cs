@@ -54,13 +54,12 @@ public static partial class TextExtensions
 			: source.AsMemory(start, segmentLen);
 	}
 
-
 	/// <summary>
 	/// Finds the first instance of a character and returns the set of characters up to that character.
 	/// </summary>
 	/// <param name="source">The source characters to look through.</param>
 	/// <param name="splitCharacter">The charcter to find.</param>
-	/// <param name="nextIndex">The next possible index following the the current one.</param>
+	/// <param name="nextIndex">The next possible index following the current one.</param>
 	/// <param name="startIndex">The index to start the split.</param>
 	/// <returns>The portion of the source up to and excluding the sequence searched for.</returns>
 	public static ReadOnlySpan<char> FirstSplit(this string source,
@@ -87,7 +86,7 @@ public static partial class TextExtensions
 	/// </summary>
 	/// <param name="source">The source characters to look through.</param>
 	/// <param name="splitSequence">The sequence to find.</param>
-	/// <param name="nextIndex">The next possible index following the the current one.</param>
+	/// <param name="nextIndex">The next possible index following the current one.</param>
 	/// <param name="startIndex">The index to start the split.</param>
 	/// <param name="comparisonType">The string comparison type to use.</param>
 	/// <returns>The portion of the source up to and excluding the sequence searched for.</returns>

@@ -39,8 +39,6 @@ namespace Open.Text.Tests
 
 			Assert.True(sB == cA);
 			Assert.True(sB == cB);
-
-
 		}
 
 		[Theory]
@@ -78,6 +76,5 @@ namespace Open.Text.Tests
 			Assert.False(sB == cA);
 			Assert.True(sB == cB);
 		}
-
 	}
 }

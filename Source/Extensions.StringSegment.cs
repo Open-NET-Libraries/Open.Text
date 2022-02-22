@@ -314,7 +314,6 @@ public static partial class TextExtensions
 			}
 			while (startIndex != len);
 		}
-
 	}
 
 	/// <summary>
@@ -329,24 +328,33 @@ public static partial class TextExtensions
 		Regex pattern,
 		StringSplitOptions options = StringSplitOptions.None)
 	{
-		if (source is null) throw new ArgumentNullException(nameof(source));
-		if (pattern is null) throw new ArgumentNullException(nameof(pattern));
-		Contract.EndContractBlock();
+		return source is null
+			? throw new ArgumentNullException(nameof(source))
+			: pattern is null
+			? throw new ArgumentNullException(nameof(pattern))
+			: source.Length==0
+			? options == StringSplitOptions.RemoveEmptyEntries
+				? Enumerable.Empty<StringSegment>()
+				: Enumerable.Repeat(StringSegment.Empty, 1)
+			: SplitCore(source, pattern, options);
 
-		int len;
-		var nextStart = 0;
-		var match = pattern.Match(source);
-		while (match.Success)
+		static IEnumerable<StringSegment> SplitCore(string source, Regex pattern, StringSplitOptions options)
 		{
-			len = match.Index - nextStart;
+			int len;
+			var nextStart = 0;
+			var match = pattern.Match(source);
+			while (match.Success)
+			{
+				len = match.Index - nextStart;
+				if (len != 0 || options == StringSplitOptions.None)
+					yield return new(source, nextStart, match.Index - nextStart);
+				nextStart = match.Index + match.Length;
+				match = match.NextMatch();
+			}
+			len = source.Length - nextStart;
 			if (len != 0 || options == StringSplitOptions.None)
-				yield return new(source, nextStart, match.Index - nextStart);
-			nextStart = match.Index + match.Length;
-			match = match.NextMatch();
+				yield return source.AsSegment(nextStart, len);
 		}
-		len = source.Length - nextStart;
-		if (len != 0 || options == StringSplitOptions.None)
-			yield return source.AsSegment(nextStart, len);
 	}
 
 	/// <returns>An IEnumerable&lt;StringSegment&gt; of the segments.</returns>
@@ -434,7 +442,6 @@ public static partial class TextExtensions
 			}
 			while (startIndex != len);
 		}
-
 	}
 
 	/// <inheritdoc cref="SplitAsSegments(string, string, StringSplitOptions, StringComparison)"/>
@@ -519,7 +526,6 @@ public static partial class TextExtensions
 			}
 			while (startIndex != len);
 		}
-
 	}
 
 	/// <summary>
@@ -531,20 +537,25 @@ public static partial class TextExtensions
 	/// <exception cref="ArgumentNullException">The source is null.</exception>
 	public static IEnumerable<StringSegment> Join(this IEnumerable<StringSegment> source, StringSegment between)
 	{
-		if (source is null) throw new ArgumentNullException(nameof(source));
-		using var e = source.GetEnumerator();
-		var ok = e.MoveNext();
-		Debug.Assert(ok);
-		var c = e.Current;
-		if (c.Length != 0) yield return c;
-		while (e.MoveNext())
+		return source is null
+			? throw new ArgumentNullException(nameof(source))
+			: JoinCore(source, between);
+
+		static IEnumerable<StringSegment> JoinCore(IEnumerable<StringSegment> source, StringSegment between)
 		{
-			if (between.HasValue) yield return between;
-			c = e.Current;
+			using var e = source.GetEnumerator();
+			var ok = e.MoveNext();
+			Debug.Assert(ok);
+			var c = e.Current;
 			if (c.Length != 0) yield return c;
+			while (e.MoveNext())
+			{
+				if (between.HasValue) yield return between;
+				c = e.Current;
+				if (c.Length != 0) yield return c;
+			}
 		}
 	}
-
 
 	/// <summary>
 	/// Joins a sequence of segments with an optional separator sequence.
@@ -583,7 +594,6 @@ public static partial class TextExtensions
 		StringComparison comparisonType = StringComparison.Ordinal)
 		=> JoinToString(Split(source, splitSequence, comparisonType: comparisonType), replacement);
 
-
 	/// <inheritdoc cref="Replace(StringSegment, StringSegment, StringSegment, StringComparison)"/>
 	public static IEnumerable<StringSegment> ReplaceAsSegments(
 		this string source,
@@ -609,14 +619,19 @@ public static partial class TextExtensions
 		StringSegment replacement,
 		StringComparison comparisonType = StringComparison.Ordinal)
 	{
-		if (source is null) throw new ArgumentNullException(nameof(source));
+		return source is null
+			? throw new ArgumentNullException(nameof(source))
+			: ReplaceEachCore(source, splitSequence, replacement, comparisonType);
 
-		// Instead of source.SelectMany(s => s.Replace(splitSequence, replacement, comparisonType));
-		// we manually yield to reduce allocations.
-		foreach (var s in source)
+		static IEnumerable<StringSegment> ReplaceEachCore(IEnumerable<StringSegment> source, StringSegment splitSequence, StringSegment replacement, StringComparison comparisonType)
 		{
-			foreach (var e in Replace(s, splitSequence, replacement, comparisonType))
-				yield return e;
+			// Instead of source.SelectMany(s => s.Replace(splitSequence, replacement, comparisonType));
+			// we manually yield to reduce allocations.
+			foreach (var s in source)
+			{
+				foreach (var e in Replace(s, splitSequence, replacement, comparisonType))
+					yield return e;
+			}
 		}
 	}
 
@@ -663,7 +678,6 @@ public static partial class TextExtensions
 		return new(source.Buffer, start, len);
 	}
 
-
 	/// <summary>
 	/// Creates a StringSegment with the offset adjusted by the value provided.
 	/// </summary>
@@ -698,7 +712,6 @@ public static partial class TextExtensions
 			? throw new ArgumentOutOfRangeException(nameof(offset), offset, "Cannot expand greater than the length of the source.")
 			: (new(segment.Buffer, sOff, newLength));
 	}
-
 
 	/// <summary>
 	/// Creates a StringSegment that starts offset by the value provided and extends by the length provided.
@@ -740,7 +753,6 @@ public static partial class TextExtensions
 			}
 			return new(segment.Buffer, newIndex, length);
 		}
-
 	}
 
 	private static int TrimStartCore(StringSegment segment, ReadOnlySpan<char> span, char trim)
@@ -798,7 +810,6 @@ public static partial class TextExtensions
 
 		return end - e;
 	}
-
 
 	/// <summary>
 	/// Returns the StringSegment of this segment that does not have the trim character at the beginning.
@@ -892,12 +903,10 @@ public static partial class TextExtensions
 			: new(segment.Buffer, segment.Offset + trimmedStart, length - trimmedEnd - trimmedStart);
 	}
 
-
 	/// <summary>
 	/// Determines whether this StringSegment and a specified ReadOnlySpan have the same characters.
 	/// </summary>
 	/// <inheritdoc cref="string.Equals(string, StringComparison)"/>
 	public static bool Equals(this StringSegment source, ReadOnlySpan<char> other, StringComparison stringComparison = StringComparison.Ordinal)
 		=> other.Length == source.Length && source.AsSpan().Equals(other, stringComparison);
-
 }

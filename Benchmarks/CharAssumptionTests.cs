@@ -15,8 +15,11 @@ public class CharAssumptionTests
 	{
 		var a = new char[Length];
 		for (var n = 0; n < Repeat; n++)
+		{
 			for (var i = 0; i < Length; i++)
 				a[i] = TestString[i];
+		}
+
 		return a;
 	}
 
@@ -25,8 +28,11 @@ public class CharAssumptionTests
 	{
 		var a = new char[Length];
 		for (var n = 0; n < Repeat; n++)
+		{
 			for (var i = 0; i < Length; i++)
 				Update(a, i, TestString[i]);
+		}
+
 		return a;
 
 		static void Update(char[] a, int i, char v) => a[i] = v;
@@ -38,8 +44,11 @@ public class CharAssumptionTests
 		var a = new char[Length];
 		var s = TestMemory.Span;
 		for (var n = 0; n < Repeat; n++)
+		{
 			for (var i = 0; i < Length; i++)
 				a[i] = s[i];
+		}
+
 		return a;
 	}
 
@@ -49,8 +58,11 @@ public class CharAssumptionTests
 		var a = new char[Length].AsSpan();
 		var s = TestMemory.Span;
 		for (var n = 0; n < Repeat; n++)
+		{
 			for (var i = 0; i < Length; i++)
 				a[i] = s[i];
+		}
+
 		return a;
 	}
 

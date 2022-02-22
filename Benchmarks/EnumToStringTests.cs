@@ -41,6 +41,6 @@ public class EnumToStringTests
 	public void EnumValueGetName()
 	{
 		foreach (var g in Values)
-			_ = EnumValue.GetName(g);
+			_ = g.GetName();
 	}
 }

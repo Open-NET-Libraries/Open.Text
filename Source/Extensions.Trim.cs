@@ -23,7 +23,7 @@ public static partial class TextExtensions
 		}
 		else
 		{
-			while (0 != max-- && source.AsSpan().IndexOf(pattern, comparisonType) == 0)
+			while (max-- != 0 && source.AsSpan().IndexOf(pattern, comparisonType) == 0)
 			{
 				source = source.Subsegment(pLen);
 				if (pattern.Length > source.Length) break;
@@ -48,7 +48,7 @@ public static partial class TextExtensions
 		}
 		else
 		{
-			while (0 != max-- && source.AsSpan().LastIndexOf(pattern, comparisonType) == expectedIndex)
+			while (max-- != 0 && source.AsSpan().LastIndexOf(pattern, comparisonType) == expectedIndex)
 			{
 				source = source.Subsegment(0, expectedIndex);
 				expectedIndex = source.Length - pattern.Length;
@@ -73,7 +73,7 @@ public static partial class TextExtensions
 		}
 		else
 		{
-			while (0 != max-- && source.IndexOf(pattern, comparisonType) == 0)
+			while (max-- != 0 && source.IndexOf(pattern, comparisonType) == 0)
 			{
 				source = source.Slice(pLen);
 				if (pattern.Length > source.Length) break;
@@ -99,7 +99,7 @@ public static partial class TextExtensions
 		}
 		else
 		{
-			while (0 != max-- && source.LastIndexOf(pattern, comparisonType) == expectedIndex)
+			while (max-- != 0 && source.LastIndexOf(pattern, comparisonType) == expectedIndex)
 			{
 				source = source.Slice(0, expectedIndex);
 				expectedIndex = source.Length - pattern.Length;
@@ -109,7 +109,6 @@ public static partial class TextExtensions
 
 		return source;
 	}
-
 
 	/// <param name="source">The source sequence of characters.</param>
 	/// <param name="pattern">The pattern to search for.</param>
@@ -247,7 +246,7 @@ public static partial class TextExtensions
 			}
 			else
 			{
-				while (0 != max && match.Success && match.Index == i)
+				while (max != 0 && match.Success && match.Index == i)
 				{
 					i += match.Length;
 					match = match.NextMatch();
@@ -330,7 +329,6 @@ public static partial class TextExtensions
 		? throw new ArgumentNullException(nameof(source))
 		: TrimEndPattern(source.AsSegment(), pattern, comparisonType, max);
 
-
 	/// <summary>
 	/// Trims (omits) a matching pattern from the end of a sequence of characters.
 	/// </summary>
@@ -370,7 +368,7 @@ public static partial class TextExtensions
 			else
 			{
 				int n;
-				while (0 != max && match.Success && match.Index == (n = i - match.Length))
+				while (max != 0 && match.Success && match.Index == (n = i - match.Length))
 				{
 					i = n;
 					match = match.NextMatch();

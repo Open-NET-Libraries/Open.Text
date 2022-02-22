@@ -111,6 +111,5 @@ namespace Open.Text.Tests
 			Assert.False("AB ".TrimmedEquals("ABC"));
 			Assert.False("A ".TrimmedEquals("ABC"));
 		}
-
 	}
 }

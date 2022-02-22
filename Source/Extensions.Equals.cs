@@ -4,7 +4,6 @@ namespace Open.Text;
 
 public static partial class TextExtensions
 {
-
 	/// <summary>
 	/// Optimized equals for comparing as span vs a string.
 	/// </summary>

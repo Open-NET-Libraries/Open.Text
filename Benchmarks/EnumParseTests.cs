@@ -12,8 +12,7 @@ public class EnumParseTests
 	[Params(false, true)]
 	public bool IgnoreCase { get; set; }
 
-
-	static readonly string[] ValidValues = new string[] { Greek.Alpha.ToString(), Greek.Epsilon.ToString(), Greek.Phi.ToString() };
+	static readonly string[] ValidValues = new string[] { nameof(Greek.Alpha), nameof(Greek.Epsilon), nameof(Greek.Phi) };
 	static readonly string[] InvalidValues = new string[] { "Apple", "Orange", "Pineapple" };
 
 	[Benchmark(Baseline = true)]
@@ -35,7 +34,6 @@ public class EnumParseTests
 				if (Enum.TryParse(s, IgnoreCase, out e))
 					throw new Exception("Valid.");
 			}
-
 		}
 		return e;
 	}
@@ -273,9 +271,7 @@ public class EnumParseTests
 
 		e = default!;
 		return false;
-
 	}
-
 
 	[Benchmark]
 	public Greek CompiledSwitch()
@@ -296,7 +292,6 @@ public class EnumParseTests
 				if (TryParseBySwitch(s, IgnoreCase, out e))
 					throw new Exception("Valid.");
 			}
-
 		}
 		return e;
 	}
@@ -320,7 +315,6 @@ public class EnumParseTests
 				if (TryParseByLengthSwitch(s, IgnoreCase, out e))
 					throw new Exception("Valid.");
 			}
-
 		}
 		return e;
 	}
@@ -344,11 +338,9 @@ public class EnumParseTests
 				if (EnumValue.TryParse(s, IgnoreCase, out e))
 					throw new Exception("Valid.");
 			}
-
 		}
 		return e;
 	}
-
 
 	[Benchmark]
 	public Greek FastEnumParse()
@@ -369,7 +361,6 @@ public class EnumParseTests
 				if (FastEnum.TryParse(s, IgnoreCase, out e))
 					throw new Exception("Valid.");
 			}
-
 		}
 		return e;
 	}

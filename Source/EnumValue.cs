@@ -277,7 +277,7 @@ public readonly struct EnumValueCaseIgnored<TEnum>
 }
 
 /// <summary>
-/// Fast utilties and extensions for parsing enums and retreiving the name of an enum value. 
+/// Fast utilties and extensions for parsing enums and retreiving the name of an enum value.
 /// </summary>
 public static class EnumValue
 {

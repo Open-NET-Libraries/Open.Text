@@ -35,7 +35,6 @@ namespace Open.Text.Tests
 			Assert.False(EnumValue.TryParse<Greek>(value, true, out _));
 		}
 
-
 		[Theory]
 		[InlineData(Greek.Alpha)]
 		[InlineData(Greek.Beta)]
@@ -66,6 +65,5 @@ namespace Open.Text.Tests
 			Assert.False(value != expected);
 			Assert.False(value != new EnumValue<Greek>(expected));
 		}
-
 	}
 }

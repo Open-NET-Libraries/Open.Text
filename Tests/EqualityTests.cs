@@ -105,7 +105,6 @@ namespace Open.Text.Tests
 			Assert.True(value.TrimmedEquals(other.AsSpan(), ' ', comparison));
 		}
 
-
 		[Theory]
 		[InlineData(" ", "")]
 		[InlineData("y ", "y")]
@@ -117,6 +116,5 @@ namespace Open.Text.Tests
 			Assert.True(value.TrimmedEquals(other, Chars.Span, comparison));
 			Assert.True(value.TrimmedEquals(other.AsSpan(), Chars.Span, comparison));
 		}
-
 	}
 }

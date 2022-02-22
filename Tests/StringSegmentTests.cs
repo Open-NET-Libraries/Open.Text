@@ -28,7 +28,10 @@ namespace Open.Text.Tests
 		public static void BeforeFirst(string source, string pattern, string? expected, StringComparison comparisonType = StringComparison.Ordinal)
 		{
 			var first = source.First(pattern, comparisonType);
-			if (expected is null) Assert.False(first.HasValue);
+			if (expected is null)
+			{
+				Assert.False(first.HasValue);
+			}
 			else
 			{
 				var p = first.Preceding();

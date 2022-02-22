@@ -11,7 +11,9 @@ using System.Text.RegularExpressions;
 [assembly: CLSCompliant(true)]
 namespace Open.Text;
 
-/// <summary />
+/// <summary>
+/// Extensions for comparing strings and manipulating text.
+/// </summary>
 public static partial class TextExtensions
 {
 	private const uint BYTE_RED = 1024;
@@ -80,7 +82,7 @@ public static partial class TextExtensions
 	/// Returns true if any string is null, empty or white-space only.
 	/// </summary>
 	/// <param name="values">The set of values to validate.</param>
-	/// <returns>True if any of the provided values is is null, empty or white-space only. Otherwise false.</returns>
+	/// <returns>True if any of the provided values is null, empty or white-space only. Otherwise false.</returns>
 	public static bool IsAnyNullOrWhiteSpace(params string[] values)
 		=> values != null && values.Length != 0 && values.Any(v => string.IsNullOrWhiteSpace(v));
 
@@ -211,18 +213,25 @@ public static partial class TextExtensions
 	/// <exception cref="ArgumentNullException">If the pattern or input is null.</exception>
 	public static IEnumerable<StringSegment> AsSegments(this Regex pattern, string input)
 	{
-		if (pattern is null) throw new ArgumentNullException(nameof(pattern));
-		if (input is null) throw new ArgumentNullException(nameof(input));
-		if (input.Length == 0) yield break;
-		var match = pattern.Match(input);
-		while (match.Success)
+		return pattern is null
+			? throw new ArgumentNullException(nameof(pattern))
+			: input is null
+			? throw new ArgumentNullException(nameof(input))
+			: input.Length == 0
+			? Enumerable.Empty<StringSegment>()
+			: AsSegmentsCore(pattern, input);
+
+		static IEnumerable<StringSegment> AsSegmentsCore(Regex pattern, string input)
 		{
-			yield return new(input, match.Index, match.Length);
-			match = match.NextMatch();
+			var match = pattern.Match(input);
+			while (match.Success)
+			{
+				yield return new(input, match.Index, match.Length);
+				match = match.NextMatch();
+			}
 		}
 	}
 	#endregion
-
 
 	#region Numeric string formatting.
 	/// <summary>
@@ -255,9 +264,8 @@ public static partial class TextExtensions
 	public static string ToPercentString(this int value, int range, int decimals = 0, CultureInfo? cultureInfo = default)
 		=> ((double)value / range).ToString($"p{decimals}", cultureInfo);
 
-
 	/// <summary>
-	/// Returns an abbreviated metric representation of a quantity of bytes. 
+	/// Returns an abbreviated metric representation of a quantity of bytes.
 	/// </summary>
 	public static string ToByteString(this double bytes, string decimalFormat = "N1", CultureInfo? cultureInfo = default)
 	{
@@ -279,19 +287,19 @@ public static partial class TextExtensions
 	}
 
 	/// <summary>
-	/// Returns an abbreviated metric representation of a quantity of bytes. 
+	/// Returns an abbreviated metric representation of a quantity of bytes.
 	/// </summary>
 	public static string ToByteString(this int bytes, string decimalFormat = "N1", CultureInfo? cultureInfo = default)
 		=> ToByteString((double)bytes, decimalFormat, cultureInfo);
 
 	/// <summary>
-	/// Returns an abbreviated metric representation of a quantity of bytes. 
+	/// Returns an abbreviated metric representation of a quantity of bytes.
 	/// </summary>
 	public static string ToByteString(this long bytes, string decimalFormat = "N1", CultureInfo? cultureInfo = default)
 		=> ToByteString((double)bytes, decimalFormat, cultureInfo);
 
 	/// <summary>
-	/// Returns an abbreviated metric representation of a number. 
+	/// Returns an abbreviated metric representation of a number.
 	/// </summary>
 	public static string ToMetricString(this double number, string decimalFormat = "N1", CultureInfo? cultureInfo = default)
 	{
@@ -310,13 +318,13 @@ public static partial class TextExtensions
 	}
 
 	/// <summary>
-	/// Returns an abbreviated metric representation of a number. 
+	/// Returns an abbreviated metric representation of a number.
 	/// </summary>
 	public static string ToMetricString(this long number, string decimalFormat = "N1", CultureInfo? cultureInfo = default)
 		=> ToMetricString((double)number, decimalFormat, cultureInfo);
 
 	/// <summary>
-	/// Returns an abbreviated metric representation of a number. 
+	/// Returns an abbreviated metric representation of a number.
 	/// </summary>
 	public static string ToMetricString(this int number, string decimalFormat = "N1", CultureInfo? cultureInfo = default)
 		=> ToMetricString((double)number, decimalFormat, cultureInfo);

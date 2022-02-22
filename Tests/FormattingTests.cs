@@ -8,9 +8,7 @@ namespace Open.Text.Tests
 		[InlineData("10%", 10, 100)]
 		[InlineData("50.0%", 1, 2, 1)]
 		public static void ToPercentString(string expected, int value, int range, int decimals = 0)
-		{
-			Assert.Equal(expected, value.ToPercentString(range, decimals));
-		}
+			=> Assert.Equal(expected, value.ToPercentString(range, decimals));
 
 		[Theory]
 		[InlineData("1 byte", 1)]
@@ -25,9 +23,7 @@ namespace Open.Text.Tests
 		[InlineData("1.5 PB", 1024d * 1024 * 1024 * 1024 * 1024 * 1.5)]
 		[InlineData("1,536.0 PB", 1024d * 1024 * 1024 * 1024 * 1024 * 1024 * 1.5)]
 		public static void ToByteString(string expected, double bytes)
-		{
-			Assert.Equal(expected, bytes.ToByteString());
-		}
+			=> Assert.Equal(expected, bytes.ToByteString());
 
 		[Theory]
 		[InlineData("1.0", 1)]
@@ -38,8 +34,6 @@ namespace Open.Text.Tests
 		[InlineData("1.1M", 1110 * 1000)]
 		[InlineData("1.1B", 1110 * 1000 * 1000)]
 		public static void ToMetricString(string expected, double bytes)
-		{
-			Assert.Equal(expected, bytes.ToMetricString());
-		}
+			=> Assert.Equal(expected, bytes.ToMetricString());
 	}
 }

@@ -156,10 +156,9 @@ public readonly struct StringComparable
 	/// Compares a StringComparable and a SpanComparable for inequality.
 	/// </summary>
 	public static bool operator !=(StringComparable a, SpanComparable b) => !a.Equals(b);
-
 }
 
-/// <summary />
+/// <summary>Extensions for StringComparable.</summary>
 public static class StringComparableExtensions
 {
 	/// <summary>
@@ -243,5 +242,4 @@ public static class StringComparableExtensions
 	/// </summary>
 	public static StringComparable AsInvariantCulture(this StringSegment source)
 		=> new(source, StringComparison.InvariantCulture);
-
 }

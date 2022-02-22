@@ -183,7 +183,7 @@
         </member>
         <member name="T:Open.Text.EnumValue">
             <summary>
-            Fast utilties and extensions for parsing enums and retreiving the name of an enum value. 
+            Fast utilties and extensions for parsing enums and retreiving the name of an enum value.
             </summary>
         </member>
         <member name="M:Open.Text.EnumValue.Parse``1(System.String)">
@@ -217,7 +217,9 @@
             <returns>The name of the enum.</returns>
         </member>
         <member name="T:Open.Text.TextExtensions">
-            <summary />
+            <summary>
+            Extensions for comparing strings and manipulating text.
+            </summary>
         </member>
         <member name="M:Open.Text.TextExtensions.Equals(System.ReadOnlySpan{System.Char},System.String,System.StringComparison)">
             <summary>
@@ -301,7 +303,7 @@
             </summary>
             <param name="source">The source characters to look through.</param>
             <param name="splitCharacter">The charcter to find.</param>
-            <param name="nextIndex">The next possible index following the the current one.</param>
+            <param name="nextIndex">The next possible index following the current one.</param>
             <param name="startIndex">The index to start the split.</param>
             <returns>The portion of the source up to and excluding the sequence searched for.</returns>
         </member>
@@ -311,7 +313,7 @@
             </summary>
             <param name="source">The source characters to look through.</param>
             <param name="splitSequence">The sequence to find.</param>
-            <param name="nextIndex">The next possible index following the the current one.</param>
+            <param name="nextIndex">The next possible index following the current one.</param>
             <param name="startIndex">The index to start the split.</param>
             <param name="comparisonType">The string comparison type to use.</param>
             <returns>The portion of the source up to and excluding the sequence searched for.</returns>
@@ -717,7 +719,7 @@
             Returns true if any string is null, empty or white-space only.
             </summary>
             <param name="values">The set of values to validate.</param>
-            <returns>True if any of the provided values is is null, empty or white-space only. Otherwise false.</returns>
+            <returns>True if any of the provided values is null, empty or white-space only. Otherwise false.</returns>
         </member>
         <member name="M:Open.Text.TextExtensions.AssertIsNotNullOrWhiteSpace(System.String)">
             <summary>
@@ -817,32 +819,32 @@
         </member>
         <member name="M:Open.Text.TextExtensions.ToByteString(System.Double,System.String,System.Globalization.CultureInfo)">
             <summary>
-            Returns an abbreviated metric representation of a quantity of bytes. 
+            Returns an abbreviated metric representation of a quantity of bytes.
             </summary>
         </member>
         <member name="M:Open.Text.TextExtensions.ToByteString(System.Int32,System.String,System.Globalization.CultureInfo)">
             <summary>
-            Returns an abbreviated metric representation of a quantity of bytes. 
+            Returns an abbreviated metric representation of a quantity of bytes.
             </summary>
         </member>
         <member name="M:Open.Text.TextExtensions.ToByteString(System.Int64,System.String,System.Globalization.CultureInfo)">
             <summary>
-            Returns an abbreviated metric representation of a quantity of bytes. 
+            Returns an abbreviated metric representation of a quantity of bytes.
             </summary>
         </member>
         <member name="M:Open.Text.TextExtensions.ToMetricString(System.Double,System.String,System.Globalization.CultureInfo)">
             <summary>
-            Returns an abbreviated metric representation of a number. 
+            Returns an abbreviated metric representation of a number.
             </summary>
         </member>
         <member name="M:Open.Text.TextExtensions.ToMetricString(System.Int64,System.String,System.Globalization.CultureInfo)">
             <summary>
-            Returns an abbreviated metric representation of a number. 
+            Returns an abbreviated metric representation of a number.
             </summary>
         </member>
         <member name="M:Open.Text.TextExtensions.ToMetricString(System.Int32,System.String,System.Globalization.CultureInfo)">
             <summary>
-            Returns an abbreviated metric representation of a number. 
+            Returns an abbreviated metric representation of a number.
             </summary>
         </member>
         <member name="F:Open.Text.TextExtensions.WhiteSpacePattern">
@@ -924,7 +926,7 @@
             <inheritdoc cref="M:Open.Text.SpanComparable.Equals(System.String)"/>
         </member>
         <member name="M:Open.Text.SpanComparable.Equals(System.Object)">
-            <summary />
+            <inheritdoc cref="M:System.ReadOnlySpan`1.Equals(System.Object)" />
         </member>
         <member name="M:Open.Text.SpanComparable.GetHashCode">
             <inheritdoc />
@@ -970,7 +972,7 @@
             </summary>
         </member>
         <member name="T:Open.Text.SpanComparableExtensions">
-            <summary/>
+            <summary>Extensions for SpanComparable.</summary>
         </member>
         <member name="M:Open.Text.SpanComparableExtensions.AsComparable(System.ReadOnlySpan{System.Char},System.StringComparison)">
             <summary>
@@ -1134,6 +1136,15 @@
             Appends a key/value pair to StringBuilder using the provided separators.
             </summary>
         </member>
+        <member name="M:Open.Text.StringBuilderExtensions.Append(System.Text.StringBuilder,System.ReadOnlySpan{System.Char})">
+            <summary>
+            Appends the string representation of a specified read-only character span to this instance.
+            </summary>
+            <param name="target">The StringBuilder to append to.</param>
+            <param name="value">The read-only character span to append.</param>
+            <returns>A reference to this instance after the append operation is completed.</returns>
+            <exception cref="T:System.ArgumentNullException">If the target is null.</exception>
+        </member>
         <member name="T:Open.Text.StringComparable">
             <summary>
             A StringComparison variable struct for comparing a string against other values.
@@ -1253,7 +1264,7 @@
             </summary>
         </member>
         <member name="T:Open.Text.StringComparableExtensions">
-            <summary />
+            <summary>Extensions for StringComparable.</summary>
         </member>
         <member name="M:Open.Text.StringComparableExtensions.AsComparable(System.String,System.StringComparison)">
             <summary>
