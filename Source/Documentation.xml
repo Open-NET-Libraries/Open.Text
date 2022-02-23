@@ -474,6 +474,9 @@
         <member name="M:Open.Text.TextExtensions.SplitAsSegments(System.String,System.Char,System.StringSplitOptions)">
             <inheritdoc cref="M:Open.Text.TextExtensions.SplitToEnumerable(System.String,System.Char,System.StringSplitOptions)"/>
         </member>
+        <member name="M:Open.Text.TextExtensions.SplitAsSegments(Microsoft.Extensions.Primitives.StringSegment,System.Char,System.StringSplitOptions)">
+            <inheritdoc cref="M:Open.Text.TextExtensions.SplitToEnumerable(System.String,System.Char,System.StringSplitOptions)"/>
+        </member>
         <member name="M:Open.Text.TextExtensions.Split(System.String,System.Text.RegularExpressions.Regex,System.StringSplitOptions)">
             <summary>
             Enumerates a string by segments that are separated by the regular expression matches.
@@ -1135,15 +1138,6 @@
             <summary>
             Appends a key/value pair to StringBuilder using the provided separators.
             </summary>
-        </member>
-        <member name="M:Open.Text.StringBuilderExtensions.Append(System.Text.StringBuilder,System.ReadOnlySpan{System.Char})">
-            <summary>
-            Appends the string representation of a specified read-only character span to this instance.
-            </summary>
-            <param name="target">The StringBuilder to append to.</param>
-            <param name="value">The read-only character span to append.</param>
-            <returns>A reference to this instance after the append operation is completed.</returns>
-            <exception cref="T:System.ArgumentNullException">If the target is null.</exception>
         </member>
         <member name="T:Open.Text.StringComparable">
             <summary>

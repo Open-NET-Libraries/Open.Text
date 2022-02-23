@@ -247,6 +247,14 @@ public static partial class TextExtensions
 		if (source is null) throw new ArgumentNullException(nameof(source));
 		Contract.EndContractBlock();
 
+		return SplitAsSegments((StringSegment)source, splitCharacter, options);
+	}
+
+	/// <inheritdoc cref="SplitToEnumerable(string, char, StringSplitOptions)"/>
+	public static IEnumerable<StringSegment> SplitAsSegments(this StringSegment source,
+		char splitCharacter,
+		StringSplitOptions options = StringSplitOptions.None)
+	{
 		return options switch
 		{
 			StringSplitOptions.None => source.Length == 0
@@ -259,7 +267,7 @@ public static partial class TextExtensions
 		};
 
 		static IEnumerable<StringSegment> SplitAsSegmentsCore(
-			string source,
+			StringSegment source,
 			char splitCharacter)
 		{
 			var startIndex = 0;
@@ -269,17 +277,17 @@ public static partial class TextExtensions
 			var nextIndex = source.IndexOf(splitCharacter, startIndex);
 			if (nextIndex == -1)
 			{
-				yield return source.AsSegment(startIndex);
+				yield return source.Subsegment(startIndex);
 				yield break;
 			}
 			else if (nextIndex == len)
 			{
-				yield return new(source, nextIndex, 0);
+				yield return source.Subsegment(nextIndex, 0);
 				yield break;
 			}
 			else
 			{
-				yield return new(source, startIndex, nextIndex - startIndex);
+				yield return source.Subsegment(startIndex, nextIndex - startIndex);
 				++nextIndex;
 			}
 			startIndex = nextIndex;
@@ -287,7 +295,7 @@ public static partial class TextExtensions
 		}
 
 		static IEnumerable<StringSegment> SplitAsSegmentsCoreOmitEmpty(
-			string source,
+			StringSegment source,
 			char splitCharacter)
 		{
 			var startIndex = 0;
@@ -301,13 +309,13 @@ public static partial class TextExtensions
 
 				if (nextIndex == -1)
 				{
-					yield return source.AsSegment(startIndex);
+					yield return source.Subsegment(startIndex);
 					yield break;
 				}
 				else
 				{
 					var length = nextIndex - startIndex;
-					if (length != 0) yield return new(source, startIndex, length);
+					if (length != 0) yield return source.Subsegment(startIndex, length);
 					++nextIndex;
 				}
 				startIndex = nextIndex;
@@ -315,6 +323,7 @@ public static partial class TextExtensions
 			while (startIndex != len);
 		}
 	}
+
 
 	/// <summary>
 	/// Enumerates a string by segments that are separated by the regular expression matches.
