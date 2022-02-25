@@ -15,7 +15,7 @@ public static partial class TextExtensions
 		var pLen = pattern.Length;
 		if (max == -1)
 		{
-			while (source.AsSpan().IndexOf(pattern, comparisonType) == 0)
+			while (source.IndexOf(pattern, comparisonType) == 0)
 			{
 				source = source.Subsegment(pLen);
 				if (pattern.Length > source.Length) break;
@@ -23,7 +23,7 @@ public static partial class TextExtensions
 		}
 		else
 		{
-			while (max-- != 0 && source.AsSpan().IndexOf(pattern, comparisonType) == 0)
+			while (max-- != 0 && source.IndexOf(pattern, comparisonType) == 0)
 			{
 				source = source.Subsegment(pLen);
 				if (pattern.Length > source.Length) break;
@@ -39,7 +39,7 @@ public static partial class TextExtensions
 		var expectedIndex = source.Length - pLen;
 		if (max == -1)
 		{
-			while (source.AsSpan().LastIndexOf(pattern, comparisonType) == expectedIndex)
+			while (source.LastIndexOf(pattern, comparisonType) == expectedIndex)
 			{
 				source = source.Subsegment(0, expectedIndex);
 				expectedIndex = source.Length - pattern.Length;
@@ -48,7 +48,7 @@ public static partial class TextExtensions
 		}
 		else
 		{
-			while (max-- != 0 && source.AsSpan().LastIndexOf(pattern, comparisonType) == expectedIndex)
+			while (max-- != 0 && source.LastIndexOf(pattern, comparisonType) == expectedIndex)
 			{
 				source = source.Subsegment(0, expectedIndex);
 				expectedIndex = source.Length - pattern.Length;

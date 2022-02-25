@@ -498,7 +498,13 @@
             <param name="comparisonType">One of the enumeration values that specifies the rules for the search.</param>
             <exception cref="T:System.ArgumentOutOfRangeException">If start index is less than zero.</exception>
         </member>
+        <member name="M:Open.Text.TextExtensions.IndexOf(Microsoft.Extensions.Primitives.StringSegment,System.ReadOnlySpan{System.Char},System.Int32,System.StringComparison)">
+            <inheritdoc cref="M:Open.Text.TextExtensions.IndexOf(Microsoft.Extensions.Primitives.StringSegment,Microsoft.Extensions.Primitives.StringSegment,System.Int32,System.StringComparison)"/>
+        </member>
         <member name="M:Open.Text.TextExtensions.IndexOf(Microsoft.Extensions.Primitives.StringSegment,Microsoft.Extensions.Primitives.StringSegment,System.StringComparison)">
+            <inheritdoc cref="M:Open.Text.TextExtensions.IndexOf(Microsoft.Extensions.Primitives.StringSegment,Microsoft.Extensions.Primitives.StringSegment,System.Int32,System.StringComparison)"/>
+        </member>
+        <member name="M:Open.Text.TextExtensions.IndexOf(Microsoft.Extensions.Primitives.StringSegment,System.ReadOnlySpan{System.Char},System.StringComparison)">
             <inheritdoc cref="M:Open.Text.TextExtensions.IndexOf(Microsoft.Extensions.Primitives.StringSegment,Microsoft.Extensions.Primitives.StringSegment,System.Int32,System.StringComparison)"/>
         </member>
         <member name="M:Open.Text.TextExtensions.IndexOf(System.String,Microsoft.Extensions.Primitives.StringSegment,System.StringComparison)">
@@ -750,6 +756,9 @@
             <param name="comparisonType">The comparison type to use when searching.</param>
             <returns>The source of the string before the search string.  Returns null if search string is not found.</returns>
         </member>
+        <member name="M:Open.Text.TextExtensions.LastIndexOf(Microsoft.Extensions.Primitives.StringSegment,System.ReadOnlySpan{System.Char},System.StringComparison)">
+            <inheritdoc cref="M:Open.Text.TextExtensions.LastIndexOf(System.ReadOnlySpan{System.Char},System.ReadOnlySpan{System.Char},System.StringComparison)"/>
+        </member>
         <member name="M:Open.Text.TextExtensions.ToTitleCase(System.String,System.Globalization.CultureInfo)">
             <summary>
             Converts a string to title-case.
@@ -990,6 +999,16 @@
             Compares a SpanComparable with a string for equality.
             </summary>
         </member>
+        <member name="M:Open.Text.SpanComparable.op_Inequality(Open.Text.SpanComparable,Microsoft.Extensions.Primitives.StringSegment)">
+            <summary>
+            Compares a SpanComparable with a StringSegment for inequality.
+            </summary>
+        </member>
+        <member name="M:Open.Text.SpanComparable.op_Equality(Open.Text.SpanComparable,Microsoft.Extensions.Primitives.StringSegment)">
+            <summary>
+            Compares a SpanComparable with a StringSegment for equality.
+            </summary>
+        </member>
         <member name="M:Open.Text.SpanComparable.op_Inequality(Open.Text.SpanComparable,System.String)">
             <summary>
             Compares a SpanComparable with a string for inequality.
@@ -1180,15 +1199,6 @@
             Appends a key/value pair to StringBuilder using the provided separators.
             </summary>
         </member>
-        <member name="M:Open.Text.StringBuilderExtensions.Append(System.Text.StringBuilder,System.ReadOnlySpan{System.Char})">
-            <summary>
-            Appends the string representation of a specified read-only character span to this instance.
-            </summary>
-            <param name="target">The StringBuilder to append to.</param>
-            <param name="value">The read-only character span to append.</param>
-            <returns>A reference to this instance after the append operation is completed.</returns>
-            <exception cref="T:System.ArgumentNullException">If the target is null.</exception>
-        </member>
         <member name="T:Open.Text.StringComparable">
             <summary>
             A StringComparison variable struct for comparing a string against other values.
@@ -1217,6 +1227,19 @@
             </summary>
         </member>
         <member name="P:Open.Text.StringComparable.Length">
+            <summary>
+            The length of the string.
+            </summary>
+        </member>
+        <member name="M:Open.Text.StringComparable.Equals(System.String)">
+            <summary>
+            Compares <paramref name="other"/> if its characters matches this instance.
+            </summary>
+            <returns>true if the value of <paramref name="other"/> matches; otherwise false. </returns>
+        </member>
+        <member name="M:Open.Text.StringComparable.Equals(System.ReadOnlySpan{System.Char})">
+            <inheritdoc cref="M:Open.Text.StringComparable.Equals(System.String)"/>
+        </membeparable.Length">
             <summary>
             The length of the string.
             </summary>

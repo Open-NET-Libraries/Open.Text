@@ -200,7 +200,44 @@ public static partial class TextExtensions
 	/// <inheritdoc cref="IndexOf(StringSegment, StringSegment, int, StringComparison)"/>
 	public static int IndexOf(
 		this StringSegment segment,
+		ReadOnlySpan<char> value,
+		int startIndex = 0,
+		StringComparison comparisonType = StringComparison.Ordinal)
+	{
+		if (startIndex < 0) throw new ArgumentOutOfRangeException(nameof(startIndex), startIndex, "Must be at least zero.");
+
+		var len = value.Length;
+		if (len == 0 || startIndex + len > segment.Length) return -1;
+		if (startIndex == 0 && len == segment.Length)
+			return segment.Equals(value, comparisonType) ? 0 : -1;
+
+		if (comparisonType == StringComparison.Ordinal)
+		{
+			startIndex = segment.IndexOf(value[0], startIndex);
+			if (startIndex == -1) return -1;
+		}
+
+		var max = segment.Length - len;
+		for (var i = startIndex; i <= max; i++)
+		{
+			if (segment.Subsegment(i, len).Equals(value, comparisonType))
+				return i;
+		}
+
+		return -1;
+	}
+
+	/// <inheritdoc cref="IndexOf(StringSegment, StringSegment, int, StringComparison)"/>
+	public static int IndexOf(
+		this StringSegment segment,
 		StringSegment value,
+		StringComparison comparisonType)
+		=> IndexOf(segment, value, 0, comparisonType);
+
+	/// <inheritdoc cref="IndexOf(StringSegment, StringSegment, int, StringComparison)"/>
+	public static int IndexOf(
+		this StringSegment segment,
+		ReadOnlySpan<char> value,
 		StringComparison comparisonType)
 		=> IndexOf(segment, value, 0, comparisonType);
 

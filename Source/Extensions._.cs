@@ -40,7 +40,7 @@ public static partial class TextExtensions
 	/// <param name="comparisonType">The comparison type to use when searching.</param>
 	/// <returns>The source of the string before the search string.  Returns null if search string is not found.</returns>
 	public static int LastIndexOf(this ReadOnlySpan<char> source,
-		ReadOnlySpan<char> search, StringComparison comparisonType)
+		ReadOnlySpan<char> search, StringComparison comparisonType = StringComparison.Ordinal)
 	{
 		if (search.Length > source.Length)
 			return -1;
@@ -60,6 +60,35 @@ public static partial class TextExtensions
 
 		// Recurse to get the last one.
 		var next = source
+			.Slice(n)
+			.LastIndexOf(search, comparisonType);
+
+		return next == -1 ? i : (n + next);
+	}
+
+	/// <inheritdoc cref="LastIndexOf(ReadOnlySpan{char}, ReadOnlySpan{char}, StringComparison)"/>
+	public static int LastIndexOf(this StringSegment source,
+		ReadOnlySpan<char> search, StringComparison comparisonType = StringComparison.Ordinal)
+	{
+		if (search.Length > source.Length)
+			return -1;
+
+		if (comparisonType == StringComparison.Ordinal)
+			return source.AsSpan().LastIndexOf(search);
+
+		// Nothing found?
+		var i = source.IndexOf(search, comparisonType);
+		if (i == -1)
+			return i;
+
+		// Next possible can't fit?
+		var n = i + search.Length;
+		if (n + search.Length > source.Length)
+			return i;
+
+		// Recurse to get the last one.
+		var next = source
+			.AsSpan()
 			.Slice(n)
 			.LastIndexOf(search, comparisonType);
 

@@ -98,6 +98,16 @@ public readonly ref struct SpanComparable
 	public static bool operator ==(SpanComparable a, string? b) => a.Equals(b);
 
 	/// <summary>
+	/// Compares a SpanComparable with a StringSegment for inequality.
+	/// </summary>
+	public static bool operator !=(SpanComparable a, StringSegment b) => !a.Equals(b);
+
+	/// <summary>
+	/// Compares a SpanComparable with a StringSegment for equality.
+	/// </summary>
+	public static bool operator ==(SpanComparable a, StringSegment b) => a.Equals(b);
+
+	/// <summary>
 	/// Compares a SpanComparable with a string for inequality.
 	/// </summary>
 	public static bool operator !=(SpanComparable a, string? b) => !a.Equals(b);
