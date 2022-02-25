@@ -111,7 +111,7 @@ namespace Open.Text.Tests
 			Assert.Equal("well how", segment.ToString());
 			var slice = segment.Subsegment(0, 4);
 			Assert.Equal("well", slice.ToString());
-			Assert.True(slice.Equals("well".AsSpan()));
+			Assert.True(slice.SequenceEqual("well".AsSpan()));
 			Assert.Throws<ArgumentException>(() => slice.Subsegment(5, 5));
 			Assert.Throws<ArgumentException>(() => slice.Subsegment(0, 5));
 			Assert.True(slice.Slice(1, 6, true).Equals("ell ho"));

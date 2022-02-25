@@ -48,19 +48,27 @@ public static partial class TextExtensions
 	/// <param name="comparisonType">The string comparision type to use.  Default is Ordinal.</param>
 	/// <returns>
 	/// The segment representing the found string.
-	/// If not found, the StringSegment.IsValid property will be false.
+	/// If not found, the StringSegment.HasValue property will be false.
 	/// </returns>
-	public static StringSegment First(this string source, string search, StringComparison comparisonType = StringComparison.Ordinal)
+	public static StringSegment First(this StringSegment source, StringSegment search, StringComparison comparisonType = StringComparison.Ordinal)
 	{
-		if (source is null) throw new ArgumentNullException(nameof(source));
-		if (search is null) throw new ArgumentNullException(nameof(search));
+		if (!source.HasValue) throw new ArgumentException(MustBeSegmentWithValue, nameof(source));
 		Contract.EndContractBlock();
 
 		if (search.Length == 0)
 			return default;
 
 		var i = source.IndexOf(search, comparisonType);
-		return i == -1 ? default : new(source, i, search.Length);
+		return i == -1 ? default : source.Subsegment(i, search.Length);
+	}
+
+	/// <inheritdoc cref="First(StringSegment, StringSegment, StringComparison)"/>
+	public static StringSegment First(this string source, StringSegment search, StringComparison comparisonType = StringComparison.Ordinal)
+	{
+		if (source is null) throw new ArgumentNullException(nameof(source));
+		Contract.EndContractBlock();
+
+		return First(source.AsSegment(), search, comparisonType);
 	}
 
 	/// <summary>Shortcut for .AsSegment().Trim().</summary>
@@ -75,7 +83,7 @@ public static partial class TextExtensions
 	/// <param name="pattern">The pattern to look for.</param>
 	/// <returns>
 	/// The segment representing the found string.
-	/// If not found, the StringSegment.IsValid property will be false.
+	/// If not found, the StringSegment.HasValue property will be false.
 	/// </returns>
 	/// <remarks>If the pattern is right-to-left, then it will return the first segment from the right.</remarks>
 	public static StringSegment First(this string source, Regex pattern)
@@ -88,7 +96,7 @@ public static partial class TextExtensions
 		return match.Success ? new(source, match.Index, match.Length) : default;
 	}
 
-	/// <inheritdoc cref="First(string, string, StringComparison)" />
+	/// <inheritdoc cref="First(string, StringSegment, StringComparison)" />
 	public static StringSegment First(this StringSegment source, ReadOnlySpan<char> search, StringComparison comparisonType = StringComparison.Ordinal)
 	{
 		if (!source.HasValue) throw new ArgumentException(MustBeSegmentWithValue, nameof(source));
@@ -101,31 +109,25 @@ public static partial class TextExtensions
 		return i == -1 ? default : new(source.Buffer, source.Offset + i, search.Length);
 	}
 
-	/// <inheritdoc cref="First(string, string, StringComparison)" />
-	public static StringSegment First(this StringSegment source, string search, StringComparison comparisonType = StringComparison.Ordinal)
-	{
-		if (search is null) throw new ArgumentNullException(nameof(search));
-		Contract.EndContractBlock();
-
-		return First(source, search.AsSpan(), comparisonType);
-	}
-
 	/// <summary>
 	/// Finds the last instance of a string and returns a StringSegment for subsequent use.
 	/// </summary>
-	/// <inheritdoc cref="First(string, string, StringComparison)"/>
-	public static StringSegment Last(this string source, string search, StringComparison comparisonType = StringComparison.Ordinal)
+	/// <inheritdoc cref="First(StringSegment, StringSegment, StringComparison)"/>
+	public static StringSegment Last(this StringSegment source, StringSegment search, StringComparison comparisonType = StringComparison.Ordinal)
 	{
-		if (source is null) throw new ArgumentNullException(nameof(source));
-		if (search is null) throw new ArgumentNullException(nameof(search));
+		if (!source.HasValue) throw new ArgumentException(MustBeSegmentWithValue, nameof(source));
 		Contract.EndContractBlock();
 
 		if (search.Length == 0)
 			return default;
 
-		var i = source.LastIndexOf(search, comparisonType);
-		return i == -1 ? default : new(source, i, search.Length);
+		var i = source.AsSpan().LastIndexOf(search, comparisonType);
+		return i == -1 ? default : source.Subsegment(i, search.Length);
 	}
+
+	/// <inheritdoc cref="Last(StringSegment, StringSegment, StringComparison)" />
+	public static StringSegment Last(this string source, StringSegment search, StringComparison comparisonType = StringComparison.Ordinal)
+		=> Last(source.AsSegment(), search, comparisonType);
 
 	/// <summary>
 	/// Finds the last instance of a pattern and returns a StringSegment for subsequent use.
@@ -144,7 +146,7 @@ public static partial class TextExtensions
 		return new(source, match.Index, match.Length);
 	}
 
-	/// <inheritdoc cref="Last(string, string, StringComparison)" />
+	/// <inheritdoc cref="Last(StringSegment, StringSegment, StringComparison)" />
 	public static StringSegment Last(this StringSegment source, ReadOnlySpan<char> search, StringComparison comparisonType = StringComparison.Ordinal)
 	{
 		if (!source.HasValue) throw new ArgumentException(MustBeSegmentWithValue, nameof(source));
@@ -154,15 +156,6 @@ public static partial class TextExtensions
 
 		var i = source.AsSpan().LastIndexOf(search, comparisonType);
 		return i == -1 ? default : new(source.Buffer, source.Offset + i, search.Length);
-	}
-
-	/// <inheritdoc cref="Last(string, string, StringComparison)" />
-	public static StringSegment Last(this StringSegment source, string search, StringComparison comparisonType = StringComparison.Ordinal)
-	{
-		if (search is null) throw new ArgumentNullException(nameof(search));
-		Contract.EndContractBlock();
-
-		return Last(source, search.AsSpan(), comparisonType);
 	}
 
 	/// <summary>
@@ -240,18 +233,20 @@ public static partial class TextExtensions
 		=> segment.AsSegment().IndexOf(value, comparisonType) != -1;
 
 	/// <inheritdoc cref="SplitToEnumerable(string, char, StringSplitOptions)"/>
-	public static IEnumerable<StringSegment> SplitAsSegments(this string source,
+	public static IEnumerable<StringSegment> SplitAsSegments(
+		this string source,
 		char splitCharacter,
 		StringSplitOptions options = StringSplitOptions.None)
 	{
 		if (source is null) throw new ArgumentNullException(nameof(source));
 		Contract.EndContractBlock();
 
-		return SplitAsSegments((StringSegment)source, splitCharacter, options);
+		return SplitAsSegments(source.AsSegment(), splitCharacter, options);
 	}
 
 	/// <inheritdoc cref="SplitToEnumerable(string, char, StringSplitOptions)"/>
-	public static IEnumerable<StringSegment> SplitAsSegments(this StringSegment source,
+	public static IEnumerable<StringSegment> SplitAsSegments(
+		this StringSegment source,
 		char splitCharacter,
 		StringSplitOptions options = StringSplitOptions.None)
 	{
@@ -324,7 +319,6 @@ public static partial class TextExtensions
 		}
 	}
 
-
 	/// <summary>
 	/// Enumerates a string by segments that are separated by the regular expression matches.
 	/// </summary>
@@ -332,7 +326,7 @@ public static partial class TextExtensions
 	/// <param name="pattern">The pattern to split by.</param>
 	/// <param name="options">Can specify to omit empty entries.</param>
 	/// <returns>An enumerable of the segments.</returns>
-	public static IEnumerable<StringSegment> Split(
+	public static IEnumerable<StringSegment> SplitAsSegments(
 		this string source,
 		Regex pattern,
 		StringSplitOptions options = StringSplitOptions.None)
@@ -376,85 +370,13 @@ public static partial class TextExtensions
 	{
 		if (source is null) throw new ArgumentNullException(nameof(source));
 		if (splitSequence is null) throw new ArgumentNullException(nameof(splitSequence));
-		if (splitSequence.Length == 0)
-			throw new ArgumentException("Cannot split using empty sequence.", nameof(splitSequence));
 		Contract.EndContractBlock();
 
-		return options switch
-		{
-			StringSplitOptions.None => source.Length == 0
-				? Enumerable.Repeat(StringSegment.Empty, 1)
-				: SplitAsSegmentsCore(source, splitSequence, comparisonType),
-			StringSplitOptions.RemoveEmptyEntries => source.Length == 0
-				? Enumerable.Empty<StringSegment>()
-				: SplitAsSegmentsCoreOmitEmpty(source, splitSequence, comparisonType),
-			_ => throw new System.ComponentModel.InvalidEnumArgumentException(),
-		};
-
-		static IEnumerable<StringSegment> SplitAsSegmentsCore(
-			string source,
-			string splitSequence,
-			StringComparison comparisonType = StringComparison.Ordinal)
-		{
-			var startIndex = 0;
-			var len = source.Length;
-			var s = splitSequence.Length;
-
-		loop:
-			var nextIndex = source.IndexOf(splitSequence, startIndex, comparisonType);
-			if (nextIndex == -1)
-			{
-				yield return source.AsSegment(startIndex);
-				yield break;
-			}
-			else if (nextIndex == len)
-			{
-				yield return new(source, nextIndex, 0);
-				yield break;
-			}
-			else
-			{
-				yield return new(source, startIndex, nextIndex - startIndex);
-				nextIndex += s;
-			}
-			startIndex = nextIndex;
-			goto loop;
-		}
-
-		static IEnumerable<StringSegment> SplitAsSegmentsCoreOmitEmpty(
-			string source,
-			string splitSequence,
-			StringComparison comparisonType = StringComparison.Ordinal)
-		{
-			var startIndex = 0;
-			var len = source.Length;
-			var s = splitSequence.Length;
-
-			do
-			{
-				var nextIndex = source.IndexOf(splitSequence, startIndex, comparisonType);
-				if (nextIndex == len)
-					yield break;
-
-				if (nextIndex == -1)
-				{
-					yield return source.AsSegment(startIndex);
-					yield break;
-				}
-				else
-				{
-					var length = nextIndex - startIndex;
-					if (length != 0) yield return new(source, startIndex, length);
-					nextIndex += s;
-				}
-				startIndex = nextIndex;
-			}
-			while (startIndex != len);
-		}
+		return SplitAsSegments(source.AsSegment(), splitSequence.AsSegment(), options, comparisonType);
 	}
 
 	/// <inheritdoc cref="SplitAsSegments(string, string, StringSplitOptions, StringComparison)"/>
-	public static IEnumerable<StringSegment> Split(
+	public static IEnumerable<StringSegment> SplitAsSegments(
 		this StringSegment source,
 		StringSegment splitSequence,
 		StringSplitOptions options = StringSplitOptions.None,
@@ -593,7 +515,7 @@ public static partial class TextExtensions
 		StringSegment splitSequence,
 		StringSegment replacement,
 		StringComparison comparisonType = StringComparison.Ordinal)
-		=> Join(Split(source, splitSequence, comparisonType: comparisonType), replacement);
+		=> Join(SplitAsSegments(source, splitSequence, comparisonType: comparisonType), replacement);
 
 	/// <returns>The resultant string.</returns>
 	/// <inheritdoc cref="Replace(StringSegment, StringSegment, StringSegment, StringComparison)"/>
@@ -601,14 +523,14 @@ public static partial class TextExtensions
 		StringSegment splitSequence,
 		StringSegment replacement,
 		StringComparison comparisonType = StringComparison.Ordinal)
-		=> JoinToString(Split(source, splitSequence, comparisonType: comparisonType), replacement);
+		=> JoinToString(SplitAsSegments(source, splitSequence, comparisonType: comparisonType), replacement);
 
 	/// <inheritdoc cref="Replace(StringSegment, StringSegment, StringSegment, StringComparison)"/>
 	public static IEnumerable<StringSegment> ReplaceAsSegments(
 		this string source,
 		Regex splitSequence,
 		StringSegment replacement)
-		=> Join(Split(source, splitSequence), replacement);
+		=> Join(SplitAsSegments(source, splitSequence), replacement);
 
 	/// <inheritdoc cref="Replace(StringSegment, StringSegment, StringSegment, StringComparison)"/>
 	public static IEnumerable<StringSegment> ReplaceAsSegments(
@@ -911,11 +833,4 @@ public static partial class TextExtensions
 		return trimmedEnd == 0 && trimmedStart == 0 ? segment
 			: new(segment.Buffer, segment.Offset + trimmedStart, length - trimmedEnd - trimmedStart);
 	}
-
-	/// <summary>
-	/// Determines whether this StringSegment and a specified ReadOnlySpan have the same characters.
-	/// </summary>
-	/// <inheritdoc cref="string.Equals(string, StringComparison)"/>
-	public static bool Equals(this StringSegment source, ReadOnlySpan<char> other, StringComparison stringComparison = StringComparison.Ordinal)
-		=> other.Length == source.Length && source.AsSpan().Equals(other, stringComparison);
 }

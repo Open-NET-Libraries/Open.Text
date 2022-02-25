@@ -30,9 +30,9 @@ namespace Open.Text.Tests
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Roslynator", "RCS1196:Call extension method as instance method.", Justification = "Preferred.")]
 		public static void ThrowIfNull()
 		{
-			Assert.Throws<ArgumentNullException>(() => TextExtensions.FirstSplit(default!, ',', out _));
-			Assert.Throws<ArgumentNullException>(() => TextExtensions.FirstSplit(default!, ",", out _));
-			Assert.Throws<ArgumentNullException>(() => TextExtensions.FirstSplit(DefaultTestString, default(string)!, out _));
+			Assert.Throws<ArgumentException>(() => TextExtensions.FirstSplit(default!, ',', out _));
+			Assert.Throws<ArgumentException>(() => TextExtensions.FirstSplit(default!, ",", out _));
+			Assert.Throws<ArgumentException>(() => TextExtensions.FirstSplit(DefaultTestString, default(string)!, out _));
 			Assert.Throws<ArgumentNullException>(() => TextExtensions.SplitToEnumerable(default!, ','));
 			Assert.Throws<ArgumentNullException>(() => TextExtensions.SplitToEnumerable(default!, ","));
 			Assert.Throws<ArgumentNullException>(() => TextExtensions.SplitToEnumerable(DefaultTestString, default(string)!));
@@ -82,7 +82,7 @@ namespace Open.Text.Tests
 			Assert.Equal(segments, sequence.SplitAsMemory(",", options: options).Select(m => m.Span.ToString()));
 			Assert.Equal(segments, sequence.SplitAsSegments(',', options).Select(m => m.ToString()));
 			Assert.Equal(segments, sequence.SplitAsSegments(",", options: options).Select(m => m.ToString()));
-			Assert.Equal(segments, sequence.Split(new Regex(","), options: options).Select(m => m.ToString()));
+			Assert.Equal(segments, sequence.SplitAsSegments(new Regex(","), options: options).Select(m => m.ToString()));
 			var span = sequence.AsSpan();
 			Assert.Equal(segments, span.Split(',', options));
 			Assert.Equal(segments, span.Split(",", options));
@@ -98,7 +98,7 @@ namespace Open.Text.Tests
 				.Select(m => m.Value));
 
 			var stringSegment = sequence.AsSegment();
-			var ss = stringSegment.Split(",", options).Select(s => s.Value).ToArray();
+			var ss = stringSegment.SplitAsSegments(",", options).Select(s => s.Value).ToArray();
 			Assert.Equal(segments, ss);
 
 			if (options == StringSplitOptions.RemoveEmptyEntries) return;

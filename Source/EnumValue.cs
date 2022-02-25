@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Primitives;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -29,7 +30,7 @@ public readonly struct EnumValue<TEnum>
 	/// Parses the string value to construct an EnumValue&lt;<typeparamref name="TEnum"/>&gt; instance.
 	/// </summary>
 	/// <exception cref="ArgumentNullException">value is null.</exception>
-	public EnumValue(string value)
+	public EnumValue(StringSegment value)
 	{
 		Value = EnumValue.Parse<TEnum>(value);
 	}
@@ -164,6 +165,11 @@ public readonly struct EnumValue<TEnum>
 	/// <summary>
 	/// Implicitly converts an string to an EnumValue of enum type TEnum.
 	/// </summary>
+	public static implicit operator EnumValue<TEnum>(StringSegment value) => new(value);
+
+	/// <summary>
+	/// Implicitly converts an string to an EnumValue of enum type TEnum.
+	/// </summary>
 	public static implicit operator EnumValue<TEnum>(string value) => new(value);
 
 	private string GetDebuggerDisplay()
@@ -194,7 +200,7 @@ public readonly struct EnumValueCaseIgnored<TEnum>
 	/// Parses the string value to construct an EnumValueCaseIgnored&lt;<typeparamref name="TEnum"/>&gt; instance.
 	/// </summary>
 	/// <exception cref="ArgumentNullException"><paramref name="value"/> is null.</exception>
-	public EnumValueCaseIgnored(string value)
+	public EnumValueCaseIgnored(StringSegment value)
 	{
 		Value = EnumValue.Parse<TEnum>(value, true);
 	}
@@ -267,6 +273,11 @@ public readonly struct EnumValueCaseIgnored<TEnum>
 	/// <summary>
 	/// Implicitly converts an string to an EnumValueCaseIgnored of enum type TEnum.
 	/// </summary>
+	public static implicit operator EnumValueCaseIgnored<TEnum>(StringSegment value) => new(value);
+
+	/// <summary>
+	/// Implicitly converts an string to an EnumValueCaseIgnored of enum type TEnum.
+	/// </summary>
 	public static implicit operator EnumValueCaseIgnored<TEnum>(string value) => new(value);
 
 	private string GetDebuggerDisplay()
@@ -284,20 +295,20 @@ public static class EnumValue
 	/// <returns>The enum that represents the string <paramref name="value"/> provided.</returns>
 	/// <exception cref="ArgumentNullException"><paramref name="value"/> is null.</exception>
 	/// <exception cref="ArgumentException">Requested <paramref name="value"/> was not found.</exception>
-	/// <inheritdoc cref="TryParse{TEnum}(string, bool, out TEnum)"/>
-	public static TEnum Parse<TEnum>(string value)
+	/// <inheritdoc cref="TryParse{TEnum}(StringSegment, bool, out TEnum)"/>
+	public static TEnum Parse<TEnum>(StringSegment value)
 		where TEnum : Enum
 		=> TryParse<TEnum>(value, false, out var e) ? e
 		: throw new ArgumentException($"Requested value '{value}' was not found.", nameof(value));
 
-	/// <inheritdoc cref="TryParse{TEnum}(string, bool, out TEnum)"/>
-	public static TEnum Parse<TEnum>(string value, bool ignoreCase)
+	/// <inheritdoc cref="TryParse{TEnum}(StringSegment, bool, out TEnum)"/>
+	public static TEnum Parse<TEnum>(StringSegment value, bool ignoreCase)
 		where TEnum : Enum
 		=> TryParse<TEnum>(value, ignoreCase, out var e) ? e
 		: throw new ArgumentException($"Requested value '{value}' was not found.", nameof(value));
 
-	/// <inheritdoc cref="TryParse{TEnum}(string, bool, out TEnum)"/>
-	public static bool TryParse<TEnum>(string value, out TEnum e)
+	/// <inheritdoc cref="TryParse{TEnum}(StringSegment, bool, out TEnum)"/>
+	public static bool TryParse<TEnum>(StringSegment value, out TEnum e)
 		where TEnum : Enum
 		=> TryParse(value, false, out e);
 
@@ -308,11 +319,12 @@ public static class EnumValue
 	/// <param name="ignoreCase">If true, will ignore case differences when looking for a match.</param>
 	/// <param name="e">The enum that represents the string <paramref name="value"/> provided.</param>
 	/// <returns>true if the value was found; otherwise false.</returns>
-	public static bool TryParse<TEnum>(string value, bool ignoreCase, out TEnum e)
+	public static bool TryParse<TEnum>(StringSegment value, bool ignoreCase, out TEnum e)
 		where TEnum : Enum
 	{
-		if (value is null) goto notFound;
+		if (!value.HasValue) goto notFound;
 		var len = value.Length;
+		if(len==0) goto notFound;
 		var lookup = EnumValue<TEnum>.Lookup;
 		if (len >= lookup.Length) goto notFound;
 		var r = lookup[len];

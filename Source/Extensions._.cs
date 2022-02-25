@@ -31,7 +31,9 @@ public static partial class TextExtensions
 	public static readonly Regex ValidAlphaNumericOnlyUntrimmedPattern = new(@"^\s*\w+\s*$", RegexOptions.Compiled);
 
 	/// <summary>
-	/// Provides the substring before the search string.
+	/// Reports the zero-based index position of the last occurrence of a specified string
+	/// within this instance. The search starts at a specified character position and
+	/// proceeds backward toward the beginning of the string.
 	/// </summary>
 	/// <param name="source">The source string to search in.</param>
 	/// <param name="search">The search string to look for.  If the search is null or empty this method returns null.</param>
