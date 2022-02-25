@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Text;
 
@@ -17,6 +18,7 @@ public static class StringBuilderExtensions
 	/// <param name="sb">The string builder to append to.</param>
 	/// <param name="value">The generic value to append.</param>
 	/// <exception cref="ArgumentNullException">If the provided StringBuilder is null.</exception>
+	[ExcludeFromCodeCoverage] // Reason: no need to cover underlying .NET code.
 	public static StringBuilder Append<T>(this StringBuilder sb, T value)
 		=> sb is null
 		? throw new ArgumentNullException(nameof(sb))
@@ -364,6 +366,7 @@ public static class StringBuilderExtensions
 	/// <summary>
 	/// Appends a key/value pair to StringBuilder using the provided separators.
 	/// </summary>
+	[ExcludeFromCodeCoverage] // Reason: component parts are tested.
 	public static StringBuilder AppendWithSeparator<T>(this StringBuilder target, IDictionary<string, T> source, string key, string itemSeparator, string keyValueSeparator)
 	{
 		if (target is null)
@@ -397,6 +400,7 @@ public static class StringBuilderExtensions
 	/// <param name="value">The read-only character span to append.</param>
 	/// <returns>A reference to this instance after the append operation is completed.</returns>
 	/// <exception cref="ArgumentNullException">If the target is null.</exception>
+	[ExcludeFromCodeCoverage] // Reason: component parts are tested.
 	public static StringBuilder Append(this StringBuilder target, ReadOnlySpan<char> value)
 	{
 		if (target is null) throw new ArgumentNullException(nameof(target));

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Primitives;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Text.RegularExpressions;
 
@@ -321,6 +322,7 @@ public static partial class TextExtensions
 		: TrimEndPattern(source.AsSegment(), pattern.AsSpan(), comparisonType, max);
 
 	/// <inheritdoc cref="TrimEndPattern(ReadOnlySpan{char}, ReadOnlySpan{char}, StringComparison, int)"/>
+	[ExcludeFromCodeCoverage]
 	public static StringSegment TrimEndPattern(this string source,
 		ReadOnlySpan<char> pattern,
 		StringComparison comparisonType = StringComparison.Ordinal,

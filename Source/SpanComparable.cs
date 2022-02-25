@@ -33,6 +33,7 @@ public readonly ref struct SpanComparable
 	/// <summary>
 	/// The length of the string.
 	/// </summary>
+	[ExcludeFromCodeCoverage]
 	public int Length => Source.Length;
 
 	/// <summary>
@@ -60,10 +61,26 @@ public readonly ref struct SpanComparable
 	public bool Equals(StringSegment other)
 		=> Equals(other.AsSpan());
 
+	/// <summary>
+	/// Checks if <paramref name="value"/> value is contained in the sequence using the comparison type.
+	/// </summary>
+	/// <returns>true if the value of <paramref name="value"/> is contained (using the comparison type); otherwise false. </returns>
+	public bool Contains(string value)
+		=> Source.Contains(value, Type);
+
+	/// <inheritdoc cref="Contains(string)"/>
+	public bool Contains(StringSegment value)
+		=> Source.Contains(value, Type);
+
+	/// <inheritdoc cref="Contains(string)"/>
+	public bool Contains(ReadOnlySpan<char> value)
+		=> Source.Contains(value, Type);
+
 	/// <inheritdoc cref="ReadOnlySpan{T}.Equals(object)" />
 	[Obsolete("Equals() on StringCompariable will always throw an exception. Use == instead.")]
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	[SuppressMessage("Design", "CA1065:Do not raise exceptions in unexpected locations", Justification = "<Pending>")]
+	[ExcludeFromCodeCoverage]
 #pragma warning disable CS0809 // Obsolete member overrides non-obsolete member
 	public override bool Equals(object obj) => throw new NotSupportedException();
 
@@ -72,6 +89,7 @@ public readonly ref struct SpanComparable
 #pragma warning disable IDE0079 // Remove unnecessary suppression
 #pragma warning disable IDE0070 // Use 'System.HashCode'
 	/// <inheritdoc />
+	[ExcludeFromCodeCoverage]
 	public override int GetHashCode()
 	{
 		int hashCode = 1013877538;
@@ -134,6 +152,7 @@ public readonly ref struct SpanComparable
 }
 
 /// <summary>Extensions for SpanComparable.</summary>
+[ExcludeFromCodeCoverage]
 public static class SpanComparableExtensions
 {
 	/// <summary>

@@ -296,6 +296,9 @@
         <member name="M:Open.Text.TextExtensions.TrimmedEquals(Microsoft.Extensions.Primitives.StringSegment,Microsoft.Extensions.Primitives.StringSegment,System.StringComparison)">
             <inheritdoc cref="M:Open.Text.TextExtensions.TrimmedEquals(System.String,Microsoft.Extensions.Primitives.StringSegment,System.Char,System.StringComparison)"/>
         </member>
+        <member name="M:Open.Text.TextExtensions.TrimmedEquals(Microsoft.Extensions.Primitives.StringSegment,System.ReadOnlySpan{System.Char},System.StringComparison)">
+            <inheritdoc cref="M:Open.Text.TextExtensions.TrimmedEquals(System.String,Microsoft.Extensions.Primitives.StringSegment,System.Char,System.StringComparison)"/>
+        </member>
         <member name="M:Open.Text.TextExtensions.TrimmedEquals(System.String,System.ReadOnlySpan{System.Char},System.Char,System.StringComparison)">
             <param name="source">The source string to virtually trim.</param>
             <param name="other">The span to compare to.</param>
@@ -510,17 +513,26 @@
         <member name="M:Open.Text.TextExtensions.IndexOf(System.String,Microsoft.Extensions.Primitives.StringSegment,System.StringComparison)">
             <inheritdoc cref="M:Open.Text.TextExtensions.IndexOf(Microsoft.Extensions.Primitives.StringSegment,Microsoft.Extensions.Primitives.StringSegment,System.Int32,System.StringComparison)"/>
         </member>
-        <member name="M:Open.Text.TextExtensions.Contains(Microsoft.Extensions.Primitives.StringSegment,System.String,System.StringComparison)">
+        <member name="M:Open.Text.TextExtensions.Contains(Microsoft.Extensions.Primitives.StringSegment,Microsoft.Extensions.Primitives.StringSegment,System.StringComparison)">
             <summary>
             Checks if <paramref name="value"/> value is contained in the sequence using the comparison type.
             </summary>
             <returns>true if the value of <paramref name="value"/> is contained (using the comparison type); otherwise false. </returns>
         </member>
-        <member name="M:Open.Text.TextExtensions.Contains(Microsoft.Extensions.Primitives.StringSegment,Microsoft.Extensions.Primitives.StringSegment,System.StringComparison)">
-            <inheritdoc cref="M:Open.Text.TextExtensions.Contains(Microsoft.Extensions.Primitives.StringSegment,System.String,System.StringComparison)"/>
+        <member name="M:Open.Text.TextExtensions.Contains(Microsoft.Extensions.Primitives.StringSegment,System.ReadOnlySpan{System.Char},System.StringComparison)">
+            <inheritdoc cref="M:Open.Text.TextExtensions.Contains(Microsoft.Extensions.Primitives.StringSegment,Microsoft.Extensions.Primitives.StringSegment,System.StringComparison)"/>
+        </member>
+        <member name="M:Open.Text.TextExtensions.Contains(System.ReadOnlySpan{System.Char},Microsoft.Extensions.Primitives.StringSegment,System.StringComparison)">
+            <summary>
+            Checks if <paramref name="value"/> value is contained in the sequence using the comparison type.
+            </summary>
+            <returns>true if the value of <paramref name="value"/> is contained (using the comparison type); otherwise false. </returns>
         </member>
         <member name="M:Open.Text.TextExtensions.Contains(System.String,Microsoft.Extensions.Primitives.StringSegment,System.StringComparison)">
-            <inheritdoc cref="M:Open.Text.TextExtensions.Contains(Microsoft.Extensions.Primitives.StringSegment,System.String,System.StringComparison)"/>
+            <inheritdoc cref="M:Open.Text.TextExtensions.Contains(Microsoft.Extensions.Primitives.StringSegment,Microsoft.Extensions.Primitives.StringSegment,System.StringComparison)"/>
+        </member>
+        <member name="M:Open.Text.TextExtensions.Contains(System.String,System.ReadOnlySpan{System.Char},System.StringComparison)">
+            <inheritdoc cref="M:Open.Text.TextExtensions.Contains(Microsoft.Extensions.Primitives.StringSegment,Microsoft.Extensions.Primitives.StringSegment,System.StringComparison)"/>
         </member>
         <member name="M:Open.Text.TextExtensions.SplitAsSegments(System.String,System.Char,System.StringSplitOptions)">
             <inheritdoc cref="M:Open.Text.TextExtensions.SplitToEnumerable(System.String,System.Char,System.StringSplitOptions)"/>
@@ -825,21 +837,18 @@
             <remarks>This is a stop-gap until .NET 6 releases the .ValueSpan property.</remarks>
             <param name="capture">The capture to get the span from.</param>
         </member>
-        <member name="M:Open.Text.TextExtensions.GetValue(System.Text.RegularExpressions.GroupCollection,System.String,System.Boolean)">
+        <member name="M:Open.Text.TextExtensions.GetValue(System.Text.RegularExpressions.GroupCollection,System.String)">
             <summary>
             Gets a group by name.
             </summary>
-            <remarks>If throwIfInvalid = false then will return null if not found; otherwise an ArgumentException will be thrown.</remarks>
             <param name="groups">The group collection to get the group from.</param>
             <param name="groupName">The declared name of the group.</param>
-            <param name="throwIfInvalid">Causes an exception if true and a group is not found.</param>
-            <returns>The value of the requested group.</returns>
+            <returns>The value of the requested group or null if not found.</returns>
             <exception cref="T:System.ArgumentNullException">Groups or groupName is null.</exception>
-            <exception cref="T:System.ArgumentException">If throwIfInvalid is true and no group is found.</exception>
         </member>
-        <member name="M:Open.Text.TextExtensions.GetValueSpan(System.Text.RegularExpressions.GroupCollection,System.String,System.Boolean)">
-            <remarks>If throwIfInvalid = false then will return an empty span if not found; otherwise an ArgumentException will be thrown.</remarks>
-            <inheritdoc cref="M:Open.Text.TextExtensions.GetValue(System.Text.RegularExpressions.GroupCollection,System.String,System.Boolean)" />
+        <member name="M:Open.Text.TextExtensions.GetValueSpan(System.Text.RegularExpressions.GroupCollection,System.String)">
+            <returns>The value of the requested group or an empty span if not found.</returns>
+            <inheritdoc cref="M:Open.Text.TextExtensions.GetValue(System.Text.RegularExpressions.GroupCollection,System.String)" />
         </member>
         <member name="M:Open.Text.TextExtensions.AsSegments(System.Text.RegularExpressions.Regex,System.String)">
             <summary>
@@ -977,6 +986,18 @@
         </member>
         <member name="M:Open.Text.SpanComparable.Equals(Microsoft.Extensions.Primitives.StringSegment)">
             <inheritdoc cref="M:Open.Text.SpanComparable.Equals(System.String)"/>
+        </member>
+        <member name="M:Open.Text.SpanComparable.Contains(System.String)">
+            <summary>
+            Checks if <paramref name="value"/> value is contained in the sequence using the comparison type.
+            </summary>
+            <returns>true if the value of <paramref name="value"/> is contained (using the comparison type); otherwise false. </returns>
+        </member>
+        <member name="M:Open.Text.SpanComparable.Contains(Microsoft.Extensions.Primitives.StringSegment)">
+            <inheritdoc cref="M:Open.Text.SpanComparable.Contains(System.String)"/>
+        </member>
+        <member name="M:Open.Text.SpanComparable.Contains(System.ReadOnlySpan{System.Char})">
+            <inheritdoc cref="M:Open.Text.SpanComparable.Contains(System.String)"/>
         </member>
         <member name="M:Open.Text.SpanComparable.Equals(System.Object)">
             <inheritdoc cref="M:System.ReadOnlySpan`1.Equals(System.Object)" />
@@ -1239,19 +1260,6 @@
         </member>
         <member name="M:Open.Text.StringComparable.Equals(System.ReadOnlySpan{System.Char})">
             <inheritdoc cref="M:Open.Text.StringComparable.Equals(System.String)"/>
-        </membeparable.Length">
-            <summary>
-            The length of the string.
-            </summary>
-        </member>
-        <member name="M:Open.Text.StringComparable.Equals(System.String)">
-            <summary>
-            Compares <paramref name="other"/> if its characters matches this instance.
-            </summary>
-            <returns>true if the value of <paramref name="other"/> matches; otherwise false. </returns>
-        </member>
-        <member name="M:Open.Text.StringComparable.Equals(System.ReadOnlySpan{System.Char})">
-            <inheritdoc cref="M:Open.Text.StringComparable.Equals(System.String)"/>
         </member>
         <member name="M:Open.Text.StringComparable.Equals(Open.Text.StringComparable)">
             <inheritdoc cref="M:Open.Text.StringComparable.Equals(System.String)"/>
@@ -1275,6 +1283,9 @@
             <returns>true if the value of <paramref name="value"/> is contained (using the comparison type); otherwise false. </returns>
         </member>
         <member name="M:Open.Text.StringComparable.Contains(Microsoft.Extensions.Primitives.StringSegment)">
+            <inheritdoc cref="M:Open.Text.StringComparable.Contains(System.String)"/>
+        </member>
+        <member name="M:Open.Text.StringComparable.Contains(System.ReadOnlySpan{System.Char})">
             <inheritdoc cref="M:Open.Text.StringComparable.Contains(System.String)"/>
         </member>
         <member name="M:Open.Text.StringComparable.GetHashCode">

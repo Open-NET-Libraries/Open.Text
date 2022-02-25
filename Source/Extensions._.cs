@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.IO;
@@ -40,7 +41,7 @@ public static partial class TextExtensions
 	/// <param name="comparisonType">The comparison type to use when searching.</param>
 	/// <returns>The source of the string before the search string.  Returns null if search string is not found.</returns>
 	public static int LastIndexOf(this ReadOnlySpan<char> source,
-		ReadOnlySpan<char> search, StringComparison comparisonType = StringComparison.Ordinal)
+		ReadOnlySpan<char> search, StringComparison comparisonType)
 	{
 		if (search.Length > source.Length)
 			return -1;
@@ -101,6 +102,7 @@ public static partial class TextExtensions
 	/// <param name="source">The string to apply title-casing to.</param>
 	/// <param name="cultureInfo">The optional culture info.  Default is invariant.</param>
 	/// <returns>The new title-cased string.</returns>
+	[ExcludeFromCodeCoverage] // Would only text .NET TextInfo.ToTitleCase method.
 	public static string ToTitleCase(this string source, CultureInfo? cultureInfo = default)
 	{
 		if (source is null) throw new ArgumentNullException(nameof(source));
@@ -114,8 +116,11 @@ public static partial class TextExtensions
 	/// </summary>
 	/// <param name="values">The set of values to validate.</param>
 	/// <returns>True if any of the provided values is null, empty or white-space only. Otherwise false.</returns>
+	[ExcludeFromCodeCoverage]
 	public static bool IsAnyNullOrWhiteSpace(params string[] values)
-		=> values != null && values.Length != 0 && values.Any(v => string.IsNullOrWhiteSpace(v));
+		=> values != null
+		&& values.Length != 0
+		&& values.Any(v => string.IsNullOrWhiteSpace(v));
 
 	/// <summary>
 	/// Throws if null, empty or white-space only.
@@ -124,6 +129,7 @@ public static partial class TextExtensions
 	/// <exception cref="ArgumentException">If the source is empty or white-space.</exception>
 	/// <param name="source">The source string to validate.</param>
 	/// <returns>The original string.</returns>
+	[ExcludeFromCodeCoverage]
 	public static string AssertIsNotNullOrWhiteSpace(this string? source)
 	{
 		if (source is null) throw new ArgumentNullException(nameof(source));
@@ -136,6 +142,7 @@ public static partial class TextExtensions
 	/// <summary>
 	/// Shortcut for String.IsNullOrWhiteSpace(source).
 	/// </summary>
+	[ExcludeFromCodeCoverage]
 	public static bool IsNullOrWhiteSpace(this string? source)
 		=> string.IsNullOrWhiteSpace(source);
 
@@ -144,6 +151,7 @@ public static partial class TextExtensions
 	/// </summary>
 	/// <param name="value">The value to be trimmed.</param>
 	/// <param name="trim">True will trim whitespace from valid response.</param>
+	[ExcludeFromCodeCoverage]
 	public static string? ToNullIfWhiteSpace(this string? value, bool trim = false)
 		=> string.IsNullOrWhiteSpace(value) ? null
 			: (trim ? value!.Trim() : value);
@@ -153,6 +161,7 @@ public static partial class TextExtensions
 	/// </summary>
 	/// <param name="value">The value to be formatted.</param>
 	/// <param name="format">The format string.</param>
+	[ExcludeFromCodeCoverage]
 	public static string ToFormat(this string value, string? format = null)
 		=> string.IsNullOrWhiteSpace(value) ? string.Empty
 			: (format is null ? value : string.Format(CultureInfo.InvariantCulture, format, value));
@@ -164,6 +173,7 @@ public static partial class TextExtensions
 	/// <param name="format">The format string.</param>
 	/// <param name="cultureInfo">The optional culture info.  Default is invariant.</param>
 	/// <returns>The formatted string, or empty string if the value is null.</returns>
+	[ExcludeFromCodeCoverage]
 	public static string ToFormat<T>(this T? value, string? format = null, CultureInfo? cultureInfo = default)
 		where T : struct
 		=> value.HasValue
@@ -175,6 +185,7 @@ public static partial class TextExtensions
 	/// </summary>
 	/// <param name="source">The value to be formatted.</param>
 	/// <param name="trim">Will be trimmed if true.</param>
+	[ExcludeFromCodeCoverage]
 	public static bool IsAlphaNumeric(this string source, bool trim = false)
 		=> !string.IsNullOrWhiteSpace(source)
 		&& (trim ? ValidAlphaNumericOnlyUntrimmedPattern : ValidAlphaNumericOnlyPattern).IsMatch(source);
@@ -198,14 +209,11 @@ public static partial class TextExtensions
 	/// <summary>
 	/// Gets a group by name.
 	/// </summary>
-	/// <remarks>If throwIfInvalid = false then will return null if not found; otherwise an ArgumentException will be thrown.</remarks>
 	/// <param name="groups">The group collection to get the group from.</param>
 	/// <param name="groupName">The declared name of the group.</param>
-	/// <param name="throwIfInvalid">Causes an exception if true and a group is not found.</param>
-	/// <returns>The value of the requested group.</returns>
+	/// <returns>The value of the requested group or null if not found.</returns>
 	/// <exception cref="ArgumentNullException">Groups or groupName is null.</exception>
-	/// <exception cref="ArgumentException">If throwIfInvalid is true and no group is found.</exception>
-	public static string? GetValue(this GroupCollection groups, string groupName, bool throwIfInvalid = false)
+	public static string? GetValue(this GroupCollection groups, string groupName)
 	{
 		if (groups is null)
 			throw new ArgumentNullException(nameof(groups));
@@ -214,14 +222,14 @@ public static partial class TextExtensions
 		Contract.EndContractBlock();
 
 		var group = groups[groupName];
-		return group is null
-			? (throwIfInvalid ? throw new ArgumentException("Group not found.", nameof(groupName)) : null)
-			: (group.Success ? group.Value : null);
+		return group.Success
+			? group.Value
+			: null;
 	}
 
-	/// <remarks>If throwIfInvalid = false then will return an empty span if not found; otherwise an ArgumentException will be thrown.</remarks>
-	/// <inheritdoc cref="GetValue(GroupCollection, string, bool)" />
-	public static ReadOnlySpan<char> GetValueSpan(this GroupCollection groups, string groupName, bool throwIfInvalid = false)
+	/// <returns>The value of the requested group or an empty span if not found.</returns>
+	/// <inheritdoc cref="GetValue(GroupCollection, string)" />
+	public static ReadOnlySpan<char> GetValueSpan(this GroupCollection groups, string groupName)
 	{
 		if (groups is null)
 			throw new ArgumentNullException(nameof(groups));
@@ -230,9 +238,9 @@ public static partial class TextExtensions
 		Contract.EndContractBlock();
 
 		var group = groups[groupName];
-		return group is null
-			? throwIfInvalid ? throw new ArgumentException("Group not found.", nameof(groupName)) : null
-			: group.Success ? group.AsSpan() : ReadOnlySpan<char>.Empty;
+		return group.Success
+			? group.AsSpan()
+			: ReadOnlySpan<char>.Empty;
 	}
 
 	/// <summary>
@@ -268,6 +276,7 @@ public static partial class TextExtensions
 	/// <summary>
 	/// Shortcut for formating Nullable&lt;T&gt;.
 	/// </summary>
+	[ExcludeFromCodeCoverage]
 	public static string ToString<T>(this T? value, string format, T defaultValue = default, CultureInfo? cultureInfo = default)
 		where T : struct, IFormattable
 	{
@@ -280,12 +289,14 @@ public static partial class TextExtensions
 	/// <summary>
 	/// Shortcut for formating Nullable&lt;double&gt;.
 	/// </summary>
+	[ExcludeFromCodeCoverage]
 	public static string ToString(this double? value, string format, double defaultValue = double.NaN, CultureInfo? cultureInfo = default)
 		=> ToString<double>(value, format, defaultValue, cultureInfo);
 
 	/// <summary>
 	/// Shortcut for formating Nullable&lt;float&gt;.
 	/// </summary>
+	[ExcludeFromCodeCoverage]
 	public static string ToString(this float? value, string format, float defaultValue = float.NaN, CultureInfo? cultureInfo = default)
 		=> ToString<float>(value, format, defaultValue, cultureInfo);
 
@@ -320,12 +331,14 @@ public static partial class TextExtensions
 	/// <summary>
 	/// Returns an abbreviated metric representation of a quantity of bytes.
 	/// </summary>
+	[ExcludeFromCodeCoverage]
 	public static string ToByteString(this int bytes, string decimalFormat = "N1", CultureInfo? cultureInfo = default)
 		=> ToByteString((double)bytes, decimalFormat, cultureInfo);
 
 	/// <summary>
 	/// Returns an abbreviated metric representation of a quantity of bytes.
 	/// </summary>
+	[ExcludeFromCodeCoverage]
 	public static string ToByteString(this long bytes, string decimalFormat = "N1", CultureInfo? cultureInfo = default)
 		=> ToByteString((double)bytes, decimalFormat, cultureInfo);
 
@@ -351,12 +364,14 @@ public static partial class TextExtensions
 	/// <summary>
 	/// Returns an abbreviated metric representation of a number.
 	/// </summary>
+	[ExcludeFromCodeCoverage]
 	public static string ToMetricString(this long number, string decimalFormat = "N1", CultureInfo? cultureInfo = default)
 		=> ToMetricString((double)number, decimalFormat, cultureInfo);
 
 	/// <summary>
 	/// Returns an abbreviated metric representation of a number.
 	/// </summary>
+	[ExcludeFromCodeCoverage]
 	public static string ToMetricString(this int number, string decimalFormat = "N1", CultureInfo? cultureInfo = default)
 		=> ToMetricString((double)number, decimalFormat, cultureInfo);
 	#endregion
@@ -373,6 +388,7 @@ public static partial class TextExtensions
 	/// <param name="source">The source string.</param>
 	/// <param name="replace">The optional pattern to replace with.</param>
 	/// <returns>The resultant string.</returns>
+	[ExcludeFromCodeCoverage]
 	public static string ReplaceWhiteSpace(this string source, string replace = " ")
 	{
 		if (source is null) throw new ArgumentNullException(nameof(source));
@@ -390,6 +406,7 @@ public static partial class TextExtensions
 	/// <summary>
 	/// Shortcut for WriteLineNoTabs on a TextWriter. Mimimcs similar classes.
 	/// </summary>
+	[ExcludeFromCodeCoverage]
 	public static void WriteLineNoTabs(this TextWriter writer, string? s = null)
 	{
 		if (writer is null) throw new ArgumentNullException(nameof(writer));
@@ -407,6 +424,7 @@ public static partial class TextExtensions
 	/// <param name="values">The values to inject.</param>
 	/// <param name="cultureInfo">The optional culture info.  Default is invariant.</param>
 	/// <returns>The resultant string.</returns>
+	[ExcludeFromCodeCoverage]
 	public static string Supplant<T>(this string format, T[]? values, CultureInfo? cultureInfo = default)
 		=> values is null ? format : values.Length switch
 		{

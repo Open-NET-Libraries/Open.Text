@@ -160,6 +160,12 @@ public static partial class TextExtensions
 			&& source.Trim().Equals(other, comparisonType)
 		 : !other.HasValue;
 
+	/// <inheritdoc cref="TrimmedEquals(string?, StringSegment, char, StringComparison)"/>
+	public static bool TrimmedEquals(this StringSegment source, ReadOnlySpan<char> other, StringComparison comparisonType = StringComparison.Ordinal)
+		=> source.HasValue
+		&& source.Length >= other.Length
+		&& source.Trim().Equals(other, comparisonType);
+
 	/// <param name="source">The source string to virtually trim.</param>
 	/// <param name="other">The span to compare to.</param>
 	/// <param name="trimChar">The character to trim.</param>

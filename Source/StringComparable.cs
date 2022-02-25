@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Primitives;
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Open.Text;
 
@@ -43,6 +44,7 @@ public readonly struct StringComparable
 	/// <summary>
 	/// The length of the string.
 	/// </summary>
+	[ExcludeFromCodeCoverage]
 	public int Length => Segment.Length;
 
 	/// <summary>
@@ -74,6 +76,7 @@ public readonly struct StringComparable
 	/// Compares <paramref name="obj"/> if it is a string or StringComparable and if the value matches this instance.
 	/// </summary>
 	/// <returns>true if the value of <paramref name="obj"/> matches; otherwise false. </returns>
+	[ExcludeFromCodeCoverage]
 	public override bool Equals(object obj) => obj switch
 	{
 		StringComparable sc => Equals(sc),
@@ -93,7 +96,12 @@ public readonly struct StringComparable
 	public bool Contains(StringSegment value)
 		=> Segment.Contains(value, Type);
 
+	/// <inheritdoc cref="Contains(string)"/>
+	public bool Contains(ReadOnlySpan<char> value)
+		=> Segment.Contains(value, Type);
+
 	/// <inheritdoc />
+	[ExcludeFromCodeCoverage]
 #if NETSTANDARD2_1_OR_GREATER
 	public override int GetHashCode()
 		=> HashCode.Combine(Segment, Type);
@@ -159,6 +167,7 @@ public readonly struct StringComparable
 }
 
 /// <summary>Extensions for StringComparable.</summary>
+[ExcludeFromCodeCoverage]
 public static class StringComparableExtensions
 {
 	/// <summary>

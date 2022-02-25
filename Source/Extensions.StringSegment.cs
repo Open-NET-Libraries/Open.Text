@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
@@ -73,6 +74,7 @@ public static partial class TextExtensions
 
 	/// <summary>Shortcut for .AsSegment().Trim().</summary>
 	/// <inheritdoc cref="AsSegment(string)"/>
+	[ExcludeFromCodeCoverage] // Reason: would just test already tested code.
 	public static StringSegment TrimAsSegment(this string buffer)
 		=> buffer is null ? default : new StringSegment(buffer).Trim();
 
@@ -86,6 +88,7 @@ public static partial class TextExtensions
 	/// If not found, the StringSegment.HasValue property will be false.
 	/// </returns>
 	/// <remarks>If the pattern is right-to-left, then it will return the first segment from the right.</remarks>
+	[ExcludeFromCodeCoverage] // Reason: would just test already tested code.
 	public static StringSegment First(this string source, Regex pattern)
 	{
 		if (source is null) throw new ArgumentNullException(nameof(source));
@@ -254,19 +257,34 @@ public static partial class TextExtensions
 	/// <returns>true if the value of <paramref name="value"/> is contained (using the comparison type); otherwise false. </returns>
 	public static bool Contains(
 		this StringSegment segment,
-		string value, StringComparison comparisonType = StringComparison.Ordinal)
-		=> segment.IndexOf(value, comparisonType) != -1;
-
-	/// <inheritdoc cref="Contains(StringSegment, string, StringComparison)"/>
-	public static bool Contains(
-		this StringSegment segment,
 		StringSegment value, StringComparison comparisonType = StringComparison.Ordinal)
 		=> segment.IndexOf(value, comparisonType) != -1;
 
-	/// <inheritdoc cref="Contains(StringSegment, string, StringComparison)"/>
+	/// <inheritdoc cref="Contains(StringSegment, StringSegment, StringComparison)"/>
+	public static bool Contains(
+	this StringSegment segment,
+		ReadOnlySpan<char> value, StringComparison comparisonType = StringComparison.Ordinal)
+		=> segment.IndexOf(value, comparisonType) != -1;
+
+	/// <summary>
+	/// Checks if <paramref name="value"/> value is contained in the sequence using the comparison type.
+	/// </summary>
+	/// <returns>true if the value of <paramref name="value"/> is contained (using the comparison type); otherwise false. </returns>
+	public static bool Contains(
+		this ReadOnlySpan<char> span,
+		StringSegment value, StringComparison comparisonType = StringComparison.Ordinal)
+		=> span.IndexOf(value, comparisonType) != -1;
+
+	/// <inheritdoc cref="Contains(StringSegment, StringSegment, StringComparison)"/>
 	public static bool Contains(
 		this string segment,
 		StringSegment value, StringComparison comparisonType = StringComparison.Ordinal)
+		=> segment.AsSegment().IndexOf(value, comparisonType) != -1;
+
+	/// <inheritdoc cref="Contains(StringSegment, StringSegment, StringComparison)"/>
+	public static bool Contains(
+		this string segment,
+		ReadOnlySpan<char> value, StringComparison comparisonType = StringComparison.Ordinal)
 		=> segment.AsSegment().IndexOf(value, comparisonType) != -1;
 
 	/// <inheritdoc cref="SplitToEnumerable(string, char, StringSplitOptions)"/>
