@@ -43,7 +43,6 @@ public enum Greek
 	None
 }
 
-
 public static class EnumValueTests
 {
 	[Theory]
