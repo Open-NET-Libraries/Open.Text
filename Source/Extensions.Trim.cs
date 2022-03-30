@@ -230,6 +230,7 @@ public static partial class TextExtensions
 					--max;
 				}
 			}
+
 			return i;
 		}
 
@@ -254,6 +255,7 @@ public static partial class TextExtensions
 					--max;
 				}
 			}
+
 			return i;
 		}
 	}
@@ -377,6 +379,7 @@ public static partial class TextExtensions
 					--max;
 				}
 			}
+
 			return i;
 		}
 
@@ -407,6 +410,7 @@ public static partial class TextExtensions
 					--max;
 				}
 			}
+
 			return i;
 		}
 	}

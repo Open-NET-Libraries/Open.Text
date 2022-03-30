@@ -340,6 +340,7 @@ public static partial class TextExtensions
 				yield return source.Subsegment(startIndex, nextIndex - startIndex);
 				++nextIndex;
 			}
+
 			startIndex = nextIndex;
 			goto loop;
 		}
@@ -368,6 +369,7 @@ public static partial class TextExtensions
 					if (length != 0) yield return source.Subsegment(startIndex, length);
 					++nextIndex;
 				}
+
 				startIndex = nextIndex;
 			}
 			while (startIndex != len);
@@ -478,6 +480,7 @@ public static partial class TextExtensions
 				yield return source.Subsegment(startIndex, nextIndex - startIndex);
 				nextIndex += s;
 			}
+
 			startIndex = nextIndex;
 			goto loop;
 		}
@@ -508,6 +511,7 @@ public static partial class TextExtensions
 					if (length != 0) yield return source.Subsegment(startIndex, length);
 					nextIndex += s;
 				}
+
 				startIndex = nextIndex;
 			}
 			while (startIndex != len);
@@ -716,6 +720,7 @@ public static partial class TextExtensions
 			return offset == 0 && length == 0 ? segment
 				: throw new InvalidOperationException("Cannot slice a segment with no value.");
 		}
+
 		var newIndex = segment.Offset + offset;
 		if (newIndex < 0) throw new ArgumentOutOfRangeException(nameof(offset), offset, "Cannot index less than the start of the string.");
 		var newEnd = newIndex + length;
@@ -727,6 +732,7 @@ public static partial class TextExtensions
 				if (newIndex > end) throw new ArgumentOutOfRangeException(nameof(offset), offset, "Index is greater than the end of the source string.");
 				throw new ArgumentOutOfRangeException(nameof(length), length, "Desired length will extend greater than the end of the source string.");
 			}
+
 			return new(segment.Buffer, newIndex, length);
 		}
 		else
@@ -737,6 +743,7 @@ public static partial class TextExtensions
 				if (newIndex > end) throw new ArgumentOutOfRangeException(nameof(offset), offset, "Index is greater than the length of the segment.");
 				throw new ArgumentOutOfRangeException(nameof(length), length, "Desired length will extend greater than the length of the segment.");
 			}
+
 			return new(segment.Buffer, newIndex, length);
 		}
 	}

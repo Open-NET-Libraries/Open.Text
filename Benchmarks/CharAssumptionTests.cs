@@ -80,6 +80,7 @@ public class CharAssumptionTests
 				x = v;
 			}
 		}
+
 		return a;
 	}
 
@@ -96,6 +97,7 @@ public class CharAssumptionTests
 				Update(a, in i, in v);
 			}
 		}
+
 		return a;
 
 		static void Update(Span<char> a, in int i, in char v) => a[i] = v;
@@ -113,6 +115,7 @@ public class CharAssumptionTests
 				Update(a, in i, s[i]);
 			}
 		}
+
 		return a;
 
 		static void Update(Span<char> a, in int i, char v) => a[i] = v;
@@ -130,6 +133,7 @@ public class CharAssumptionTests
 				Update(a, in i, s[i]);
 			}
 		}
+
 		return a;
 
 		static void Update(Span<char> a, in int i, in char v) => a[i] = v;
