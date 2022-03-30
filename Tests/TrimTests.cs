@@ -107,6 +107,7 @@ public static class TrimTests
 		Assert.Equal("xyzABC", "xyzABCxyzxyz".TrimEndPattern(new Regex("[a-z]+")));
 		Assert.Equal("xyzABCxyzx", "xyzABCxyzxyz".TrimEndPattern(new Regex("yz"), 2));
 		Assert.Equal("xyzABCxyzx", "xyzABCxyzxyz".TrimEndPattern(new Regex("yz", RegexOptions.RightToLeft), 2));
+
 	}
 
 	[Fact]
@@ -116,7 +117,7 @@ public static class TrimTests
 		Assert.True(" ".AsSegment().TrimmedEquals(string.Empty));
 		Assert.True(" ".AsSegment().TrimmedEquals(string.Empty, new[] { ' ' }.AsSpan()));
 		Assert.True(" ".AsSegment().TrimmedEquals(ReadOnlySpan<char>.Empty));
-		Assert.True(" ".AsSegment().TrimmedEquals(ReadOnlySpan<char>.Empty, new[] {' '}.AsSpan()));
+		Assert.True(" ".AsSegment().TrimmedEquals(ReadOnlySpan<char>.Empty, new[] { ' ' }.AsSpan()));
 		Assert.True(" ".TrimmedEquals(string.Empty));
 		Assert.False("AB ".TrimmedEquals("ABC"));
 		Assert.False("A ".TrimmedEquals("ABC"));

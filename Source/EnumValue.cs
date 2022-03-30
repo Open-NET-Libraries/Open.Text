@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Primitives;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -45,15 +46,22 @@ public readonly struct EnumValue<TEnum>
 	/// </summary>
 	public override string ToString() => NameLookup(Value);
 
+	/// <summary>
+	/// Precompiled typed list of all enum values.
+	/// </summary>
+	public static readonly IReadOnlyList<TEnum> Values = Array.AsReadOnly(Enum.GetValues(typeof(TEnum)).Cast<TEnum>().ToArray());
+
+	internal static readonly ConcurrentDictionary<TEnum, IReadOnlyList<Attribute>> Attributes = new();
+
 	internal static readonly (string Name, TEnum Value)[]?[] Lookup = CreateLookup();
 
 	internal static readonly Func<TEnum, string> NameLookup = GetEnumNameDelegate();
 
 	static Func<TEnum, string> GetEnumNameDelegate()
 	{
-		var eValue = Expression.Parameter(typeof(TEnum), "value"); // (TEnum value)
 		var tEnum = typeof(TEnum);
 		var tResult = typeof(string);
+		var eValue = Expression.Parameter(tEnum, "value"); // (TEnum value)
 
 		return
 		  Expression.Lambda<Func<TEnum, string>>(
@@ -64,7 +72,7 @@ public readonly struct EnumValue<TEnum>
 				  Expression.Default(tResult)
 				),
 				null,
-				Enum.GetValues(tEnum).Cast<object>().Select(v => Expression.SwitchCase(
+				Values.Select(v => Expression.SwitchCase(
 				  Expression.Constant(string.Intern(v.ToString())),
 				  Expression.Constant(v)
 				)).ToArray()
@@ -77,11 +85,8 @@ public readonly struct EnumValue<TEnum>
 	{
 		var longest = 0;
 		var d = new Dictionary<int, List<(string Name, TEnum Value)>>();
-		var values = Enum
-			.GetValues(typeof(TEnum))
-			.Cast<TEnum>();
 
-		foreach (var e in values)
+		foreach (var e in Values)
 		{
 			var n = string.Intern(e.ToString());
 			var len = n.Length;
@@ -354,4 +359,21 @@ public static class EnumValue
 	/// <returns>The name of the enum.</returns>
 	public static string GetName<TEnum>(this TEnum value) where TEnum : Enum
 		=> EnumValue<TEnum>.NameLookup(value);
+
+	/// <summary>
+	/// Retrieves the attributes for a given enum value.
+	/// </summary>
+	public static IReadOnlyList<Attribute> GetAttributes<TEnum>(this TEnum value) where TEnum : Enum
+	{
+		return EnumValue<TEnum>.Attributes.GetOrAdd(value, GetAttributesCore);
+
+		static IReadOnlyList<Attribute> GetAttributesCore(TEnum value)
+		{
+			var memInfo = typeof(TEnum).GetMember(value.GetName());
+			var attributes = memInfo[0].GetCustomAttributes(false);
+			return attributes.Length is 0
+				? Array.Empty<Attribute>()
+				: Array.AsReadOnly(attributes.OfType<Attribute>().ToArray());
+		}
+	}
 }

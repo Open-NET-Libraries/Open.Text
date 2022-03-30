@@ -1,15 +1,51 @@
 ﻿using System;
+using System.Linq;
 using Xunit;
 
 namespace Open.Text.Tests;
 
-public static class EnumValueTests
+[AttributeUsage(AttributeTargets.Field)]
+public class LetterAttribute : Attribute
 {
-	public enum Greek
+	public LetterAttribute(char upper, char lower)
 	{
-		Alpha, Beta, Gamma
+		Upper = upper;
+		Lower = lower;
 	}
 
+	public char Upper { get; }
+	public char Lower { get; }
+
+	public bool EqualsLetter(char letter)
+		=> letter == Upper || letter == Lower;
+}
+
+public enum Greek
+{
+	[Letter('Α', 'α')]
+	Alpha,
+	[Letter('Β', 'β')]
+	Beta,
+	[Letter('Κ', 'κ')]
+	Kappa,
+	[Letter('Δ', 'δ')]
+	Delta,
+	[Letter('Ε', 'ε')]
+	Epsilon,
+	[Letter('Γ', 'γ')]
+	Gamma,
+	[Letter('Ω', 'ω')]
+	Omega,
+	[Letter('Φ', 'φ')]
+	Phi,
+	[Letter('Θ', 'θ')]
+	Theta,
+	None
+}
+
+
+public static class EnumValueTests
+{
 	[Theory]
 	[InlineData("Alpha")]
 	[InlineData("Beta")]
@@ -24,8 +60,8 @@ public static class EnumValueTests
 	}
 
 	[Theory]
-	[InlineData("Cappa")]
-	[InlineData("Theta")]
+	[InlineData("XXX")]
+	[InlineData("YYY")]
 	public static void EvalValueParseFail(string value)
 	{
 		Assert.Throws<ArgumentException>(() => Enum.Parse(typeof(Greek), value));
@@ -44,6 +80,17 @@ public static class EnumValueTests
 	{
 		var s = expected.ToString();
 		Assert.Equal(s, expected.GetName());
+	}
+
+	[Theory]
+	[InlineData(Greek.Alpha, 'Α')]
+	[InlineData(Greek.Beta, 'Β')]
+	[InlineData(Greek.Gamma, 'Γ')]
+
+	public static void GetLetter(Greek expected, char letter)
+	{
+		var a = (LetterAttribute)expected.GetAttributes().Single();
+		Assert.Equal(letter, a.Upper);
 	}
 
 	static void CheckImplicit(EnumValue<Greek> value, Greek expected)

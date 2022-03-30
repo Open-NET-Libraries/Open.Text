@@ -1,5 +1,6 @@
 ﻿using BenchmarkDotNet.Attributes;
 using FastEnumUtility;
+using System;
 
 namespace Open.Text.Benchmarks;
 
@@ -35,6 +36,7 @@ public class EnumParseTests
 					throw new Exception("Valid.");
 			}
 		}
+
 		return e;
 	}
 
@@ -54,9 +56,9 @@ public class EnumParseTests
 				return true;
 			}
 
-			if (value.Equals(nameof(Greek.Cappa), StringComparison.OrdinalIgnoreCase))
+			if (value.Equals(nameof(Greek.Kappa), StringComparison.OrdinalIgnoreCase))
 			{
-				e = Greek.Cappa;
+				e = Greek.Kappa;
 				return true;
 			}
 
@@ -114,8 +116,8 @@ public class EnumParseTests
 			case nameof(Greek.Beta):
 				e = Greek.Beta;
 				return true;
-			case nameof(Greek.Cappa):
-				e = Greek.Cappa;
+			case nameof(Greek.Kappa):
+				e = Greek.Kappa;
 				return true;
 			case nameof(Greek.Delta):
 				e = Greek.Delta;
@@ -155,6 +157,7 @@ public class EnumParseTests
 					e = Greek.Phi;
 					return true;
 				}
+
 				e = default!;
 				return false;
 
@@ -200,9 +203,9 @@ public class EnumParseTests
 						return true;
 					}
 
-					if (value.Equals(nameof(Greek.Cappa), StringComparison.OrdinalIgnoreCase))
+					if (value.Equals(nameof(Greek.Kappa), StringComparison.OrdinalIgnoreCase))
 					{
-						e = Greek.Cappa;
+						e = Greek.Kappa;
 						return true;
 					}
 
@@ -239,8 +242,8 @@ public class EnumParseTests
 					case nameof(Greek.Alpha):
 						e = Greek.Alpha;
 						return true;
-					case nameof(Greek.Cappa):
-						e = Greek.Cappa;
+					case nameof(Greek.Kappa):
+						e = Greek.Kappa;
 						return true;
 					case nameof(Greek.Delta):
 						e = Greek.Delta;
@@ -265,6 +268,7 @@ public class EnumParseTests
 					e = Greek.Epsilon;
 					return true;
 				}
+
 				e = default!;
 				return false;
 		}
@@ -293,6 +297,7 @@ public class EnumParseTests
 					throw new Exception("Valid.");
 			}
 		}
+
 		return e;
 	}
 
@@ -316,6 +321,7 @@ public class EnumParseTests
 					throw new Exception("Valid.");
 			}
 		}
+
 		return e;
 	}
 
@@ -339,6 +345,7 @@ public class EnumParseTests
 					throw new Exception("Valid.");
 			}
 		}
+
 		return e;
 	}
 
@@ -362,6 +369,7 @@ public class EnumParseTests
 					throw new Exception("Valid.");
 			}
 		}
+
 		return e;
 	}
 }
