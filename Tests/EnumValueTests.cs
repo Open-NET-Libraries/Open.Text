@@ -45,6 +45,14 @@ public enum Greek
 
 public static class EnumValueTests
 {
+	[Fact]
+	public static void IsIntType()
+	{
+		var tInt = typeof(int);
+		var t = EnumValue<Greek>.UnderlyingType;
+		Assert.Equal(tInt,t);
+	}
+
 	[Theory]
 	[InlineData("Alpha")]
 	[InlineData("Beta")]
@@ -80,6 +88,20 @@ public static class EnumValueTests
 		var s = expected.ToString();
 		Assert.Equal(s, expected.GetName());
 	}
+
+	[Theory]
+	[InlineData(0)]
+	[InlineData(1)]
+	[InlineData(2)]
+
+	public static void GetValue(int expected)
+	{
+		Assert.True(EnumValue<Greek>.IsDefined(expected));
+		var found = EnumValue.TryGetValue(expected, out Greek e);
+		Assert.True(found);
+		Assert.Equal(expected, (int)e);
+	}
+
 
 	[Theory]
 	[InlineData(Greek.Alpha, 'Α')]

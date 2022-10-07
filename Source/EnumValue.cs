@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 namespace Open.Text;
 
@@ -19,6 +20,13 @@ public readonly struct EnumValue<TEnum>
 	: IEquatable<EnumValue<TEnum>>, IEquatable<EnumValueCaseIgnored<TEnum>>, IEquatable<TEnum>
 	where TEnum : Enum
 {
+	private static Type? _underlyingType;
+
+	/// <summary>
+	/// The underlying type of <typeparamref name="TEnum"/>.
+	/// </summary>
+	public static Type UnderlyingType => _underlyingType ??= Enum.GetUnderlyingType(typeof(TEnum));
+
 	/// <summary>
 	/// Constructs an EnumValue&lt;<typeparamref name="TEnum"/>&gt; using the provided enum value.
 	/// </summary>
@@ -59,9 +67,8 @@ public readonly struct EnumValue<TEnum>
 
 	static Func<TEnum, string> GetEnumNameDelegate()
 	{
-		var tEnum = typeof(TEnum);
 		var tResult = typeof(string);
-		var eValue = Expression.Parameter(tEnum, "value"); // (TEnum value)
+		var eValue = Expression.Parameter(typeof(TEnum), "value"); // (TEnum value)
 
 		return
 		  Expression.Lambda<Func<TEnum, string>>(
@@ -176,6 +183,35 @@ public readonly struct EnumValue<TEnum>
 	/// Implicitly converts an string to an EnumValue of enum type TEnum.
 	/// </summary>
 	public static implicit operator EnumValue<TEnum>(string value) => new(value);
+
+	static class Underlying<T>
+	{
+		public static readonly Dictionary<T, TEnum> Map;
+
+		static Underlying()
+		{
+			Map = new Dictionary<T, TEnum>();
+			if (typeof(T) != UnderlyingType) return;
+
+			foreach (var e in Values)
+			{
+				var i = (T)Convert.ChangeType(e, typeof(T));
+				Map.Add(i, e);
+			}
+		}
+	}
+
+	/// <summary>
+	/// Returns true if the <paramref name="value"/> matches a value of <typeparamref name="TEnum"/>.
+	/// </summary>
+	public static bool IsDefined<T>(T value)
+		=> Underlying<T>.Map.ContainsKey(value);
+
+	/// <summary>
+	/// Returns the <typeparamref name="TEnum"/> from the <paramref name="value"/> provided if it maps directly to the underlying value.
+	/// </summary>
+	public static bool TryGetValue<T>(T value, out TEnum e)
+		=> Underlying<T>.Map.TryGetValue(value, out e);
 
 	private string GetDebuggerDisplay()
 	{
@@ -351,12 +387,20 @@ public static class EnumValue
 	}
 
 	/// <summary>
+	/// Returns the <typeparamref name="TEnum"/> from the <paramref name="value"/> provided if it maps directly to the underlying value.
+	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static bool TryGetValue<TEnum, T>(T value, out TEnum e) where TEnum : Enum
+		=> EnumValue<TEnum>.TryGetValue(value, out e);
+
+	/// <summary>
 	/// Uses an expression tree to do an fast lookup the name of the enum value.
 	/// </summary>
 	/// <remarks>Is faster than calling .ToString() on a value.</remarks>
 	/// <typeparam name="TEnum">The enum type.</typeparam>
 	/// <param name="value">The enum value to get the name for.</param>
 	/// <returns>The name of the enum.</returns>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static string GetName<TEnum>(this TEnum value) where TEnum : Enum
 		=> EnumValue<TEnum>.NameLookup(value);
 
