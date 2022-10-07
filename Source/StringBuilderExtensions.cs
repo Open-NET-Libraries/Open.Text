@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Primitives;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
@@ -39,6 +40,8 @@ public static class StringBuilderExtensions
 			decimal d => sb.Append(d),
 			string s => sb.Append(s),
 			char[] c => sb.Append(c),
+			StringSegment s => Append(sb, s),
+			ReadOnlyMemory<char> s => sb.Append(s.Span),
 			_ => sb.Append(value)
 		};
 
@@ -390,6 +393,24 @@ public static class StringBuilderExtensions
 		}
 
 		return target;
+	}
+
+	/// <summary>
+	/// Appends the characters of <paramref name="value"/> to this instance.
+	/// </summary>
+	/// <param name="target">The <see cref="StringBuilder"/> to append to.</param>
+	/// <param name="value">The <see cref="StringSegment"/> to append.</param>
+	/// <returns>A reference to this instance after the append operation is completed.</returns>
+	/// <exception cref="ArgumentNullException">If the target is null.</exception>
+	[ExcludeFromCodeCoverage] // Reason: component parts are tested.
+	[SuppressMessage("Style", "IDE0046:Convert to conditional expression")]
+	public static StringBuilder Append(this StringBuilder target, StringSegment value)
+	{
+		if (target is null) throw new ArgumentNullException(nameof(target));
+		if (!value.HasValue) return target;
+		if (value.Length == 0) return target.Append(string.Empty);
+		if (value.Length == value.Buffer.Length) return target.Append(value.Buffer);
+		return target.Append(value.AsSpan());
 	}
 
 #if NETSTANDARD2_0
