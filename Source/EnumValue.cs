@@ -15,6 +15,7 @@ namespace Open.Text;
 /// </summary>
 /// <remarks>String parsing or coercion is case sensitve and must be exact.</remarks>
 [SuppressMessage("Usage", "CA2225:Operator overloads have named alternates", Justification = "Already exposes via a property.")]
+[SuppressMessage("Design", "CA1000:Do not declare static members on generic types", Justification = "Intentional")]
 [DebuggerDisplay("{GetDebuggerDisplay()}")]
 public readonly struct EnumValue<TEnum>
 	: IEquatable<EnumValue<TEnum>>, IEquatable<EnumValueCaseIgnored<TEnum>>, IEquatable<TEnum>
@@ -25,6 +26,7 @@ public readonly struct EnumValue<TEnum>
 	/// <summary>
 	/// The underlying type of <typeparamref name="TEnum"/>.
 	/// </summary>
+	[SuppressMessage("Roslynator", "RCS1158:Static member in generic type should use a type parameter.")]
 	public static Type UnderlyingType => _underlyingType ??= Enum.GetUnderlyingType(typeof(TEnum));
 
 	/// <summary>
@@ -186,11 +188,11 @@ public readonly struct EnumValue<TEnum>
 
 	static class Underlying<T>
 	{
-		public static readonly Dictionary<T, TEnum> Map;
+		public static readonly Dictionary<T, TEnum> Map = new();
 
+		[SuppressMessage("Globalization", "CA1305:Specify IFormatProvider")]
 		static Underlying()
 		{
-			Map = new Dictionary<T, TEnum>();
 			if (typeof(T) != UnderlyingType) return;
 
 			foreach (var e in Values)
@@ -204,6 +206,7 @@ public readonly struct EnumValue<TEnum>
 	/// <summary>
 	/// Returns true if the <paramref name="value"/> matches a value of <typeparamref name="TEnum"/>.
 	/// </summary>
+	[SuppressMessage("Roslynator", "RCS1158:Static member in generic type should use a type parameter.")]
 	public static bool IsDefined<T>(T value)
 		=> Underlying<T>.Map.ContainsKey(value);
 

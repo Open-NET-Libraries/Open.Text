@@ -1,6 +1,9 @@
 ﻿using BenchmarkDotNet.Attributes;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Open.Text.Benchmarks;
+
+[SuppressMessage("Performance", "CA1822:Mark members as static")]
 public class IsDefinedTests
 {
 	static readonly IReadOnlyList<int> Values = Enumerable.Range(-2, 30).ToArray();

@@ -102,7 +102,6 @@ public static class EnumValueTests
 		Assert.Equal(expected, (int)e);
 	}
 
-
 	[Theory]
 	[InlineData(Greek.Alpha, 'Α')]
 	[InlineData(Greek.Beta, 'Β')]
