@@ -1,5 +1,6 @@
 ﻿using BenchmarkDotNet.Attributes;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -44,5 +45,14 @@ public class EnumToStringTests
 	{
 		foreach (var g in Values)
 			_ = g.GetName();
+	}
+
+	static readonly ConcurrentDictionary<Greek, string> _reg = new();
+
+	[Benchmark]
+	public void GetCachedName()
+	{
+		foreach (var g in Values)
+			_ = _reg.GetOrAdd(g, k=>k.ToString());
 	}
 }
