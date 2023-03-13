@@ -130,6 +130,7 @@ public static partial class TextExtensions
 	/// <param name="source">The source string to validate.</param>
 	/// <returns>The original string.</returns>
 	[ExcludeFromCodeCoverage]
+	[SuppressMessage("Roslynator", "RCS1256:Invalid argument null check.", Justification = "Prefer unique exception for null.")]
 	public static string AssertIsNotNullOrWhiteSpace(this string? source)
 	{
 		if (source is null) throw new ArgumentNullException(nameof(source));

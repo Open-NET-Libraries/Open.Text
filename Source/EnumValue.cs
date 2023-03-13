@@ -6,14 +6,16 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
+using static System.Linq.Expressions.Expression;
 using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace Open.Text;
 
 /// <summary>
 /// A case struct representing an enum value that can be implicitly coerced from a string.
 /// </summary>
-/// <remarks>String parsing or coercion is case sensitve and must be exact.</remarks>
+/// <remarks>String parsing or coercion is case sensitive and must be exact.</remarks>
 [SuppressMessage("Usage", "CA2225:Operator overloads have named alternates", Justification = "Already exposes via a property.")]
 [SuppressMessage("Design", "CA1000:Do not declare static members on generic types", Justification = "Intentional")]
 [DebuggerDisplay("{GetDebuggerDisplay()}")]
@@ -54,46 +56,92 @@ public readonly struct EnumValue<TEnum>
 	/// <summary>
 	/// Returns the string representation of the enum value.
 	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public override string ToString() => NameLookup(Value);
 
+	private static IReadOnlyList<TEnum>? _values;
 	/// <summary>
 	/// Precompiled typed list of all enum values.
 	/// </summary>
-	public static readonly IReadOnlyList<TEnum> Values = Array.AsReadOnly(Enum.GetValues(typeof(TEnum)).Cast<TEnum>().ToArray());
+	public static IReadOnlyList<TEnum> Values
+		=> LazyInitializer.EnsureInitialized(ref _values,
+			() => Array.AsReadOnly(Enum.GetValues(typeof(TEnum)).Cast<TEnum>().ToArray()))!;
 
-	internal static readonly ConcurrentDictionary<TEnum, IReadOnlyList<Attribute>> Attributes = new();
-
-	internal static readonly (string Name, TEnum Value)[]?[] Lookup = CreateLookup();
-
-	internal static readonly Func<TEnum, string> NameLookup = GetEnumNameDelegate();
+	private static ConcurrentDictionary<TEnum, IReadOnlyList<Attribute>>? _attributes;
+	internal static ConcurrentDictionary<TEnum, IReadOnlyList<Attribute>> Attributes
+		=> LazyInitializer.EnsureInitialized(ref _attributes)!;
 
 	static Func<TEnum, string> GetEnumNameDelegate()
 	{
 		var tResult = typeof(string);
-		var eValue = Expression.Parameter(typeof(TEnum), "value"); // (TEnum value)
+		var eValue = Parameter(typeof(TEnum), "value"); // (TEnum value)
 
-		return
-		  Expression.Lambda<Func<TEnum, string>>(
-			Expression.Block(tResult,
-			  Expression.Switch(tResult, eValue,
-				Expression.Block(tResult,
-				  Expression.Throw(Expression.New(typeof(Exception).GetConstructor(Type.EmptyTypes))),
-				  Expression.Default(tResult)
+		return Lambda<Func<TEnum, string>>(
+			Switch(tResult, eValue,
+				Block(
+					Throw(New(typeof(ArgumentException).GetConstructor(Type.EmptyTypes))),
+					Default(tResult)
 				),
 				null,
-				Values.Select(v => Expression.SwitchCase(
-				  Expression.Constant(string.Intern(v.ToString())),
-				  Expression.Constant(v)
+				Values.Select(v => SwitchCase(
+					Constant(string.Intern(v.ToString())),
+					Constant(v)
 				)).ToArray()
-			  )
-			), eValue
-		  ).Compile();
+			), eValue).Compile();
 	}
+
+	private static Func<TEnum, string>? _nameLookup;
+	internal static Func<TEnum, string> NameLookup
+		=> LazyInitializer.EnsureInitialized(ref _nameLookup,
+			() => GetEnumNameDelegate())!;
+	internal static Func<string, (bool Success, TEnum Value)> GetEnumTryParseDelegate()
+	{
+		var valueParam = Parameter(typeof(string), "value");
+		var defaultExpression = CreateNewTuple(false, default!);
+		var enumValues = Values.Select(v => (value: v, name: string.Intern(v.ToString())));
+		var nameGroups = enumValues.GroupBy(v => v.name.Length);
+		var lengthCheckCases = nameGroups.Select(group =>
+			SwitchCase(
+				Switch(
+					valueParam,
+					defaultExpression,
+					null,
+					group.Select(v => SwitchCase(
+						CreateNewTuple(true, v.value),
+						Constant(v.name)
+					)).ToArray()
+				),
+				Constant(group.Key)
+			)
+		).ToArray();
+
+		return Lambda<Func<string, (bool Success, TEnum Value)>>(
+			Switch(
+				Property(valueParam, nameof(string.Length)),
+				defaultExpression,
+				null,
+				lengthCheckCases
+			),
+			valueParam
+		).Compile();
+
+		static Expression CreateNewTuple(bool success, TEnum value)
+			=> New(
+				typeof((bool Success, TEnum Value)).GetConstructor(new[] { typeof(bool), typeof(TEnum) }),
+				Constant(success),
+				Constant(value)
+			);
+	}
+
+	private static Func<string, (bool Success, TEnum Value)>? _valueLookup;
+	internal static Func<string, (bool Success, TEnum Value)> ValueLookup
+		=> LazyInitializer.EnsureInitialized(ref _valueLookup,
+			() => GetEnumTryParseDelegate())!;
 
 	static (string Name, TEnum Value)[]?[] CreateLookup()
 	{
 		var longest = 0;
-		var d = new Dictionary<int, List<(string Name, TEnum Value)>>();
+		var d = new Dictionary<int, SortedList<string, (string Name, TEnum Value)>>();
 
 		foreach (var e in Values)
 		{
@@ -101,15 +149,20 @@ public readonly struct EnumValue<TEnum>
 			var len = n.Length;
 			if (len > longest) longest = len;
 			if (!d.TryGetValue(len, out var v)) d.Add(len, v = new());
-			v.Add((n, e));
+			v.Add(n, (n, e));
 		}
 
 		var result = new (string Name, TEnum Value)[]?[longest + 1];
 		foreach (var i in d.Keys)
-			result[i] = d[i].ToArray();
+			result[i] = d[i].Values.ToArray();
 
 		return result;
 	}
+
+	private static (string Name, TEnum Value)[]?[]? _lookup;
+	internal static (string Name, TEnum Value)[]?[] Lookup
+		=> LazyInitializer.EnsureInitialized(ref _lookup,
+			() => CreateLookup())!;
 
 	/// <summary>
 	/// Indicates whether this instance matches the enum value of <paramref name="other"/>.
@@ -197,7 +250,7 @@ public readonly struct EnumValue<TEnum>
 
 			foreach (var e in Values)
 			{
-				var i = (T)Convert.ChangeType(e, typeof(T));
+				var i = (T)System.Convert.ChangeType(e, typeof(T));
 				Map.Add(i, e);
 			}
 		}
@@ -332,10 +385,33 @@ public readonly struct EnumValueCaseIgnored<TEnum>
 }
 
 /// <summary>
-/// Fast utilties and extensions for parsing enums and retreiving the name of an enum value.
+/// Fast utilities and extensions for parsing enums and retrieving the name of an enum value.
 /// </summary>
+[SuppressMessage("Globalization", "CA1305:Specify IFormatProvider")]
 public static class EnumValue
 {
+	private const string NotFoundMessage = "Requested value '{0}' was not found.";
+
+	/// <returns>The enum that represents the string <paramref name="value"/> provided.</returns>
+	/// <exception cref="ArgumentException">Requested <paramref name="value"/> was not found.</exception>
+	/// <inheritdoc cref="TryParse{TEnum}(StringSegment, bool, out TEnum)"/>
+	public static TEnum Parse<TEnum>(string value)
+		where TEnum : Enum
+	{
+		var (success, result) = EnumValue<TEnum>.ValueLookup(value);
+		return success ? result
+			: throw new ArgumentException(string.Format(NotFoundMessage, value), nameof(value));
+	}
+
+	/// <inheritdoc cref="TryParse{TEnum}(StringSegment, out TEnum)"/>
+	public static bool TryParse<TEnum>(string value, out TEnum e)
+		where TEnum : Enum
+	{
+		var (success, result) = EnumValue<TEnum>.ValueLookup(value);
+		e = result;
+		return success;
+	}
+
 	/// <returns>The enum that represents the string <paramref name="value"/> provided.</returns>
 	/// <exception cref="ArgumentNullException"><paramref name="value"/> is null.</exception>
 	/// <exception cref="ArgumentException">Requested <paramref name="value"/> was not found.</exception>
@@ -343,13 +419,21 @@ public static class EnumValue
 	public static TEnum Parse<TEnum>(StringSegment value)
 		where TEnum : Enum
 		=> TryParse<TEnum>(value, false, out var e) ? e
-		: throw new ArgumentException($"Requested value '{value}' was not found.", nameof(value));
+		: throw new ArgumentException(string.Format(NotFoundMessage, value), nameof(value));
+
+	/// <inheritdoc cref="TryParse{TEnum}(StringSegment, bool, out TEnum)"/>
+	public static TEnum Parse<TEnum>(string value, bool ignoreCase)
+		where TEnum : Enum
+		=> ignoreCase
+			? TryParse<TEnum>(value, ignoreCase, out var e) ? e
+				: throw new ArgumentException(string.Format(NotFoundMessage, value), nameof(value))
+			: Parse<TEnum>(value);
 
 	/// <inheritdoc cref="TryParse{TEnum}(StringSegment, bool, out TEnum)"/>
 	public static TEnum Parse<TEnum>(StringSegment value, bool ignoreCase)
 		where TEnum : Enum
 		=> TryParse<TEnum>(value, ignoreCase, out var e) ? e
-		: throw new ArgumentException($"Requested value '{value}' was not found.", nameof(value));
+		: throw new ArgumentException(string.Format(NotFoundMessage, value), nameof(value));
 
 	/// <inheritdoc cref="TryParse{TEnum}(StringSegment, bool, out TEnum)"/>
 	public static bool TryParse<TEnum>(StringSegment value, out TEnum e)
@@ -367,20 +451,92 @@ public static class EnumValue
 		where TEnum : Enum
 	{
 		if (!value.HasValue) goto notFound;
+
+		// If this is a string, use the optimized version.
+		if (!ignoreCase && value.Buffer.Length == value.Length)
+			return TryParse(value.Buffer, out e);
+
 		var len = value.Length;
-		if(len==0) goto notFound;
+		if (len == 0) goto notFound;
 		var lookup = EnumValue<TEnum>.Lookup;
 		if (len >= lookup.Length) goto notFound;
+
 		var r = lookup[len];
 		if (r is null) goto notFound;
+		Debug.Assert(r.Length != 0);
 
 		var sc = ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+
+		if (r.Length > 64)
+			goto binarySearch;
+
+		// For smaller sizes, a simple linear search is faster than a binary search.
+		// Above arrays sizes of 64 is when things start to change and binary search wins on average.
 		foreach (var (Name, Value) in r)
 		{
 			if (Name.Equals(value, sc))
 			{
 				e = Value;
 				return true;
+			}
+		}
+
+		goto notFound;
+
+	binarySearch:
+		var span = r.AsSpan();
+
+	// Use a custom binary search to optimize for potentially larger cases.
+	search:
+		switch (span.Length)
+		{
+			case 1:
+			{
+				var (Name, Value) = span[0];
+				if (Name.Equals(value, sc))
+				{
+					e = Value;
+					return true;
+				}
+
+				break;
+			}
+
+			case 2:
+			{
+				var (Name, Value) = span[0];
+				if (Name.Equals(value, sc))
+				{
+					e = Value;
+					return true;
+				}
+
+				span = span.Slice(0, 1);
+				goto search;
+			}
+
+			default:
+			{
+				int i = span.Length / 2;
+				var (Name, Value) = r[i];
+				switch ((StringSegment.Compare(value, Name, sc) >> 31) | 1)
+				{
+					case 0:
+						e = Value;
+						return true;
+
+					case -1:
+						span = span.Slice(0, i);
+						goto search;
+
+					case +1:
+						span = span.Slice(i + 1);
+						goto search;
+				}
+
+				Debug.Fail("Should never have arrived here");
+
+				break;
 			}
 		}
 

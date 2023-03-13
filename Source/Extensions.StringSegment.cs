@@ -18,7 +18,7 @@ public static partial class TextExtensions
 	/// Creates a StringSegment representing the provided string.
 	/// </summary>
 	/// <param name="buffer">The string the segment belongs to.</param>
-	public static StringSegment AsSegment(this string buffer)
+	public static StringSegment AsSegment(this string? buffer)
 		=> buffer is null ? default : new(buffer);
 
 	/// <inheritdoc cref="AsSegment(string, int, int)"/>
@@ -31,7 +31,6 @@ public static partial class TextExtensions
 	/// <param name="buffer">The string the segment belongs to.</param>
 	/// <param name="offset">The starting point of the string to use as the index of the segment.</param>
 	/// <param name="length">The length of the segment.</param>
-	/// <exception cref="ArgumentNullException">If the source is null.</exception>
 	public static StringSegment AsSegment(this string buffer, int offset, int length)
 	{
 		if (buffer is null) throw new ArgumentNullException(nameof(buffer));
@@ -46,7 +45,7 @@ public static partial class TextExtensions
 	/// </summary>
 	/// <param name="source">The source string to search.</param>
 	/// <param name="search">The string pattern to look for.</param>
-	/// <param name="comparisonType">The string comparision type to use.  Default is Ordinal.</param>
+	/// <param name="comparisonType">The string comparison type to use.  Default is Ordinal.</param>
 	/// <returns>
 	/// The segment representing the found string.
 	/// If not found, the StringSegment.HasValue property will be false.
@@ -566,7 +565,7 @@ public static partial class TextExtensions
 		=> JoinToStringBuilder(source, between).ToString();
 
 	/// <summary>
-	/// Splits a sequence and replaces the removed sequendces with the replacement sequence.
+	/// Splits a sequence and replaces the removed sequences with the replacement sequence.
 	/// </summary>
 	/// <inheritdoc cref="SplitAsSegments(string, string, StringSplitOptions, StringComparison)"/>
 	public static IEnumerable<StringSegment> Replace(
@@ -600,7 +599,7 @@ public static partial class TextExtensions
 		=> Replace(source, splitSequence, replacement, comparisonType);
 
 	/// <summary>
-	/// Splits each sequence and replaces the removed sequendces with the replacement sequence.
+	/// Splits each sequence and replaces the removed sequences with the replacement sequence.
 	/// </summary>
 	/// <inheritdoc cref="SplitAsSegments(string, string, StringSplitOptions, StringComparison)"/>
 	public static IEnumerable<StringSegment> ReplaceEach(
@@ -682,7 +681,7 @@ public static partial class TextExtensions
 			? throw new ArgumentOutOfRangeException(nameof(offset), offset, "Cannot index less than the start of the string.")
 			: offset > sLen
 			? throw new ArgumentOutOfRangeException(nameof(offset), offset, "Cannot index greater than the length of the segment.")
-			: (new(segment.Buffer, newIndex, sLen - offset));
+			: new(segment.Buffer, newIndex, sLen - offset);
 	}
 
 	/// <summary>
@@ -700,7 +699,7 @@ public static partial class TextExtensions
 			? throw new ArgumentOutOfRangeException(nameof(offset), offset, "Cannot shrink less than the start of the string.")
 			: sOff + newLength > segment.Buffer.Length
 			? throw new ArgumentOutOfRangeException(nameof(offset), offset, "Cannot expand greater than the length of the source.")
-			: (new(segment.Buffer, sOff, newLength));
+			: new(segment.Buffer, sOff, newLength);
 	}
 
 	/// <summary>
@@ -711,7 +710,7 @@ public static partial class TextExtensions
 	/// <param name="length">The length desired.</param>
 	/// <param name="ignoreLengthBoundary">
 	///	If true, the length can exceed the segment length but not past the full length of the source string.
-	///	If false (default), an ArgumentOutOfRangeException will be thrown if the expected length exeeds the segment.
+	///	If false (default), an ArgumentOutOfRangeException will be thrown if the expected length exceeds the segment.
 	///	</param>
 	public static StringSegment Slice(this StringSegment segment, int offset, int length, bool ignoreLengthBoundary = false)
 	{
@@ -816,7 +815,7 @@ public static partial class TextExtensions
 
 		var trimmed = TrimStartCore(segment, segment.Buffer.AsSpan(), trim);
 		return trimmed == 0 ? segment
-			: new(segment.Buffer, segment.Offset + trimmed, length - trimmed);
+			: new(segment.Buffer!, segment.Offset + trimmed, length - trimmed);
 	}
 
 	/// <summary>
@@ -830,7 +829,7 @@ public static partial class TextExtensions
 
 		var trimmed = TrimEndCore(segment, segment.Buffer.AsSpan(), trim);
 		return trimmed == 0 ? segment
-			: new(segment.Buffer, segment.Offset, length - trimmed);
+			: new(segment.Buffer!, segment.Offset, length - trimmed);
 	}
 
 	/// <summary>
@@ -845,7 +844,7 @@ public static partial class TextExtensions
 
 		var trimmed = TrimStartCore(segment, segment.Buffer.AsSpan(), trim);
 		return trimmed == 0 ? segment
-			: new(segment.Buffer, segment.Offset + trimmed, length - trimmed);
+			: new(segment.Buffer!, segment.Offset + trimmed, length - trimmed);
 	}
 
 	/// <summary>
@@ -859,7 +858,7 @@ public static partial class TextExtensions
 
 		var trimmed = TrimEndCore(segment, segment.Buffer.AsSpan(), trim);
 		return trimmed == 0 ? segment
-			: new(segment.Buffer, segment.Offset, length - trimmed);
+			: new(segment.Buffer!, segment.Offset, length - trimmed);
 	}
 
 	/// <summary>
@@ -873,10 +872,10 @@ public static partial class TextExtensions
 
 		var span = segment.Buffer.AsSpan();
 		var trimmedEnd = TrimEndCore(segment, span, trim);
-		if (trimmedEnd == length) return new(segment.Buffer, segment.Offset, 0);
+		if (trimmedEnd == length) return new(segment.Buffer!, segment.Offset, 0);
 		var trimmedStart = TrimStartCore(segment, span, trim);
 		return trimmedEnd == 0 && trimmedStart == 0 ? segment
-			: new(segment.Buffer, segment.Offset + trimmedStart, length - trimmedEnd - trimmedStart);
+			: new(segment.Buffer!, segment.Offset + trimmedStart, length - trimmedEnd - trimmedStart);
 	}
 
 	/// <summary>
@@ -890,9 +889,9 @@ public static partial class TextExtensions
 
 		var span = segment.Buffer.AsSpan();
 		var trimmedEnd = TrimEndCore(segment, span, trim);
-		if (trimmedEnd == length) return new(segment.Buffer, segment.Offset, 0);
+		if (trimmedEnd == length) return new(segment.Buffer!, segment.Offset, 0);
 		var trimmedStart = TrimStartCore(segment, span, trim);
 		return trimmedEnd == 0 && trimmedStart == 0 ? segment
-			: new(segment.Buffer, segment.Offset + trimmedStart, length - trimmedEnd - trimmedStart);
+			: new(segment.Buffer!, segment.Offset + trimmedStart, length - trimmedEnd - trimmedStart);
 	}
 }

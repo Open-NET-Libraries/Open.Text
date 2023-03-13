@@ -62,8 +62,9 @@ public static class EnumValueTests
 		CheckImplicit(value, (Greek)Enum.Parse(typeof(Greek), value));
 		var lower = value.ToLower();
 		CheckImplicitCaseIgnored(lower, (Greek)Enum.Parse(typeof(Greek), lower, true));
-		Assert.True(EnumValue.TryParse<Greek>(lower, true, out _));
+		Assert.True(EnumValue.TryParse<Greek>(lower, true, out var e));
 		Assert.False(EnumValue.TryParse<Greek>(lower, out _));
+		Assert.Equal(e, EnumValue.Parse<Greek>(value));
 	}
 
 	[Theory]
