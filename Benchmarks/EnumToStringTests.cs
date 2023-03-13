@@ -22,6 +22,7 @@ public class EnumToStringTests
 	{
 		Greek.Alpha => nameof(Greek.Alpha),
 		Greek.Beta => nameof(Greek.Beta),
+		Greek.Beta2 => nameof(Greek.Beta2),
 		Greek.Kappa => nameof(Greek.Kappa),
 		Greek.Delta => nameof(Greek.Delta),
 		Greek.Epsilon => nameof(Greek.Epsilon),

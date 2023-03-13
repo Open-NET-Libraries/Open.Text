@@ -21,8 +21,10 @@ public enum Greek
 {
 	[Letter('Α','α')]
 	Alpha,
-	[Letter('Β','β')]
+	[Letter('Β', 'β')]
 	Beta,
+	[Letter('b', 'b')]
+	Beta2,
 	[Letter('Κ','κ')]
 	Kappa,
 	[Letter('Δ','δ')]
