@@ -319,33 +319,40 @@ public readonly struct EnumValueCaseIgnored<TEnum>
 	/// <summary>
 	/// Compares an EnumValueCaseIgnored and EnumValue for enum inequality.
 	/// </summary>
-	public static bool operator !=(EnumValueCaseIgnored<TEnum> left, EnumValue<TEnum> right) => !left.Value.Equals(right.Value);
+	public static bool operator !=(EnumValueCaseIgnored<TEnum> left, EnumValue<TEnum> right)
+		=> !left.Value.Equals(right.Value);
 
 	/// <inheritdoc cref="EnumValue{TEnum}.Equals(EnumValue{TEnum})"/>
-	public bool Equals(EnumValueCaseIgnored<TEnum> other) => Value.Equals(other.Value);
+	public bool Equals(EnumValueCaseIgnored<TEnum> other)
+		=> Value.Equals(other.Value);
 
 	/// <summary>
 	/// Compares two EnumValueCaseIgnored for enum equality.
 	/// </summary>
-	public static bool operator ==(EnumValueCaseIgnored<TEnum> left, EnumValueCaseIgnored<TEnum> right) => left.Value.Equals(right.Value);
+	public static bool operator ==(EnumValueCaseIgnored<TEnum> left, EnumValueCaseIgnored<TEnum> right)
+		=> left.Value.Equals(right.Value);
 
 	/// <summary>
 	/// Compares two EnumValueCaseIgnored for enum inequality.
 	/// </summary>
-	public static bool operator !=(EnumValueCaseIgnored<TEnum> left, EnumValueCaseIgnored<TEnum> right) => !left.Value.Equals(right.Value);
+	public static bool operator !=(EnumValueCaseIgnored<TEnum> left, EnumValueCaseIgnored<TEnum> right)
+		=> !left.Value.Equals(right.Value);
 
 	/// <inheritdoc cref="EnumValue{TEnum}.Equals(TEnum)"/>
-	public bool Equals(TEnum other) => Value.Equals(other);
+	public bool Equals(TEnum other)
+		=> Value.Equals(other);
 
 	/// <summary>
 	/// Compares an EnumValueCaseIgnored and an enum value for enum equality.
 	/// </summary>
-	public static bool operator ==(EnumValueCaseIgnored<TEnum> left, TEnum right) => left.Value.Equals(right);
+	public static bool operator ==(EnumValueCaseIgnored<TEnum> left, TEnum right)
+		=> left.Value.Equals(right);
 
 	/// <summary>
 	/// Compares an EnumValueCaseIgnored and an enum value for enum inequality.
 	/// </summary>
-	public static bool operator !=(EnumValueCaseIgnored<TEnum> left, TEnum right) => !left.Value.Equals(right);
+	public static bool operator !=(EnumValueCaseIgnored<TEnum> left, TEnum right)
+		=> !left.Value.Equals(right);
 
 	/// <inheritdoc />
 	public override bool Equals(object? obj)
@@ -354,28 +361,33 @@ public readonly struct EnumValueCaseIgnored<TEnum>
 		|| obj is EnumValue<TEnum> v2 && Value.Equals(v2.Value);
 
 	/// <inheritdoc />
-	public override int GetHashCode() => Value.GetHashCode();
+	public override int GetHashCode()
+		=> Value.GetHashCode();
 
 	/// <summary>
 	/// Implicitly converts an EnumValue to an EnumValueCaseInsensitive.
 	/// Before conversion they are already equivalent.
 	/// </summary>
-	public static implicit operator EnumValueCaseIgnored<TEnum>(EnumValue<TEnum> value) => new(value.Value);
+	public static implicit operator EnumValueCaseIgnored<TEnum>(EnumValue<TEnum> value)
+		=> new(value.Value);
 
 	/// <summary>
 	/// Implicitly returns the actual enum contained by the EnumValueCaseIgnored.
 	/// </summary>
-	public static implicit operator TEnum(EnumValueCaseIgnored<TEnum> value) => value.Value;
+	public static implicit operator TEnum(EnumValueCaseIgnored<TEnum> value)
+		=> value.Value;
 
 	/// <summary>
 	/// Implicitly converts an string to an EnumValueCaseIgnored of enum type TEnum.
 	/// </summary>
-	public static implicit operator EnumValueCaseIgnored<TEnum>(StringSegment value) => new(value);
+	public static implicit operator EnumValueCaseIgnored<TEnum>(StringSegment value)
+		=> new(value);
 
 	/// <summary>
 	/// Implicitly converts an string to an EnumValueCaseIgnored of enum type TEnum.
 	/// </summary>
-	public static implicit operator EnumValueCaseIgnored<TEnum>(string value) => new(value);
+	public static implicit operator EnumValueCaseIgnored<TEnum>(string value)
+		=> new(value);
 
 	private string GetDebuggerDisplay()
 	{
@@ -465,7 +477,9 @@ public static class EnumValue
 		if (r is null) goto notFound;
 		Debug.Assert(r.Length != 0);
 
-		var sc = ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+		var sc = ignoreCase
+			? StringComparison.OrdinalIgnoreCase
+			: StringComparison.Ordinal;
 
 		if (r.Length > 64)
 			goto binarySearch;
@@ -511,15 +525,16 @@ public static class EnumValue
 					return true;
 				}
 
-				span = span.Slice(0, 1);
+				span = span.Slice(1, 1);
 				goto search;
 			}
 
 			default:
 			{
 				int i = span.Length / 2;
-				var (Name, Value) = r[i];
-				switch ((StringSegment.Compare(value, Name, sc) >> 31) | 1)
+				var (Name, Value) = span[i];
+				var comparison = StringSegment.Compare(value, Name, sc);
+				switch (Math.Sign(comparison))
 				{
 					case 0:
 						e = Value;
