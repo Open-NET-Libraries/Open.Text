@@ -13,7 +13,6 @@ public readonly ref struct SpanComparable
 	/// <summary>
 	/// Constructs a SpanComparable using the provided string and comparison type.
 	/// </summary>
-	/// <exception cref="ArgumentNullException"><paramref name="source"/> is null</exception>
 	public SpanComparable(ReadOnlySpan<char> source, StringComparison type)
 	{
 		Source = source;
