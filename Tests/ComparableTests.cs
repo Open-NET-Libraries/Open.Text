@@ -6,9 +6,10 @@ namespace Open.Text.Tests;
 public static class ComparableTests
 {
 	[Theory]
+	[InlineData(null, null)]
 	[InlineData("ABC", "abc")]
 	[InlineData("XyZ", "xYz")]
-	public static void CaseInsensitive(string a, string b)
+	public static void CaseInsensitive(string? a, string? b)
 	{
 		var cA = a.AsCaseInsensitive();
 		var cB = b.AsCaseInsensitive();
@@ -23,6 +24,8 @@ public static class ComparableTests
 		var sB = b.AsSpan().AsCaseInsensitive();
 
 		Assert.True(sA == sB);
+		if (a is null || b is null) return;
+
 		Assert.True(sA == a);
 		Assert.True(sB == b);
 		Assert.True(sB == a);
@@ -75,5 +78,30 @@ public static class ComparableTests
 
 		Assert.False(sB == cA);
 		Assert.True(sB == cB);
+	}
+
+	[Fact]
+	public static void NullTests()
+	{
+		var cA = "ABC".AsCaseInsensitive();
+		var cB = default(string).AsCaseInsensitive();
+		Assert.False(cA == cB);
+		Assert.True(cA != cB);
+		Assert.False(cB == cA);
+		Assert.True(cB != cA);
+
+		cA = "".AsCaseInsensitive();
+		cB = default(string).AsCaseInsensitive();
+		Assert.False(cA == cB);
+		Assert.True(cA != cB);
+		Assert.False(cB == cA);
+		Assert.True(cB != cA);
+
+		cA = default(string).AsCaseInsensitive();
+		cB = default(string).AsCaseInsensitive();
+		Assert.True(cA == cB);
+		Assert.False(cA != cB);
+		Assert.True(cB == cA);
+		Assert.False(cB != cA);
 	}
 }

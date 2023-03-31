@@ -13,10 +13,8 @@ public readonly struct StringComparable
 	/// <summary>
 	/// Constructs a StringComparable using the provided string and comparison type.
 	/// </summary>
-	/// <exception cref="ArgumentException"><paramref name="segment"/> does not contain a value (is default).</exception>
 	public StringComparable(StringSegment segment, StringComparison type)
 	{
-		if (!segment.HasValue) throw new ArgumentException("The provided segment must have a value.", nameof(segment));
 		Segment = segment;
 		Type = type;
 	}
@@ -24,10 +22,8 @@ public readonly struct StringComparable
 	/// <summary>
 	/// Constructs a StringComparable using the provided string and comparison type.
 	/// </summary>
-	/// <exception cref="ArgumentNullException"><paramref name="value"/> is null</exception>
-	public StringComparable(string value, StringComparison type)
+	public StringComparable(string? value, StringComparison type)
 	{
-		if (value is null) throw new ArgumentNullException(nameof(value));
 		Segment = value;
 		Type = type;
 	}
@@ -52,7 +48,7 @@ public readonly struct StringComparable
 	/// </summary>
 	/// <returns>true if the value of <paramref name="other"/> matches; otherwise false. </returns>
 	public bool Equals(string? other)
-		=> other is not null && Segment.Equals(other, Type);
+		=> Segment.Equals(other, Type);
 
 	/// <inheritdoc cref="Equals(string?)"/>
 	public bool Equals(ReadOnlySpan<char> other)
@@ -174,41 +170,41 @@ public static class StringComparableExtensions
 	/// Prepares a string for a specific StringComparison operation.
 	/// </summary>
 	/// <inheritdoc cref="AsCaseInsensitive(string)"/>
-	public static StringComparable AsComparable(this string source, StringComparison type)
+	public static StringComparable AsComparable(this string? source, StringComparison type)
 		=> new(source, type);
 
 	/// <summary>
 	/// Prepares a string to be case insensitive when comparing equality.
 	/// </summary>
 	/// <returns>A StringComparable that can be compared (== or !=) against other StringComparables, SpanComparables, strings, and ReadOnlySpan&lt;char&gt;.</returns>
-	public static StringComparable AsCaseInsensitive(this string source)
+	public static StringComparable AsCaseInsensitive(this string? source)
 		=> new(source, StringComparison.OrdinalIgnoreCase);
 
 	/// <summary>
 	/// Prepares a string to be invariant culture and case insensitive when comparing equality.
 	/// </summary>
 	/// <inheritdoc cref="AsCaseInsensitive(string)"/>
-	public static StringComparable AsCaseInsensitiveInvariantCulture(this string source)
+	public static StringComparable AsCaseInsensitiveInvariantCulture(this string? source)
 		=> new(source, StringComparison.InvariantCultureIgnoreCase);
 
 	/// <summary>
 	/// Prepares a string to be invariant culture and case insensitive when comparing equality.
 	/// </summary>
 	/// <inheritdoc cref="AsCaseInsensitive(string)"/>
-	public static StringComparable AsCaseInsensitiveCurrentCulture(this string source)
+	public static StringComparable AsCaseInsensitiveCurrentCulture(this string? source)
 		=> new(source, StringComparison.CurrentCultureIgnoreCase);
 
 	/// <summary>
 	/// Prepares a string to be current culture and case sensitive when comparing equality.
 	/// </summary>
 	/// <inheritdoc cref="AsCaseInsensitive(string)"/>
-	public static StringComparable AsCurrentCulture(this string source)
+	public static StringComparable AsCurrentCulture(this string? source)
 		=> new(source, StringComparison.CurrentCulture);
 
 	/// <summary>
 	/// Prepares a string to be invariant culture and case sensitive when comparing equality.
 	/// </summary>
-	public static StringComparable AsInvariantCulture(this string source)
+	public static StringComparable AsInvariantCulture(this string? source)
 		=> new(source, StringComparison.InvariantCulture);
 
 	/// <summary>
