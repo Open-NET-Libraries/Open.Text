@@ -404,7 +404,8 @@ public static class StringBuilderExtensions
 	/// <exception cref="ArgumentNullException">If the target is null.</exception>
 	[ExcludeFromCodeCoverage] // Reason: component parts are tested.
 	[SuppressMessage("Style", "IDE0046:Convert to conditional expression")]
-	public static StringBuilder Append(this StringBuilder target, StringSegment value)
+	// Need to have a different name than just Append because of the potential collision with string.
+	public static StringBuilder AppendSegment(this StringBuilder target, StringSegment value)
 	{
 		if (target is null) throw new ArgumentNullException(nameof(target));
 		if (!value.HasValue) return target;
@@ -430,4 +431,101 @@ public static class StringBuilderExtensions
 	}
 #endif
 
+	/// <summary>
+	/// Trims whitespace from the end of the <see cref="StringBuilder"/>.
+	/// </summary>
+	/// <exception cref="ArgumentNullException">If <paramref name="sb"/> is null.</exception>
+	public static StringBuilder TrimEnd(this StringBuilder sb)
+	{
+		if (sb is null) throw new ArgumentNullException(nameof(sb));
+		Contract.EndContractBlock();
+
+		var last = sb.Length - 1;
+		if (last == -1) return sb;
+
+		var end = last;
+		while (end >= 0 && char.IsWhiteSpace(sb[end]))
+			end--;
+
+		if (end < last)
+			sb.Remove(end + 1, sb.Length - end - 1);
+
+		return sb;
+	}
+
+	/// <summary>
+	/// Trims the specified characters from the end of the <see cref="StringBuilder"/>.
+	/// </summary>
+	/// <exception cref="ArgumentNullException">If <paramref name="sb"/> is null.</exception>
+	public static StringBuilder TrimEnd(this StringBuilder sb, ReadOnlySpan<char> characters)
+	{
+		if (sb is null) throw new ArgumentNullException(nameof(sb));
+		Contract.EndContractBlock();
+
+		var last = sb.Length - 1;
+		if (last == -1) return sb;
+
+		var end = last;
+		while (end >= 0 && characters.IndexOf(sb[end]) != -1)
+			end--;
+
+		if (end < last)
+			sb.Remove(end + 1, sb.Length - end - 1);
+
+		return sb;
+	}
+
+	/// <summary>
+	/// Trims whitespace from the beginning of the <see cref="StringBuilder"/>.
+	/// </summary>
+	/// <exception cref="ArgumentNullException">If <paramref name="sb"/> is null.</exception>
+	public static StringBuilder TrimStart(this StringBuilder sb)
+	{
+		if (sb is null) throw new ArgumentNullException(nameof(sb));
+		Contract.EndContractBlock();
+
+		var start = 0;
+		while (start < sb.Length && char.IsWhiteSpace(sb[start]))
+			start++;
+
+		if (start > 0)
+			sb.Remove(0, start);
+
+		return sb;
+	}
+
+
+	/// <summary>
+	/// Trims the specified characters from the beginning of the <see cref="StringBuilder"/>.
+	/// </summary>
+	/// <exception cref="ArgumentNullException">If <paramref name="sb"/> is null.</exception>
+	public static StringBuilder TrimStart(this StringBuilder sb, ReadOnlySpan<char> characters)
+	{
+		if (sb is null) throw new ArgumentNullException(nameof(sb));
+		Contract.EndContractBlock();
+
+		var start = 0;
+		while (start < sb.Length && characters.IndexOf(sb[start]) != -1)
+			start++;
+
+		if (start > 0)
+			sb.Remove(0, start);
+
+		return sb;
+	}
+
+	/// <summary>
+	/// Trims whitespace from the beginning and end of the <see cref="StringBuilder"/>.
+	/// </summary>
+	/// <exception cref="ArgumentNullException">If <paramref name="sb"/> is null.</exception>
+	public static StringBuilder Trim(this StringBuilder sb)
+		=> TrimEnd(sb).TrimStart();
+
+
+	/// <summary>
+	/// Trims the specified characters from the beginning and end of the <see cref="StringBuilder"/>.
+	/// </summary>
+	/// <exception cref="ArgumentNullException">If <paramref name="sb"/> is null.</exception>
+	public static StringBuilder Trim(this StringBuilder sb, ReadOnlySpan<char> characters)
+		=> TrimEnd(sb, characters).TrimStart(characters);
 }

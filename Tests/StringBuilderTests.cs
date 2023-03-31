@@ -212,4 +212,19 @@ public static class StringBuilderTests
 			else Assert.Equal(source + separator + suffix, sb.ToString());
 		}
 	}
+
+	// Unit Tests: Theories for StringBuilder.Trim() extension that have multiple values added.
+	[Theory]
+	// Expected, A, B, C, D
+	[InlineData("Hello there.", "Hello", " ", "there.", "")]
+	[InlineData("Hello there.", " Hello", " ", "there.", "")]
+	[InlineData("Hello there.", "  Hello", " ", "there.", " ")]
+	[InlineData("Hello there.", "Hello", " ", "there.", " ")]
+	public static void Trim(string expected, string a, string b, string c, string d)
+	{
+		var sb = new StringBuilder();
+		sb.Append(a).Append(b).Append(c).Append(d).Trim();
+		Assert.Equal(expected, sb.ToString());
+	}
+
 }
