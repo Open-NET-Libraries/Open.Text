@@ -405,7 +405,7 @@ public static partial class TextExtensions
 	public const string Newline = "\r\n";
 
 	/// <summary>
-	/// Shortcut for WriteLineNoTabs on a TextWriter. Mimimcs similar classes.
+	/// Shortcut for WriteLineNoTabs on a TextWriter. Mimics similar classes.
 	/// </summary>
 	[ExcludeFromCodeCoverage]
 	public static void WriteLineNoTabs(this TextWriter writer, string? s = null)

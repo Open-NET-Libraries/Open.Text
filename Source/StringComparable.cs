@@ -5,13 +5,13 @@ using System.Diagnostics.CodeAnalysis;
 namespace Open.Text;
 
 /// <summary>
-/// A StringComparison variable struct for comparing a string against other values.
+/// A <see cref="StringComparison"/> struct for comparing a <see cref="string"/> against other values.
 /// </summary>
 public readonly struct StringComparable
 	: IEquatable<StringComparable>, IEquatable<string>, IEquatable<StringSegment>
 {
 	/// <summary>
-	/// Constructs a StringComparable using the provided string and comparison type.
+	/// Constructs a <see cref="StringComparable"/> using the provided string and comparison type.
 	/// </summary>
 	public StringComparable(StringSegment segment, StringComparison type)
 	{
@@ -20,7 +20,7 @@ public readonly struct StringComparable
 	}
 
 	/// <summary>
-	/// Constructs a StringComparable using the provided string and comparison type.
+	/// Constructs a <see cref="StringComparable"/> using the provided string and comparison type.
 	/// </summary>
 	public StringComparable(string? value, StringComparison type)
 	{
@@ -69,7 +69,7 @@ public readonly struct StringComparable
 		=> Equals(other.AsSpan());
 
 	/// <summary>
-	/// Compares <paramref name="obj"/> if it is a string or StringComparable and if the value matches this instance.
+	/// Compares <paramref name="obj"/> if it is a <see cref="string"/> or a <see cref="StringComparable"/> and if the value matches this instance.
 	/// </summary>
 	/// <returns>true if the value of <paramref name="obj"/> matches; otherwise false. </returns>
 	[ExcludeFromCodeCoverage]
@@ -112,54 +112,84 @@ public readonly struct StringComparable
 #endif
 
 	/// <summary>
-	/// Compares two StringComparables for equality.
+	/// Compares two <see cref="StringComparable"/>s for equality.
 	/// </summary>
 	public static bool operator ==(StringComparable a, StringComparable b) => a.Equals(b);
 
 	/// <summary>
-	/// Compares two StringComparables for inequality.
+	/// Compares two <see cref="StringComparable"/>s for inequality.
 	/// </summary>
 	public static bool operator !=(StringComparable a, StringComparable b) => !a.Equals(b);
 
 	/// <summary>
-	/// Compares a StringComparable and a string for equality.
+	/// Compares a <see cref="StringComparable"/> and a <see cref="string"/> for equality.
 	/// </summary>
-	public static bool operator ==(StringComparable a, string? b) => a.Equals(b);
+	public static bool operator ==(StringComparable comparable, string? str) => comparable.Equals(str);
 
 	/// <summary>
-	/// Compares a StringComparable and a string for inequality.
+	/// Compares a <see cref="StringComparable"/> and a <see cref="string"/> for inequality.
 	/// </summary>
-	public static bool operator !=(StringComparable a, string? b) => !a.Equals(b);
+	public static bool operator !=(StringComparable comparable, string? str) => !comparable.Equals(str);
 
 	/// <summary>
-	/// Compares a StringComparable and a StringSegment for equality.
+	/// Compares a <see cref="string"/> and a <see cref="StringComparable"/> for equality.
+	/// </summary>
+	public static bool operator ==(string? str, StringComparable comparable) => comparable.Equals(str);
+
+	/// <summary>
+	/// Compares a <see cref="string"/> and a <see cref="StringComparable"/> for inequality.
+	/// </summary>
+	public static bool operator !=(string? str, StringComparable comparable) => !comparable.Equals(str);
+
+	/// <summary>
+	/// Compares a <see cref="StringComparable"/> and a <see cref="StringSegment"/> for equality.
 	/// </summary>
 	public static bool operator ==(StringComparable a, StringSegment b) => a.Equals(b);
 
 	/// <summary>
-	/// Compares a StringComparable and a StringSegment for inequality.
+	/// Compares a <see cref="StringComparable"/> and a <see cref="StringSegment"/> for inequality.
 	/// </summary>
 	public static bool operator !=(StringComparable a, StringSegment b) => !a.Equals(b);
 
 	/// <summary>
-	/// Compares a StringComparable and a span for equality.
+	/// Compares a <see cref="StringSegment"/> and a <see cref="StringComparable"/> for equality.
+	/// </summary>
+	public static bool operator ==(StringSegment a, StringComparable b) => b.Equals(a);
+
+	/// <summary>
+	/// Compares a <see cref="StringSegment"/> and a <see cref="StringComparable"/> for inequality.
+	/// </summary>
+	public static bool operator !=(StringSegment a, StringComparable b) => !b.Equals(a);
+
+	/// <summary>
+	/// Compares a <see cref="StringComparable"/> and a span for equality.
 	/// </summary>
 	public static bool operator ==(StringComparable a, ReadOnlySpan<char> b) => a.Equals(b);
 
 	/// <summary>
-	/// Compares a StringComparable and a span for inequality.
+	/// Compares a <see cref="StringComparable"/> and a span for inequality.
 	/// </summary>
 	public static bool operator !=(StringComparable a, ReadOnlySpan<char> b) => !a.Equals(b);
 
 	/// <summary>
-	/// Compares a StringComparable and a SpanComparable for equality.
+	/// Compares a <see cref="StringComparable"/> and a <see cref="SpanComparable"/> for equality.
 	/// </summary>
-	public static bool operator ==(StringComparable a, SpanComparable b) => a.Equals(b);
+	public static bool operator ==(StringComparable str, SpanComparable span) => str.Equals(span);
 
 	/// <summary>
-	/// Compares a StringComparable and a SpanComparable for inequality.
+	/// Compares a <see cref="StringComparable"/> and a <see cref="SpanComparable"/> for inequality.
 	/// </summary>
-	public static bool operator !=(StringComparable a, SpanComparable b) => !a.Equals(b);
+	public static bool operator !=(StringComparable str, SpanComparable span) => !str.Equals(span);
+
+	/// <summary>
+	/// Compares a <see cref="StringComparable"/> and a span for equality.
+	/// </summary>
+	public static bool operator ==(ReadOnlySpan<char> a, StringComparable b) => b.Equals(a);
+
+	/// <summary>
+	/// Compares a <see cref="StringComparable"/> and a span for inequality.
+	/// </summary>
+	public static bool operator !=(ReadOnlySpan<char> a, StringComparable b) => !b.Equals(a);
 }
 
 /// <summary>Extensions for StringComparable.</summary>
@@ -167,83 +197,83 @@ public readonly struct StringComparable
 public static class StringComparableExtensions
 {
 	/// <summary>
-	/// Prepares a string for a specific StringComparison operation.
+	/// Prepares a <see cref="string"/> for a specific StringComparison operation.
 	/// </summary>
 	/// <inheritdoc cref="AsCaseInsensitive(string)"/>
 	public static StringComparable AsComparable(this string? source, StringComparison type)
 		=> new(source, type);
 
 	/// <summary>
-	/// Prepares a string to be case insensitive when comparing equality.
+	/// Prepares a <see cref="string"/> to be case insensitive when comparing equality.
 	/// </summary>
-	/// <returns>A StringComparable that can be compared (== or !=) against other StringComparables, SpanComparables, strings, and ReadOnlySpan&lt;char&gt;.</returns>
+	/// <returns>A <see cref="StringComparable"/> that can be compared (== or !=) against other StringComparables, SpanComparables, strings, and ReadOnlySpan&lt;char&gt;.</returns>
 	public static StringComparable AsCaseInsensitive(this string? source)
 		=> new(source, StringComparison.OrdinalIgnoreCase);
 
 	/// <summary>
-	/// Prepares a string to be invariant culture and case insensitive when comparing equality.
+	/// Prepares a <see cref="string"/> to be invariant culture and case insensitive when comparing equality.
 	/// </summary>
 	/// <inheritdoc cref="AsCaseInsensitive(string)"/>
 	public static StringComparable AsCaseInsensitiveInvariantCulture(this string? source)
 		=> new(source, StringComparison.InvariantCultureIgnoreCase);
 
 	/// <summary>
-	/// Prepares a string to be invariant culture and case insensitive when comparing equality.
+	/// Prepares a <see cref="string"/> to be invariant culture and case insensitive when comparing equality.
 	/// </summary>
 	/// <inheritdoc cref="AsCaseInsensitive(string)"/>
 	public static StringComparable AsCaseInsensitiveCurrentCulture(this string? source)
 		=> new(source, StringComparison.CurrentCultureIgnoreCase);
 
 	/// <summary>
-	/// Prepares a string to be current culture and case sensitive when comparing equality.
+	/// Prepares a <see cref="string"/> to be current culture and case sensitive when comparing equality.
 	/// </summary>
 	/// <inheritdoc cref="AsCaseInsensitive(string)"/>
 	public static StringComparable AsCurrentCulture(this string? source)
 		=> new(source, StringComparison.CurrentCulture);
 
 	/// <summary>
-	/// Prepares a string to be invariant culture and case sensitive when comparing equality.
+	/// Prepares a <see cref="string"/> to be invariant culture and case sensitive when comparing equality.
 	/// </summary>
 	public static StringComparable AsInvariantCulture(this string? source)
 		=> new(source, StringComparison.InvariantCulture);
 
 	/// <summary>
-	/// Prepares a StringSegment for a specific StringComparison operation.
+	/// Prepares a <see cref="StringSegment"/> for a specific <see cref="StringComparison"/> operation.
 	/// </summary>
 	/// <inheritdoc cref="AsCaseInsensitive(string)"/>
 	public static StringComparable AsComparable(this StringSegment source, StringComparison type)
 		=> new(source, type);
 
 	/// <summary>
-	/// Prepares a StringSegment to be case insensitive when comparing equality.
+	/// Prepares a <see cref="StringSegment"/> to be case insensitive when comparing equality.
 	/// </summary>
 	/// <inheritdoc cref="AsCaseInsensitive(string)"/>
 	public static StringComparable AsCaseInsensitive(this StringSegment source)
 		=> new(source, StringComparison.OrdinalIgnoreCase);
 
 	/// <summary>
-	/// Prepares a StringSegment to be invariant culture and case insensitive when comparing equality.
+	/// Prepares a <see cref="StringSegment"/> to be invariant culture and case insensitive when comparing equality.
 	/// </summary>
 	/// <inheritdoc cref="AsCaseInsensitive(string)"/>
 	public static StringComparable AsCaseInsensitiveInvariantCulture(this StringSegment source)
 		=> new(source, StringComparison.InvariantCultureIgnoreCase);
 
 	/// <summary>
-	/// Prepares a StringSegment to be invariant culture and case insensitive when comparing equality.
+	/// Prepares a <see cref="StringSegment"/> to be invariant culture and case insensitive when comparing equality.
 	/// </summary>
 	/// <inheritdoc cref="AsCaseInsensitive(string)"/>
 	public static StringComparable AsCaseInsensitiveCurrentCulture(this StringSegment source)
 		=> new(source, StringComparison.CurrentCultureIgnoreCase);
 
 	/// <summary>
-	/// Prepares a StringSegment to be current culture and case sensitive when comparing equality.
+	/// Prepares a <see cref="StringSegment"/> to be current culture and case sensitive when comparing equality.
 	/// </summary>
 	/// <inheritdoc cref="AsCaseInsensitive(string)"/>
 	public static StringComparable AsCurrentCulture(this StringSegment source)
 		=> new(source, StringComparison.CurrentCulture);
 
 	/// <summary>
-	/// Prepares a StringSegment to be invariant culture and case sensitive when comparing equality.
+	/// Prepares a <see cref="StringSegment"/> to be invariant culture and case sensitive when comparing equality.
 	/// </summary>
 	public static StringComparable AsInvariantCulture(this StringSegment source)
 		=> new(source, StringComparison.InvariantCulture);

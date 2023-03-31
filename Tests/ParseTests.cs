@@ -1,6 +1,5 @@
 ﻿using FluentAssertions;
 using System;
-using System.Text.RegularExpressions;
 using Xunit;
 
 namespace Open.Text.Tests;

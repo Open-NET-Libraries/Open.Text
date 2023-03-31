@@ -59,7 +59,7 @@ public static partial class TextExtensions
 	/// Finds the first instance of a character and returns the set of characters up to that character.
 	/// </summary>
 	/// <param name="source">The source characters to look through.</param>
-	/// <param name="splitCharacter">The charcter to find.</param>
+	/// <param name="splitCharacter">The character to find.</param>
 	/// <param name="nextIndex">The next possible index following the current one.</param>
 	/// <param name="startIndex">The index to start the split.</param>
 	/// <returns>The portion of the source up to and excluding the sequence searched for.</returns>
@@ -170,7 +170,7 @@ public static partial class TextExtensions
 	/// Enumerates a string by segments that are separated by the split character.
 	/// </summary>
 	/// <param name="source">The source characters to look through.</param>
-	/// <param name="splitCharacter">The charcter to find.</param>
+	/// <param name="splitCharacter">The character to find.</param>
 	/// <param name="options">Can specify to omit empty entries.</param>
 	/// <returns>An enumerable of the segments.</returns>
 	public static IEnumerable<string> SplitToEnumerable(this string source,
@@ -387,29 +387,29 @@ public static partial class TextExtensions
 				return Array.Empty<string>();
 
 			case StringSplitOptions.RemoveEmptyEntries:
-				{
-					Debug.Assert(!source.IsEmpty);
-					var list = new List<string>();
+			{
+				Debug.Assert(!source.IsEmpty);
+				var list = new List<string>();
 
-				loop:
-					var result = source.FirstSplit(splitCharacter, out var nextIndex);
-					if (!result.IsEmpty) list.Add(result.ToString());
-					if (nextIndex == -1) return list;
-					source = source.Slice(nextIndex);
-					goto loop;
-				}
+			loop:
+				var result = source.FirstSplit(splitCharacter, out var nextIndex);
+				if (!result.IsEmpty) list.Add(result.ToString());
+				if (nextIndex == -1) return list;
+				source = source.Slice(nextIndex);
+				goto loop;
+			}
 
 			default:
-				{
-					Debug.Assert(!source.IsEmpty);
-					var list = new List<string>();
-				loop:
-					var result = source.FirstSplit(splitCharacter, out var nextIndex);
-					list.Add(result.IsEmpty ? string.Empty : result.ToString());
-					if (nextIndex == -1) return list;
-					source = source.Slice(nextIndex);
-					goto loop;
-				}
+			{
+				Debug.Assert(!source.IsEmpty);
+				var list = new List<string>();
+			loop:
+				var result = source.FirstSplit(splitCharacter, out var nextIndex);
+				list.Add(result.IsEmpty ? string.Empty : result.ToString());
+				if (nextIndex == -1) return list;
+				source = source.Slice(nextIndex);
+				goto loop;
+			}
 		}
 	}
 
@@ -419,7 +419,7 @@ public static partial class TextExtensions
 	/// <param name="source">The source string to split up.</param>
 	/// <param name="splitSequence">The sequence to split by.</param>
 	/// <param name="options">Can specify to omit empty entries.</param>
-	/// <param name="comparisonType">The optional comparsion type.</param>
+	/// <param name="comparisonType">The optional comparison type.</param>
 	/// <returns>The resultant list of string segments.</returns>
 	public static IReadOnlyList<string> Split(this ReadOnlySpan<char> source,
 		ReadOnlySpan<char> splitSequence,
@@ -435,29 +435,29 @@ public static partial class TextExtensions
 				return Array.Empty<string>();
 
 			case StringSplitOptions.RemoveEmptyEntries:
-				{
-					Debug.Assert(!source.IsEmpty);
-					var list = new List<string>();
+			{
+				Debug.Assert(!source.IsEmpty);
+				var list = new List<string>();
 
-				loop:
-					var result = source.FirstSplit(splitSequence, out var nextIndex, comparisonType);
-					if (!result.IsEmpty) list.Add(result.ToString());
-					if (nextIndex == -1) return list;
-					source = source.Slice(nextIndex);
-					goto loop;
-				}
+			loop:
+				var result = source.FirstSplit(splitSequence, out var nextIndex, comparisonType);
+				if (!result.IsEmpty) list.Add(result.ToString());
+				if (nextIndex == -1) return list;
+				source = source.Slice(nextIndex);
+				goto loop;
+			}
 
 			default:
-				{
-					Debug.Assert(!source.IsEmpty);
-					var list = new List<string>();
-				loop:
-					var result = source.FirstSplit(splitSequence, out var nextIndex, comparisonType);
-					list.Add(result.IsEmpty ? string.Empty : result.ToString());
-					if (nextIndex == -1) return list;
-					source = source.Slice(nextIndex);
-					goto loop;
-				}
+			{
+				Debug.Assert(!source.IsEmpty);
+				var list = new List<string>();
+			loop:
+				var result = source.FirstSplit(splitSequence, out var nextIndex, comparisonType);
+				list.Add(result.IsEmpty ? string.Empty : result.ToString());
+				if (nextIndex == -1) return list;
+				source = source.Slice(nextIndex);
+				goto loop;
+			}
 		}
 	}
 }

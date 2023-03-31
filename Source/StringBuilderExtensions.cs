@@ -494,7 +494,6 @@ public static class StringBuilderExtensions
 		return sb;
 	}
 
-
 	/// <summary>
 	/// Trims the specified characters from the beginning of the <see cref="StringBuilder"/>.
 	/// </summary>
@@ -520,7 +519,6 @@ public static class StringBuilderExtensions
 	/// <exception cref="ArgumentNullException">If <paramref name="sb"/> is null.</exception>
 	public static StringBuilder Trim(this StringBuilder sb)
 		=> TrimEnd(sb).TrimStart();
-
 
 	/// <summary>
 	/// Trims the specified characters from the beginning and end of the <see cref="StringBuilder"/>.

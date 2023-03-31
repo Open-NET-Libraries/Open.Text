@@ -391,7 +391,7 @@ public static partial class TextExtensions
 			? throw new ArgumentNullException(nameof(source))
 			: pattern is null
 			? throw new ArgumentNullException(nameof(pattern))
-			: source.Length==0
+			: source.Length == 0
 			? options == StringSplitOptions.RemoveEmptyEntries
 				? Enumerable.Empty<StringSegment>()
 				: Enumerable.Repeat(StringSegment.Empty, 1)

@@ -1,5 +1,4 @@
 ﻿using BenchmarkDotNet.Attributes;
-using System.Linq.Expressions;
 
 namespace Open.Text.Benchmarks;
 

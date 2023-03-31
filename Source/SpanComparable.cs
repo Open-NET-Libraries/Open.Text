@@ -6,12 +6,12 @@ using System.Diagnostics.CodeAnalysis;
 namespace Open.Text;
 
 /// <summary>
-/// A StringComparison variable struct for comparing a ReadOnlySpan&lt;char&gt; against other values.
+/// A <see cref="StringComparison"/> struct for comparing a span against other values.
 /// </summary>
 public readonly ref struct SpanComparable
 {
 	/// <summary>
-	/// Constructs a SpanComparable using the provided string and comparison type.
+	/// Constructs a <see cref="SpanComparable"/> using the provided string and comparison type.
 	/// </summary>
 	public SpanComparable(ReadOnlySpan<char> source, StringComparison type)
 	{
@@ -100,62 +100,92 @@ public readonly ref struct SpanComparable
 #pragma warning restore IDE0079 // Remove unnecessary suppression
 
 	/// <summary>
-	/// Compares two SpanComparables for equality.
+	/// Compares two <see cref="SpanComparable"/>s for equality.
 	/// </summary>
 	public static bool operator ==(SpanComparable a, SpanComparable b) => a.Equals(b);
 
 	/// <summary>
-	/// Compares two SpanComparables for inequality.
+	/// Compares two <see cref="SpanComparable"/>s for inequality.
 	/// </summary>
 	public static bool operator !=(SpanComparable a, SpanComparable b) => !a.Equals(b);
 
 	/// <summary>
-	/// Compares a SpanComparable with a string for equality.
+	/// Compares a <see cref="SpanComparable"/> and a <see cref="StringSegment"/> for equality.
 	/// </summary>
-	public static bool operator ==(SpanComparable a, string? b) => a.Equals(b);
+	public static bool operator ==(SpanComparable comparable, StringSegment segment) => comparable.Equals(segment);
 
 	/// <summary>
-	/// Compares a SpanComparable with a StringSegment for inequality.
+	/// Compares a <see cref="SpanComparable"/> and a <see cref="StringSegment"/> for inequality.
 	/// </summary>
-	public static bool operator !=(SpanComparable a, StringSegment b) => !a.Equals(b);
+	public static bool operator !=(SpanComparable comparable, StringSegment segment) => !comparable.Equals(segment);
 
 	/// <summary>
-	/// Compares a SpanComparable with a StringSegment for equality.
+	/// Compares a <see cref="StringSegment"/> and a <see cref="SpanComparable"/> for equality.
 	/// </summary>
-	public static bool operator ==(SpanComparable a, StringSegment b) => a.Equals(b);
+	public static bool operator ==(StringSegment segment, SpanComparable comparable) => comparable.Equals(segment);
 
 	/// <summary>
-	/// Compares a SpanComparable with a string for inequality.
+	/// Compares a <see cref="StringSegment"/> and a <see cref="SpanComparable"/> for inequality.
 	/// </summary>
-	public static bool operator !=(SpanComparable a, string? b) => !a.Equals(b);
+	public static bool operator !=(StringSegment segment, SpanComparable comparable) => !comparable.Equals(segment);
 
 	/// <summary>
-	/// Compares a SpanComparable with a span for equality.
+	/// Compares a <see cref="SpanComparable"/> and a <see cref="string"/> for equality.
 	/// </summary>
-	public static bool operator ==(SpanComparable a, ReadOnlySpan<char> b) => a.Equals(b);
+	public static bool operator ==(SpanComparable comparable, string? str) => comparable.Equals(str);
 
 	/// <summary>
-	/// Compares a SpanComparable with a span for inequality.
+	/// Compares a <see cref="SpanComparable"/> and a <see cref="string"/> for inequality.
 	/// </summary>
-	public static bool operator !=(SpanComparable a, ReadOnlySpan<char> b) => !a.Equals(b);
+	public static bool operator !=(SpanComparable comparable, string? str) => !comparable.Equals(str);
 
 	/// <summary>
-	/// Compares a SpanComparable with a StringComparable for equality.
+	/// Compares a <see cref="string"/> and a <see cref="SpanComparable"/> for equality.
 	/// </summary>
-	public static bool operator ==(SpanComparable a, StringComparable b) => a.Equals(b);
+	public static bool operator ==(string? str, SpanComparable comparable) => comparable.Equals(str);
 
 	/// <summary>
-	/// Compares a SpanComparable with a StringComparable for inequality.
+	/// Compares a <see cref="string"/> and a <see cref="SpanComparable"/> for inequality.
 	/// </summary>
-	public static bool operator !=(SpanComparable a, StringComparable b) => !a.Equals(b);
+	public static bool operator !=(string? str, SpanComparable comparable) => !comparable.Equals(str);
+
+	/// <summary>
+	/// Compares a <see cref="SpanComparable"/> with a span for equality.
+	/// </summary>
+	public static bool operator ==(SpanComparable comparable, ReadOnlySpan<char> segment) => comparable.Equals(segment);
+
+	/// <summary>
+	/// Compares a <see cref="SpanComparable"/> with a span for inequality.
+	/// </summary>
+	public static bool operator !=(SpanComparable comparable, ReadOnlySpan<char> segment) => !comparable.Equals(segment);
+
+	/// <summary>
+	/// Compares a span with a <see cref="SpanComparable"/> for equality.
+	/// </summary>
+	public static bool operator ==(ReadOnlySpan<char> segment, SpanComparable comparable) => comparable.Equals(segment);
+
+	/// <summary>
+	/// Compares a span with a <see cref="SpanComparable"/> for inequality.
+	/// </summary>
+	public static bool operator !=(ReadOnlySpan<char> segment, SpanComparable comparable) => !comparable.Equals(segment);
+
+	/// <summary>
+	/// Compares a <see cref="SpanComparable"/> with a <see cref="StringComparable"/> for equality.
+	/// </summary>
+	public static bool operator ==(SpanComparable span, StringComparable str) => span.Equals(str);
+
+	/// <summary>
+	/// Compares a <see cref="SpanComparable"/> with a <see cref="StringComparable"/> for inequality.
+	/// </summary>
+	public static bool operator !=(SpanComparable span, StringComparable str) => !span.Equals(str);
 }
 
-/// <summary>Extensions for SpanComparable.</summary>
+/// <summary>Extensions for <see cref="SpanComparable"/>.</summary>
 [ExcludeFromCodeCoverage]
 public static class SpanComparableExtensions
 {
 	/// <summary>
-	/// Prepares a span for a specific StringComparison operation.
+	/// Prepares a span for a specific <see cref="StringComparison"/> operation.
 	/// </summary>
 	/// <inheritdoc cref="AsCaseInsensitive(ReadOnlySpan{char})"/>
 	public static SpanComparable AsComparable(this ReadOnlySpan<char> source, StringComparison type)
@@ -195,11 +225,4 @@ public static class SpanComparableExtensions
 	/// <inheritdoc cref="AsCaseInsensitive(ReadOnlySpan{char})"/>
 	public static SpanComparable AsInvariantCulture(this ReadOnlySpan<char> source)
 		=> new(source, StringComparison.InvariantCulture);
-
-	/// <summary>
-	/// Prepares a StringSegment for a specific StringComparison operation.
-	/// </summary>
-	/// <inheritdoc cref="AsCaseInsensitive(ReadOnlySpan{char})"/>
-	public static SpanComparable AsComparable(this StringSegment source, StringComparison type)
-		=> new(source, type);
 }

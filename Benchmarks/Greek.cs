@@ -1,9 +1,8 @@
-﻿using System;
-
-namespace Open.Text.Benchmarks;
+﻿namespace Open.Text.Benchmarks;
 
 [AttributeUsage(AttributeTargets.Field)]
-public class LetterAttribute : Attribute {
+public class LetterAttribute : Attribute
+{
 	public LetterAttribute(char upper, char lower)
 	{
 		Upper = upper;
@@ -19,25 +18,25 @@ public class LetterAttribute : Attribute {
 
 public enum Greek
 {
-	[Letter('Α','α')]
+	[Letter('Α', 'α')]
 	Alpha,
 	[Letter('Β', 'β')]
 	Beta,
 	[Letter('b', 'b')]
 	Beta2,
-	[Letter('Κ','κ')]
+	[Letter('Κ', 'κ')]
 	Kappa,
-	[Letter('Δ','δ')]
+	[Letter('Δ', 'δ')]
 	Delta,
-	[Letter('Ε','ε')]
+	[Letter('Ε', 'ε')]
 	Epsilon,
-	[Letter('Γ','γ')]
+	[Letter('Γ', 'γ')]
 	Gamma,
-	[Letter('Ω','ω')]
+	[Letter('Ω', 'ω')]
 	Omega,
-	[Letter('Φ','φ')]
+	[Letter('Φ', 'φ')]
 	Phi,
-	[Letter('Θ','θ')]
+	[Letter('Θ', 'θ')]
 	Theta,
 	None
 }

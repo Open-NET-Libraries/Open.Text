@@ -52,17 +52,17 @@ public static class ComparableTests
 		var cA = a.AsComparable(StringComparison.Ordinal);
 		var cB = b.AsComparable(StringComparison.Ordinal);
 
-		Assert.False(cA == cB);	Assert.True(cA != cB);
-		Assert.True(cA == a);	Assert.False(cA != a);
-		Assert.False(cA == b);	Assert.True(cA != b);
-		Assert.False(cB == a);	Assert.True(cB != a);
-		Assert.True(cB == b);	Assert.False(cB != b);
+		Assert.False(cA == cB); Assert.True(cA != cB);
+		Assert.True(cA == a); Assert.False(cA != a);
+		Assert.False(cA == b); Assert.True(cA != b);
+		Assert.False(cB == a); Assert.True(cB != a);
+		Assert.True(cB == b); Assert.False(cB != b);
 
 		var sA = a.AsSpan().AsComparable(StringComparison.Ordinal);
 		var sB = b.AsSpan().AsComparable(StringComparison.Ordinal);
 
 		Assert.False(sA == sB); Assert.True(sA != sB);
-		Assert.True(sA == a);	Assert.False(sA != a);
+		Assert.True(sA == a); Assert.False(sA != a);
 		Assert.False(sA == b);
 		Assert.False(sB == a);
 		Assert.True(sB == b);

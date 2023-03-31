@@ -1,8 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Open.Text.Benchmarks;
 
@@ -54,6 +51,6 @@ public class EnumToStringTests
 	public void GetCachedName()
 	{
 		foreach (var g in Values)
-			_ = _reg.GetOrAdd(g, k=>k.ToString());
+			_ = _reg.GetOrAdd(g, k => k.ToString());
 	}
 }

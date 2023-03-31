@@ -226,5 +226,4 @@ public static class StringBuilderTests
 		sb.Append(a).Append(b).Append(c).Append(d).Trim();
 		Assert.Equal(expected, sb.ToString());
 	}
-
 }
