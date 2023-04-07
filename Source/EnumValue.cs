@@ -138,10 +138,10 @@ public readonly struct EnumValue<TEnum>
 		=> LazyInitializer.EnsureInitialized(ref _valueLookup,
 			() => GetEnumTryParseDelegate())!;
 
-	static (string Name, TEnum Value)[]?[] CreateLookup()
+	static Entry[]?[] CreateLookup()
 	{
 		var longest = 0;
-		var d = new Dictionary<int, SortedList<string, (string Name, TEnum Value)>>();
+		var d = new Dictionary<int, List<Entry>>();
 
 		foreach (var e in Values)
 		{
@@ -149,18 +149,76 @@ public readonly struct EnumValue<TEnum>
 			var len = n.Length;
 			if (len > longest) longest = len;
 			if (!d.TryGetValue(len, out var v)) d.Add(len, v = new());
-			v.Add(n, (n, e));
+			v.Add(new(n, e));
 		}
 
-		var result = new (string Name, TEnum Value)[]?[longest + 1];
+		var result = new Entry[]?[longest + 1];
 		foreach (var i in d.Keys)
-			result[i] = d[i].Values.ToArray();
+			result[i] = d[i].OrderBy(v=>v.Name).ToArray();
 
 		return result;
 	}
 
-	private static (string Name, TEnum Value)[]?[]? _lookup;
-	internal static (string Name, TEnum Value)[]?[] Lookup
+	internal readonly struct Entry
+	{
+		public Entry(string name, TEnum value)
+		{
+			Name = name;
+			Value = value;
+		}
+
+		public string Name { get; }
+		public TEnum Value { get; }
+
+        public void Deconstruct(out string name, out TEnum value)
+		{
+			name = Name;
+			value = Value;
+		}
+
+		public static int Find(Span<Entry> span, StringSegment name, StringComparison sc)
+		{
+			// Small enough? Just brute force the index.
+			var len = span.Length;
+			if(len < 12)
+			{
+				for(var i = 0; i< len; i++)
+				{
+					ref Entry e = ref span[i];
+					if (name.Equals(e.Name, sc))
+						return i;
+				}
+
+				return -1;
+			}
+
+			// Use binary search for larger.
+			int left = 0;
+			int right = span.Length - 1;
+
+			while (left <= right)
+			{
+				int middle = left + (right - left) / 2;
+				var middleKey = span[middle].Name;
+
+				if (right - left < 4 && name.Equals(middleKey, sc))
+					return middle;
+
+				var comparison = StringSegment.Compare(middleKey, name, sc);
+				if (comparison < 0)
+					left = middle + 1;
+				else if (comparison > 0)
+					right = middle - 1;
+				else
+					return middle;
+			}
+
+			return -1;
+		}
+	}
+
+	private static Entry[]?[]? _lookup;
+	internal static Entry[]?[] Lookup
 		=> LazyInitializer.EnsureInitialized(ref _lookup,
 			() => CreateLookup())!;
 
@@ -455,20 +513,20 @@ public static class EnumValue
 	/// <summary>
 	/// Converts the string representation of the name of one or more enumerated constants to an equivalent enumerated object.
 	/// </summary>
-	/// <param name="value">The string representing the enum value to search for.</param>
+	/// <param name="name">The string representing the enum name to search for.</param>
 	/// <param name="ignoreCase">If true, will ignore case differences when looking for a match.</param>
-	/// <param name="e">The enum that represents the string <paramref name="value"/> provided.</param>
+	/// <param name="e">The enum that represents the string <paramref name="name"/> provided.</param>
 	/// <returns>true if the value was found; otherwise false.</returns>
-	public static bool TryParse<TEnum>(StringSegment value, bool ignoreCase, out TEnum e)
+	public static bool TryParse<TEnum>(StringSegment name, bool ignoreCase, out TEnum e)
 		where TEnum : Enum
 	{
-		if (!value.HasValue) goto notFound;
+		if (!name.HasValue) goto notFound;
 
 		// If this is a string, use the optimized version.
-		if (!ignoreCase && value.Buffer.Length == value.Length)
-			return TryParse(value.Buffer, out e);
+		if (!ignoreCase && name.Buffer.Length == name.Length)
+			return TryParse(name.Buffer, out e);
 
-		var len = value.Length;
+		var len = name.Length;
 		if (len == 0) goto notFound;
 		var lookup = EnumValue<TEnum>.Lookup;
 		if (len >= lookup.Length) goto notFound;
@@ -481,78 +539,12 @@ public static class EnumValue
 			? StringComparison.OrdinalIgnoreCase
 			: StringComparison.Ordinal;
 
-		if (r.Length > 64)
-			goto binarySearch;
-
-		// For smaller sizes, a simple linear search is faster than a binary search.
-		// Above arrays sizes of 64 is when things start to change and binary search wins on average.
-		foreach (var (Name, Value) in r)
-		{
-			if (Name.Equals(value, sc))
-			{
-				e = Value;
-				return true;
-			}
-		}
-
-		goto notFound;
-
-	binarySearch:
 		var span = r.AsSpan();
-
-	// Use a custom binary search to optimize for potentially larger cases.
-	search:
-		switch (span.Length)
+		var index = EnumValue<TEnum>.Entry.Find(span, name, sc);
+		if(index != -1)
 		{
-			case 1:
-			{
-				var (Name, Value) = span[0];
-				if (Name.Equals(value, sc))
-				{
-					e = Value;
-					return true;
-				}
-
-				break;
-			}
-
-			case 2:
-			{
-				var (Name, Value) = span[0];
-				if (Name.Equals(value, sc))
-				{
-					e = Value;
-					return true;
-				}
-
-				span = span.Slice(1, 1);
-				goto search;
-			}
-
-			default:
-			{
-				int i = span.Length / 2;
-				var (Name, Value) = span[i];
-				var comparison = StringSegment.Compare(value, Name, sc);
-				switch (Math.Sign(comparison))
-				{
-					case 0:
-						e = Value;
-						return true;
-
-					case -1:
-						span = span.Slice(0, i);
-						goto search;
-
-					case +1:
-						span = span.Slice(i + 1);
-						goto search;
-				}
-
-				Debug.Fail("Should never have arrived here");
-
-				break;
-			}
+			e = span[index].Value;
+			return true;
 		}
 
 	notFound:
