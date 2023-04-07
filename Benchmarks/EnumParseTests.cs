@@ -1,5 +1,6 @@
 ﻿using BenchmarkDotNet.Attributes;
 using FastEnumUtility;
+using Microsoft.Extensions.Primitives;
 
 namespace Open.Text.Benchmarks;
 
@@ -39,7 +40,7 @@ public class EnumParseTests
 		}
 	}
 
-	[Params(false, true)]
+	[Params(false/*, true*/)]
 	public bool IgnoreCase
 	{
 		get => ignoreCase;
@@ -50,8 +51,12 @@ public class EnumParseTests
 		}
 	}
 
-	static readonly string[] ValidValues = new string[] { nameof(Greek.Alpha), nameof(Greek.Epsilon), nameof(Greek.Phi) };
-	static readonly string[] InvalidValues = new string[] { "Apple", "Orange", "Pineapple" };
+	static readonly string[] ValidValues
+		= new string[] { nameof(Greek.Alpha), nameof(Greek.Epsilon), nameof(Greek.Phi) };
+	static readonly StringSegment[] ValidValueSegments
+		= new StringSegment[] { (nameof(Greek.Alpha)+" ").AsSegment(0, 5), (nameof(Greek.Epsilon) + " ").AsSegment(0, 7), (nameof(Greek.Phi) + " ").AsSegment(0, 3) };
+	static readonly string[] InvalidValues
+		= new string[] { "Apple", "Orange", "Pineapple" };
 
 	// To avoid branching overhead when benchmarking.
 	abstract class Tests
@@ -72,7 +77,7 @@ public class EnumParseTests
 		public override Greek EnumParse()
 		{
 			Greek e = default;
-			foreach (string s in ValidValues)
+			foreach (var s in ValidValues)
 			{
 				if (!Enum.TryParse(s, out e))
 					throw new Exception("Invalid.");
@@ -83,7 +88,7 @@ public class EnumParseTests
 		public override Greek CompiledSwitch()
 		{
 			Greek e = default;
-			foreach (string s in ValidValues)
+			foreach (var s in ValidValues)
 			{
 				if (!TryParseBySwitch(s, out e))
 					throw new Exception("Invalid.");
@@ -94,7 +99,7 @@ public class EnumParseTests
 		public override Greek CompiledSwitchByLength()
 		{
 			Greek e = default;
-			foreach (string s in ValidValues)
+			foreach (var s in ValidValues)
 			{
 				if (!TryParseByLengthSwitch(s, out e))
 					throw new Exception("Invalid.");
@@ -105,7 +110,7 @@ public class EnumParseTests
 		public override Greek EnumValueParse()
 		{
 			Greek e = default;
-			foreach (string s in ValidValues)
+			foreach (var s in ValidValueSegments)
 			{
 				if (!EnumValue.TryParse(s, out e))
 					throw new Exception("Invalid.");
@@ -116,7 +121,7 @@ public class EnumParseTests
 		public override Greek FastEnumParse()
 		{
 			Greek e = default;
-			foreach (string s in ValidValues)
+			foreach (var s in ValidValues)
 			{
 				if (!FastEnum.TryParse(s, out e))
 					throw new Exception("Invalid.");
@@ -568,7 +573,7 @@ public class EnumParseTests
 	public Greek CompiledSwitch() => _tests.CompiledSwitch();
 
 	// This tends to be the indisputable fastest and could be accomplished through a source generator.
-	[Benchmark(Baseline = true)]
+	//[Benchmark(Baseline = true)]
 	public Greek CompiledSwitchByLengths() => _tests.CompiledSwitchByLength();
 
 	[Benchmark]

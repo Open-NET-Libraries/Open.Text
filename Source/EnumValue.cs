@@ -154,7 +154,51 @@ public readonly struct EnumValue<TEnum>
 
 		var result = new Entry[]?[longest + 1];
 		foreach (var i in d.Keys)
-			result[i] = d[i].OrderBy(v=>v.Name).ToArray();
+			result[i] = d[i].OrderBy(v => v.Name).ToArray();
+
+		return result;
+	}
+
+	internal readonly struct StringSegmentKey : IEquatable<StringSegmentKey>
+	{
+		private readonly StringSegment _segment;
+
+		public StringSegmentKey(StringSegment segment)
+			=> this._segment = segment;
+
+		public bool Equals(EnumValue<TEnum>.StringSegmentKey other)
+			=> _segment.Equals(other._segment, StringComparison.Ordinal);
+
+		public override int GetHashCode() => _segment.AsSpan().GetHashCodeFromChars(8);
+
+		public override bool Equals(object obj)
+			=> obj is EnumValue<TEnum>.StringSegmentKey stringSegmentKey
+			&& Equals(stringSegmentKey);
+
+		public static implicit operator StringSegmentKey(string value) => new(value);
+		public static implicit operator StringSegmentKey(StringSegment value) => new(value);
+	}
+
+	static Dictionary<StringSegmentKey, TEnum>?[] CreateLookupD()
+	{
+		var longest = 0;
+		var d = new Dictionary<int, List<Entry>>();
+
+		foreach (var e in Values)
+		{
+			var n = string.Intern(e.ToString());
+			var len = n.Length;
+			if (len > longest) longest = len;
+			if (!d.TryGetValue(len, out var v)) d.Add(len, v = new());
+			v.Add(new(n, e));
+		}
+
+		var result = new Dictionary<StringSegmentKey, TEnum>?[longest + 1];
+		foreach (var i in d.Keys)
+		{
+			var lookup = new Dictionary<StringSegmentKey, TEnum>();
+			result[i] = d[i].ToDictionary(v => (StringSegmentKey)v.Name, v => v.Value);
+		}
 
 		return result;
 	}
@@ -170,7 +214,7 @@ public readonly struct EnumValue<TEnum>
 		public string Name { get; }
 		public TEnum Value { get; }
 
-        public void Deconstruct(out string name, out TEnum value)
+		public void Deconstruct(out string name, out TEnum value)
 		{
 			name = Name;
 			value = Value;
@@ -180,9 +224,9 @@ public readonly struct EnumValue<TEnum>
 		{
 			// Small enough? Just brute force the index.
 			var len = span.Length;
-			if(len < 12)
+			if (len < 12)
 			{
-				for(var i = 0; i< len; i++)
+				for (var i = 0; i < len; i++)
 				{
 					ref Entry e = ref span[i];
 					if (name.Equals(e.Name, sc))
@@ -221,6 +265,11 @@ public readonly struct EnumValue<TEnum>
 	internal static Entry[]?[] Lookup
 		=> LazyInitializer.EnsureInitialized(ref _lookup,
 			() => CreateLookup())!;
+
+	private static Dictionary<StringSegmentKey, TEnum>?[]? _lookupD;
+	internal static Dictionary<StringSegmentKey, TEnum>?[] LookupD
+		=> LazyInitializer.EnsureInitialized(ref _lookupD,
+			() => CreateLookupD())!;
 
 	/// <summary>
 	/// Indicates whether this instance matches the enum value of <paramref name="other"/>.
@@ -528,6 +577,7 @@ public static class EnumValue
 
 		var len = name.Length;
 		if (len == 0) goto notFound;
+
 		var lookup = EnumValue<TEnum>.Lookup;
 		if (len >= lookup.Length) goto notFound;
 
@@ -541,7 +591,7 @@ public static class EnumValue
 
 		var span = r.AsSpan();
 		var index = EnumValue<TEnum>.Entry.Find(span, name, sc);
-		if(index != -1)
+		if (index != -1)
 		{
 			e = span[index].Value;
 			return true;
