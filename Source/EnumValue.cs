@@ -8,6 +8,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Xml.Linq;
 using static System.Linq.Expressions.Expression;
 
 namespace Open.Text;
@@ -94,7 +95,7 @@ public readonly struct EnumValue<TEnum>
 	internal static Func<TEnum, string> NameLookup
 		=> LazyInitializer.EnsureInitialized(ref _nameLookup,
 			() => GetEnumNameDelegate())!;
-	internal static Func<string, (bool Success, TEnum Value)> GetEnumTryParseDelegate()
+	internal static Func<string, ValueLookupResult> GetEnumTryParseDelegate()
 	{
 		var valueParam = Parameter(typeof(string), "value");
 		var defaultExpression = CreateNewTuple(false, default!);
@@ -115,7 +116,7 @@ public readonly struct EnumValue<TEnum>
 			)
 		).ToArray();
 
-		return Lambda<Func<string, (bool Success, TEnum Value)>>(
+		return Lambda<Func<string, ValueLookupResult>>(
 			Switch(
 				Property(valueParam, nameof(string.Length)),
 				defaultExpression,
@@ -127,14 +128,33 @@ public readonly struct EnumValue<TEnum>
 
 		static Expression CreateNewTuple(bool success, TEnum value)
 			=> New(
-				typeof((bool Success, TEnum Value)).GetConstructor(new[] { typeof(bool), typeof(TEnum) }),
+				typeof(ValueLookupResult).GetConstructor(new[] { typeof(bool), typeof(TEnum) }),
 				Constant(success),
 				Constant(value)
 			);
 	}
 
-	private static Func<string, (bool Success, TEnum Value)>? _valueLookup;
-	internal static Func<string, (bool Success, TEnum Value)> ValueLookup
+	internal readonly struct ValueLookupResult
+	{
+		public ValueLookupResult(bool success, TEnum value)
+		{
+			Success = success;
+			Value = value;
+		}
+
+		public bool Success { get; }
+		public TEnum Value { get; }
+
+		public void Deconstruct(out bool success, out TEnum value)
+		{
+			success = Success;
+			value = Value;
+		}
+
+	}
+
+	private static Func<string, ValueLookupResult>? _valueLookup;
+	internal static Func<string, ValueLookupResult> ValueLookup
 		=> LazyInitializer.EnsureInitialized(ref _valueLookup,
 			() => GetEnumTryParseDelegate())!;
 
@@ -477,9 +497,9 @@ public static class EnumValue
 	public static bool TryParse<TEnum>(string value, out TEnum e)
 		where TEnum : Enum
 	{
-		var (success, result) = EnumValue<TEnum>.ValueLookup(value);
-		e = result;
-		return success;
+		var result = EnumValue<TEnum>.ValueLookup(value);
+		e = result.Value;
+		return result.Success;
 	}
 
 	/// <returns>The enum that represents the string <paramref name="value"/> provided.</returns>
