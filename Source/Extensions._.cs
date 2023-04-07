@@ -433,4 +433,25 @@ public static partial class TextExtensions
 			1 => string.Format(cultureInfo ?? CultureInfo.InvariantCulture, format, values[0]),
 			_ => string.Format(cultureInfo ?? CultureInfo.InvariantCulture, format, values as object[] ?? values.Cast<object>().ToArray()),
 		};
+
+	/// <summary>
+	/// A hashing algorithm that is nearly as fast as the default string.GetHashCode()
+	/// but can be used for any sequence of characters reliably.
+	/// </summary>
+	/// <remarks>
+	/// Setting the <paramref name="maxChars"/> parameter to a lower number
+	/// will dramatically increase the speed as more characters requires more iterations.
+	/// </remarks>
+	public static int GetHashCodeFromChars(this ReadOnlySpan<char> chars, int maxChars = int.MaxValue)
+	{
+		int hash_value = 0;
+		int length = Math.Min(chars.Length, maxChars);
+		for (var i = 0; i < length; i++)
+		{
+			ref readonly char c = ref chars[i];
+			hash_value = (hash_value * 31) ^ c;
+		}
+
+		return hash_value;
+	}
 }

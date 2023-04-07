@@ -3,6 +3,18 @@ using FastEnumUtility;
 
 namespace Open.Text.Benchmarks;
 
+/*
+|                  Method | UseValid | IgnoreCase |     Mean |    Error |   StdDev | Ratio | RatioSD | Allocated |
+|------------------------ |--------- |----------- |---------:|---------:|---------:|------:|--------:|----------:|
+| CompiledSwitchByLengths |     True |      False | 12.63 ns | 0.285 ns | 0.776 ns |  1.00 |    0.00 |         - |
+|          EnumValueParse |     True |      False | 50.22 ns | 0.543 ns | 0.481 ns |  3.98 |    0.17 |         - |
+|           FastEnumParse |     True |      False | 46.10 ns | 0.780 ns | 0.730 ns |  3.62 |    0.22 |         - |
+|                         |          |            |          |          |          |       |         |           |
+| CompiledSwitchByLengths |     True |       True | 17.29 ns | 0.185 ns | 0.173 ns |  1.00 |    0.00 |         - |
+|          EnumValueParse |     True |       True | 59.01 ns | 0.340 ns | 0.284 ns |  3.41 |    0.04 |         - |
+|           FastEnumParse |     True |       True | 72.12 ns | 0.451 ns | 0.352 ns |  4.17 |    0.05 |         - |
+*/
+
 [MemoryDiagnoser]
 public class EnumParseTests
 {
@@ -16,7 +28,7 @@ public class EnumParseTests
 			? (ignoreCase ? new ValidTestsIC() : new ValidTests())
 			: (ignoreCase ? new InvalidTestsIC() : new InvalidTests());
 
-	[Params(true, false)]
+	[Params(true/*, false*/)]
 	public bool UseValid
 	{
 		get => useValid;
