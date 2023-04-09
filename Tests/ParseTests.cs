@@ -58,19 +58,31 @@ public static class ParseTests
 		comparable.Contains(search.AsSpan())
 			.Should().Be(containsIC);
 
-		var spanComparable = span.AsCaseInsensitive();
-		Assert.True(spanComparable == segment);
-		Assert.True(spanComparable == span);
-		Assert.True(spanComparable == comparable);
-		Assert.False(spanComparable != segment);
-		Assert.False(spanComparable != span);
-		Assert.False(spanComparable != comparable);
-		Assert.False(comparable != spanComparable);
-		spanComparable.Contains(search)
+		var spanComparable = span.AsComparable(StringComparison.Ordinal);
+		var spanComparablei = span.AsCaseInsensitive();
+		Assert.True(spanComparable == spanComparablei);
+		Assert.True(spanComparablei == spanComparable);
+		Assert.False(spanComparable != spanComparablei);
+		Assert.False(spanComparablei != spanComparable);
+
+		Assert.True(spanComparablei == segment);
+		Assert.True(spanComparablei == span);
+		Assert.True(span == spanComparablei);
+		Assert.True(segment == spanComparablei);
+		Assert.True(segment == spanComparablei);
+		Assert.True(spanComparablei == comparable);
+		Assert.False(spanComparablei != segment);
+		Assert.False(spanComparablei != span);
+		Assert.False(span != spanComparablei);
+		Assert.False(segment != spanComparablei);
+		Assert.False(segment != spanComparablei);
+		Assert.False(spanComparablei != comparable);
+		Assert.False(comparable != spanComparablei);
+		spanComparablei.Contains(search)
 			.Should().Be(containsIC);
-		spanComparable.Contains(search.AsSegment())
+		spanComparablei.Contains(search.AsSegment())
 			.Should().Be(containsIC);
-		spanComparable.Contains(search.AsSpan())
+		spanComparablei.Contains(search.AsSpan())
 			.Should().Be(containsIC);
 	}
 }

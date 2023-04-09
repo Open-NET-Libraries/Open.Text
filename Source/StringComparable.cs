@@ -60,7 +60,7 @@ public readonly struct StringComparable
 		|| Type != other.Type && other.Equals(Segment);
 
 	/// <inheritdoc cref="Equals(string?)"/>
-	public bool Equals(in SpanComparable other)
+	public bool Equals(SpanComparable other)
 		=> Segment.Equals(other.Source, Type)
 		|| Type != other.Type && other.Equals(Segment);
 

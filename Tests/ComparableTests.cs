@@ -51,18 +51,41 @@ public static class ComparableTests
 	{
 		var cA = a.AsComparable(StringComparison.Ordinal);
 		var cB = b.AsComparable(StringComparison.Ordinal);
+		var cBi = b.AsCaseInsensitive();
+		var seg = a.AsSegment();
 
 		Assert.False(cA == cB); Assert.True(cA != cB);
 		Assert.True(cA == a); Assert.False(cA != a);
+		Assert.True(a == cA); Assert.False(a != cA);
+		Assert.True(seg == cA); Assert.False(seg != cA);
 		Assert.False(cA == b); Assert.True(cA != b);
+		Assert.False(b == cA); Assert.True(b != cA);
 		Assert.False(cB == a); Assert.True(cB != a);
 		Assert.True(cB == b); Assert.False(cB != b);
 
-		var sA = a.AsSpan().AsComparable(StringComparison.Ordinal);
-		var sB = b.AsSpan().AsComparable(StringComparison.Ordinal);
+		Assert.True(cA == cBi); Assert.False(cA != cBi);
+		Assert.True(cBi == cA); Assert.False(cBi != cA);
 
+		var span = a.AsSpan();
+		var sA = span.AsComparable(StringComparison.Ordinal);
+		var sAi = span.AsCaseInsensitive();
+		var sB = b.AsSpan().AsComparable(StringComparison.Ordinal);
+		var sBi = b.AsSpan().AsCaseInsensitive();
+
+		Assert.True(sA.Equals(cBi));
+		Assert.True(sAi.Equals(cB));
+
+		Assert.True(sAi == sBi); Assert.False(sAi != sBi);
+		Assert.True(sBi == sAi); Assert.False(sBi != sAi);
+		Assert.True(sAi == sB); Assert.False(sAi != sB);
+		Assert.True(sB == sAi); Assert.False(sB != sAi);
+		Assert.True(sBi == sA); Assert.False(sBi != sA);
+		Assert.True(sA == sBi); Assert.False(sA != sBi);
+
+		Assert.True(span == cA); Assert.False(span != cA);
 		Assert.False(sA == sB); Assert.True(sA != sB);
 		Assert.True(sA == a); Assert.False(sA != a);
+		Assert.True(a == sA); Assert.False(a != sA);
 		Assert.False(sA == b);
 		Assert.False(sB == a);
 		Assert.True(sB == b);
@@ -78,6 +101,9 @@ public static class ComparableTests
 
 		Assert.False(sB == cA);
 		Assert.True(sB == cB);
+
+		Assert.True(cA == sBi); Assert.False(cA != sBi);
+		Assert.True(sBi == cA); Assert.False(sBi != cA);
 	}
 
 	[Fact]
