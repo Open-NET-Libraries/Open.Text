@@ -175,6 +175,7 @@ public static partial class TextExtensions
 		: TrimStartPattern(source.AsSegment(), pattern, comparisonType, max);
 
 	/// <inheritdoc cref="TrimStartPattern(ReadOnlySpan{char}, ReadOnlySpan{char}, StringComparison, int)"/>
+	[ExcludeFromCodeCoverage] // simple overload	
 	public static StringSegment TrimStartPattern(this string source,
 		ReadOnlySpan<char> pattern,
 		StringComparison comparisonType = StringComparison.Ordinal,
@@ -308,6 +309,7 @@ public static partial class TextExtensions
 	}
 
 	/// <inheritdoc cref="TrimEndPattern(ReadOnlySpan{char}, ReadOnlySpan{char}, StringComparison, int)"/>
+	[ExcludeFromCodeCoverage] // simple overload	
 	public static StringSegment TrimEndPattern(this StringSegment source,
 		StringSegment pattern,
 		StringComparison comparisonType = StringComparison.Ordinal,

@@ -161,4 +161,18 @@ public static class StringSegmentTests
 		Assert.Equal(input.TrimStart(c), segment.TrimStart(c).Value);
 		Assert.Equal(input.Trim(c), segment.Trim(c).Value);
 	}
+
+	// Unit test for .ReplaceEach
+	[Theory]
+	// simple cases
+	[InlineData("Hello world", "Hello", "Goodbye", "Goodbye world")]
+	[InlineData("Hello world", "world", "universe", "Hello universe")]
+	[InlineData("Hello world", "Hello world", "Goodbye universe", "Goodbye universe")]
+	public static void ReplaceEach(string input, string search, string replace, string expected)
+	{
+		var segment = new[] { input.AsSegment() };
+		var result = segment.ReplaceEach(search, replace).JoinToString("");
+		Assert.Equal(expected, result);
+	}
+
 }
