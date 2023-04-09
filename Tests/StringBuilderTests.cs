@@ -220,10 +220,28 @@ public static class StringBuilderTests
 	[InlineData("Hello there.", " Hello", " ", "there.", "")]
 	[InlineData("Hello there.", "  Hello", " ", "there.", " ")]
 	[InlineData("Hello there.", "Hello", " ", "there.", " ")]
+	[InlineData("", "", " ", "", " ")]
+	[InlineData("", "", "", "", "")]
 	public static void Trim(string expected, string a, string b, string c, string d)
 	{
 		var sb = new StringBuilder();
 		sb.Append(a).Append(b).Append(c).Append(d).Trim();
+		Assert.Equal(expected, sb.ToString());
+	}
+
+	// Tests that cover the StringBuilder Trim but with multiple characters to trim using a ReadOnlySpan<char>
+	[Theory]
+	// Expected, A, B, C, D
+	[InlineData("Hello there.", "!Hello", " ", "there.", "")]
+	[InlineData("Hello there.", " Hello", " ", "there.", "!")]
+	[InlineData("Hello there.", " ! Hello", " ", "there.!", " ")]
+	[InlineData("Hello there.", "Hello", " ", "there.", " ")]
+	[InlineData("", "", " ", "", " ")]
+	[InlineData("", "", "", "", "")]
+	public static void TrimChars(string expected, string a, string b, string c, string d)
+	{
+		var sb = new StringBuilder();
+		sb.Append(a).Append(b).Append(c).Append(d).Trim(" !");
 		Assert.Equal(expected, sb.ToString());
 	}
 }
