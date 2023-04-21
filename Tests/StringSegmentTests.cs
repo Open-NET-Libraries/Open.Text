@@ -175,4 +175,29 @@ public static class StringSegmentTests
 		Assert.Equal(expected, result);
 	}
 
+	[Theory]
+	[InlineData("Hello, world!", "world", 0, StringComparison.Ordinal, 7)]
+	[InlineData("Hello, world!", "WORLD", 0, StringComparison.Ordinal, -1)]
+	[InlineData("Hello, world!", "WORLD", 0, StringComparison.OrdinalIgnoreCase, 7)]
+	[InlineData("abcdefg", "cde", 0, StringComparison.Ordinal, 2)]
+	[InlineData("abcdefg", "CDE", 0, StringComparison.Ordinal, -1)]
+	[InlineData("abcdefg", "CDE", 0, StringComparison.OrdinalIgnoreCase, 2)]
+	[InlineData("Hello, world! world!", "world", 8, StringComparison.Ordinal, 14)]
+	[InlineData("Hello, world! world!", "WORLD", 8, StringComparison.Ordinal, -1)]
+	[InlineData("Hello, world! world!", "WORLD", 8, StringComparison.OrdinalIgnoreCase, 14)]
+	public static void IndexOf_FindsSubstringWithCaseVariations(
+		string input,
+		string value,
+		int startIndex,
+		StringComparison comparisonType,
+		int expectedResult)
+	{
+		StringSegment segment = input;
+		StringSegment valueSegment = value;
+
+		int result = segment.IndexOf(valueSegment, startIndex, comparisonType);
+		Assert.Equal(expectedResult, result);
+		result = segment.IndexOf(valueSegment.AsSpan(), startIndex, comparisonType);
+		Assert.Equal(expectedResult, result);
+	}
 }
