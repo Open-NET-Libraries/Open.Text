@@ -8,7 +8,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using System.Xml.Linq;
 using static System.Linq.Expressions.Expression;
 
 namespace Open.Text;
