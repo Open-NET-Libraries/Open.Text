@@ -435,23 +435,33 @@ public static partial class TextExtensions
 		};
 
 	/// <summary>
-	/// A hashing algorithm that is nearly as fast as the default string.GetHashCode()
+	/// A hashing algorithm that is can be faster than the default string.GetHashCode()
 	/// but can be used for any sequence of characters reliably.
 	/// </summary>
 	/// <remarks>
-	/// Setting the <paramref name="maxChars"/> parameter to a lower number
-	/// will dramatically increase the speed as more characters requires more iterations.
+	/// Setting the <paramref name="maxChars"/> parameter to a low number
+	/// will dramatically increase the speed as more characters requires more iterations
+	/// at the expense of accuracy and possible collisions.
 	/// </remarks>
 	public static int GetHashCodeFromChars(this ReadOnlySpan<char> chars, int maxChars = int.MaxValue)
 	{
-		int hash_value = 0;
-		int length = Math.Min(chars.Length, maxChars);
-		for (var i = 0; i < length; i++)
+		int length = chars.Length > maxChars ? maxChars : chars.Length;
+
+		long hash = 0;
+		for (int i = 0; i < length; i++)
 		{
 			ref readonly char c = ref chars[i];
-			hash_value = (hash_value * 31) ^ c;
+			hash |= (long)c << (i * 8);
 		}
 
-		return hash_value;
+		return (int)(hash ^ (hash >> 32));
 	}
+
+	/// <inheritdoc cref="GetHashCodeFromChars(ReadOnlySpan{char}, int)"/>
+	public static int GetHashCodeFromChars(this StringSegment chars, int maxChars = int.MaxValue)
+		=> chars.AsSpan().GetHashCodeFromChars(maxChars);
+
+	/// <inheritdoc cref="GetHashCodeFromChars(ReadOnlySpan{char}, int)"/>
+	public static int GetHashCodeFromChars(this string chars, int maxChars = int.MaxValue)
+		=> chars.AsSpan().GetHashCodeFromChars(maxChars);
 }
