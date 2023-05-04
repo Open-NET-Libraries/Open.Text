@@ -435,33 +435,68 @@ public static partial class TextExtensions
 		};
 
 	/// <summary>
-	/// A hashing algorithm that is can be faster than the default string.GetHashCode()
-	/// but can be used for any sequence of characters reliably.
+	/// A hashing algorithm for a span of characters.
 	/// </summary>
 	/// <remarks>
 	/// Setting the <paramref name="maxChars"/> parameter to a low number
 	/// will dramatically increase the speed as more characters requires more iterations
 	/// at the expense of accuracy and possible collisions.
 	/// </remarks>
-	public static int GetHashCodeFromChars(this ReadOnlySpan<char> chars, int maxChars = int.MaxValue)
+	public static int GetHashCodeFromChars(this ReadOnlySpan<char> chars, StringComparison comparisonType = StringComparison.Ordinal, int maxChars = int.MaxValue)
 	{
 		int length = chars.Length > maxChars ? maxChars : chars.Length;
 
-		long hash = 0;
-		for (int i = 0; i < length; i++)
+		int hash = 17;
+		switch(comparisonType)
 		{
-			ref readonly char c = ref chars[i];
-			hash |= (long)c << (i * 8);
+			case StringComparison.Ordinal:
+			case StringComparison.CurrentCulture:
+			case StringComparison.InvariantCulture:
+			{
+				for (int i = 0; i < length; i++)
+				{
+					ref readonly char c = ref chars[i];
+					hash = (hash * 31) ^ c;
+				}
+
+				break;
+			}
+
+			case StringComparison.OrdinalIgnoreCase:
+			case StringComparison.CurrentCultureIgnoreCase:
+			{
+				for (int i = 0; i < length; i++)
+				{
+					ref readonly char c = ref chars[i];
+					hash = (hash * 31) ^ char.ToLower(c, CultureInfo.CurrentCulture);
+				}
+
+				break;
+			}
+
+			case StringComparison.InvariantCultureIgnoreCase:
+			{
+				for (int i = 0; i < length; i++)
+				{
+					ref readonly char c = ref chars[i];
+					hash = (hash * 31) ^ char.ToLowerInvariant(c);
+				}
+
+				break;
+			}
+
 		}
 
-		return (int)(hash ^ (hash >> 32));
+		return hash + length;
 	}
 
-	/// <inheritdoc cref="GetHashCodeFromChars(ReadOnlySpan{char}, int)"/>
-	public static int GetHashCodeFromChars(this StringSegment chars, int maxChars = int.MaxValue)
-		=> chars.AsSpan().GetHashCodeFromChars(maxChars);
+	/// <inheritdoc cref="GetHashCodeFromChars(ReadOnlySpan{char}, StringComparison, int)"/>
+	public static int GetHashCodeFromChars(this StringSegment chars, StringComparison comparisonType = StringComparison.Ordinal, int maxChars = int.MaxValue)
+		=> chars.HasValue
+		? chars.AsSpan().GetHashCodeFromChars(comparisonType, maxChars)
+		: throw new ArgumentNullException(nameof(chars), "The buffer must not be null.");
 
-	/// <inheritdoc cref="GetHashCodeFromChars(ReadOnlySpan{char}, int)"/>
-	public static int GetHashCodeFromChars(this string chars, int maxChars = int.MaxValue)
-		=> chars.AsSpan().GetHashCodeFromChars(maxChars);
+	/// <inheritdoc cref="GetHashCodeFromChars(ReadOnlySpan{char}, StringComparison, int)"/>
+	public static int GetHashCodeFromChars(this string chars, StringComparison comparisonType = StringComparison.Ordinal, int maxChars = int.MaxValue)
+		=> chars.AsSpan().GetHashCodeFromChars(comparisonType, maxChars);
 }

@@ -149,7 +149,6 @@ public readonly struct EnumValue<TEnum>
 			success = Success;
 			value = Value;
 		}
-
 	}
 
 	private static Func<string, ValueLookupResult>? _valueLookup;
@@ -195,7 +194,7 @@ public readonly struct EnumValue<TEnum>
 			value = Value;
 		}
 
-		public static int Find(Span<Entry> span, StringSegment name, StringComparison sc)
+		public static int Find(Span<Entry> span, ReadOnlySpan<char> name, StringComparison sc)
 		{
 			// Small enough? Just brute force the index.
 			var len = span.Length;
@@ -218,12 +217,12 @@ public readonly struct EnumValue<TEnum>
 			while (left <= right)
 			{
 				int middle = left + (right - left) / 2;
-				var middleKey = span[middle].Name;
+				var middleKey = span[middle].Name.AsSpan();
 
 				if (right - left < 4 && name.Equals(middleKey, sc))
 					return middle;
 
-				var comparison = StringSegment.Compare(middleKey, name, sc);
+				var comparison = name.CompareTo(middleKey, sc);
 				if (comparison < 0)
 					left = middle + 1;
 				else if (comparison > 0)
@@ -539,14 +538,13 @@ public static class EnumValue
 	public static bool TryParse<TEnum>(StringSegment name, bool ignoreCase, out TEnum e)
 		where TEnum : Enum
 	{
-		if (!name.HasValue) goto notFound;
-
-		// If this is a string, use the optimized version.
-		if (!ignoreCase && name.Buffer.Length == name.Length)
-			return TryParse(name.Buffer, out e);
-
 		var len = name.Length;
 		if (len == 0) goto notFound;
+
+		// If this is a string, use the optimized version.
+		if (!ignoreCase && name.Buffer!.Length == len)
+			return TryParse(name.Buffer, out e);
+
 		var lookup = EnumValue<TEnum>.Lookup;
 		if (len >= lookup.Length) goto notFound;
 
