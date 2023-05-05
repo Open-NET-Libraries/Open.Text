@@ -7,6 +7,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
 
 [assembly: CLSCompliant(true)]
@@ -433,6 +434,44 @@ public static partial class TextExtensions
 			1 => string.Format(cultureInfo ?? CultureInfo.InvariantCulture, format, values[0]),
 			_ => string.Format(cultureInfo ?? CultureInfo.InvariantCulture, format, values as object[] ?? values.Cast<object>().ToArray()),
 		};
+
+	public static ReadOnlySpan<char> Supplant(ReadOnlySpan<char> value, IDictionary<string, string> tags)
+	{
+		if (tags is null) throw new ArgumentNullException(nameof(tags));
+
+		StringBuilder? result = null;
+		int start = 0;
+
+		for (int i = 0; i < value.Length - 1; i++)
+		{
+			if (value[i] != '$' || value[i + 1] != '{')
+				continue;
+
+			int tagStart = i + 2;
+			int tagEnd = value.Slice(tagStart).IndexOf('}');
+			if (tagEnd == -1)
+				break; // No closing '}' found in the remaining input, exit early.
+
+			if (tagEnd == 0)
+				continue; // Empty pattern, skip it.
+
+			string tagName = value.Slice(tagStart, tagEnd).ToString();
+			if (tags.TryGetValue(tagName, out string replacement))
+			{
+				result ??= new StringBuilder((int)(value.Length * 1.5));
+				result.Append(value.Slice(start, i - start));
+				result.Append(replacement);
+				i = tagStart + tagEnd;
+				start = i + 1;
+			}
+		}
+
+		if (result is null)
+			return value;
+
+		result.Append(value.Slice(start));
+		return result.ToString().AsSpan();
+	}
 
 	/// <summary>
 	/// A hashing algorithm for a span of characters.
