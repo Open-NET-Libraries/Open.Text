@@ -270,5 +270,5 @@ public static class EnumValueTests
 
 	[Fact]
 	public static void LargeEnumTests()
-	=> TryParseTestsCore<LargeEnum>();
+		=> TryParseTestsCore<LargeEnum>();
 }

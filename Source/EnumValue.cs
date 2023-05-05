@@ -172,7 +172,7 @@ public readonly struct EnumValue<TEnum>
 
 		var result = new Entry[]?[longest + 1];
 		foreach (var i in d.Keys)
-			result[i] = d[i].OrderBy(v=>v.Name).ToArray();
+			result[i] = d[i].OrderBy(v => v.Name).ToArray();
 
 		return result;
 	}
@@ -188,7 +188,7 @@ public readonly struct EnumValue<TEnum>
 		public string Name { get; }
 		public TEnum Value { get; }
 
-        public void Deconstruct(out string name, out TEnum value)
+		public void Deconstruct(out string name, out TEnum value)
 		{
 			name = Name;
 			value = Value;
@@ -198,9 +198,9 @@ public readonly struct EnumValue<TEnum>
 		{
 			// Small enough? Just brute force the index.
 			var len = span.Length;
-			if(len < 12)
+			if (len < 12)
 			{
-				for(var i = 0; i< len; i++)
+				for (var i = 0; i < len; i++)
 				{
 					ref Entry e = ref span[i];
 					if (name.Equals(e.Name, sc))
@@ -224,12 +224,13 @@ public readonly struct EnumValue<TEnum>
 
 				var comparison = name.CompareTo(middleKey, sc);
 				if (comparison < 0)
-					left = middle + 1;
-				else if (comparison > 0)
 					right = middle - 1;
+				else if (comparison > 0)
+					left = middle + 1;
 				else
 					return middle;
 			}
+
 
 			return -1;
 		}
@@ -558,7 +559,7 @@ public static class EnumValue
 
 		var span = r.AsSpan();
 		var index = EnumValue<TEnum>.Entry.Find(span, name, sc);
-		if(index != -1)
+		if (index != -1)
 		{
 			e = span[index].Value;
 			return true;
