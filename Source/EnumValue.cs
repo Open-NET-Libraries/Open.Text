@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Primitives;
+﻿// Ignore Spelling: Deconstruct
+
+using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -9,7 +11,7 @@ using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using static System.Linq.Expressions.Expression;
-
+//using static FastExpressionCompiler.LightExpression.Expression;
 namespace Open.Text;
 
 /// <summary>
@@ -83,7 +85,7 @@ public readonly struct EnumValue<TEnum>
 					Default(tResult)
 				),
 				null,
-				Values.Select(v => SwitchCase(
+				Values.OrderBy(v => string.Intern(v.ToString())).Select(v => SwitchCase(
 					Constant(string.Intern(v.ToString())),
 					Constant(v)
 				)).ToArray()
@@ -93,41 +95,46 @@ public readonly struct EnumValue<TEnum>
 	private static Func<TEnum, string>? _nameLookup;
 	internal static Func<TEnum, string> NameLookup
 		=> LazyInitializer.EnsureInitialized(ref _nameLookup,
-			() => GetEnumNameDelegate())!;
+			GetEnumNameDelegate)!;
 	internal static Func<string, ValueLookupResult> GetEnumTryParseDelegate()
 	{
 		var valueParam = Parameter(typeof(string), "value");
+		var lengthParam = Variable(typeof(int), "length");
 		var defaultExpression = CreateNewTuple(false, default!);
 		var enumValues = Values.Select(v => (value: v, name: string.Intern(v.ToString())));
-		var nameGroups = enumValues.GroupBy(v => v.name.Length);
+		var nameGroups = enumValues.GroupBy(v => v.name.Length).OrderBy(g => g.Key);
 		var lengthCheckCases = nameGroups.Select(group =>
 			SwitchCase(
 				Switch(
 					valueParam,
 					defaultExpression,
 					null,
-					group.Select(v => SwitchCase(
+					group.OrderBy(v => v.name).Select(v => SwitchCase(
 						CreateNewTuple(true, v.value),
 						Constant(v.name)
-					)).ToArray()
+					))
+					.ToArray()
 				),
 				Constant(group.Key)
 			)
 		).ToArray();
 
 		return Lambda<Func<string, ValueLookupResult>>(
-			Switch(
-				Property(valueParam, nameof(string.Length)),
-				defaultExpression,
-				null,
-				lengthCheckCases
+			Block(new[] { lengthParam },
+				Assign(lengthParam, Property(valueParam, nameof(string.Length))),
+				Switch(
+					lengthParam,
+					defaultExpression,
+					null,
+					lengthCheckCases
+				)
 			),
 			valueParam
 		).Compile();
 
 		static Expression CreateNewTuple(bool success, TEnum value)
 			=> New(
-				typeof(ValueLookupResult).GetConstructor(new[] { typeof(bool), typeof(TEnum) }),
+				typeof(ValueLookupResult).GetConstructor(new[] { typeof(bool), typeof(TEnum) })!,
 				Constant(success),
 				Constant(value)
 			);
@@ -153,8 +160,12 @@ public readonly struct EnumValue<TEnum>
 
 	private static Func<string, ValueLookupResult>? _valueLookup;
 	internal static Func<string, ValueLookupResult> ValueLookup
-		=> LazyInitializer.EnsureInitialized(ref _valueLookup,
-			() => GetEnumTryParseDelegate())!;
+		=> LazyInitializer.EnsureInitialized(ref _valueLookup, GetEnumTryParseDelegate)!;
+
+	private static IReadOnlyDictionary<string, TEnum>? _ignoreCaseLookup;
+	internal static IReadOnlyDictionary<string, TEnum> IgnoreCaseLookup
+		=> LazyInitializer.EnsureInitialized(ref _ignoreCaseLookup,
+			() => Values.ToDictionary(e => Enum.GetName(typeof(TEnum), e)!, e => e, StringComparer.OrdinalIgnoreCase))!;
 
 	static Entry[]?[] CreateLookup()
 	{
@@ -484,6 +495,7 @@ public static class EnumValue
 	/// <returns>The enum that represents the string <paramref name="value"/> provided.</returns>
 	/// <exception cref="ArgumentException">Requested <paramref name="value"/> was not found.</exception>
 	/// <inheritdoc cref="TryParse{TEnum}(StringSegment, bool, out TEnum)"/>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static TEnum Parse<TEnum>(string value)
 		where TEnum : Enum
 	{
@@ -493,6 +505,7 @@ public static class EnumValue
 	}
 
 	/// <inheritdoc cref="TryParse{TEnum}(StringSegment, out TEnum)"/>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static bool TryParse<TEnum>(string value, out TEnum e)
 		where TEnum : Enum
 	{
@@ -505,29 +518,53 @@ public static class EnumValue
 	/// <exception cref="ArgumentNullException"><paramref name="value"/> is null.</exception>
 	/// <exception cref="ArgumentException">Requested <paramref name="value"/> was not found.</exception>
 	/// <inheritdoc cref="TryParse{TEnum}(StringSegment, bool, out TEnum)"/>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static TEnum Parse<TEnum>(StringSegment value)
 		where TEnum : Enum
 		=> TryParse<TEnum>(value, false, out var e) ? e
 		: throw new ArgumentException(string.Format(NotFoundMessage, value), nameof(value));
 
 	/// <inheritdoc cref="TryParse{TEnum}(StringSegment, bool, out TEnum)"/>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static TEnum Parse<TEnum>(string value, bool ignoreCase)
 		where TEnum : Enum
 		=> ignoreCase
-			? TryParse<TEnum>(value, ignoreCase, out var e) ? e
+			? EnumValue<TEnum>.IgnoreCaseLookup.TryGetValue(value, out var e) ? e
 				: throw new ArgumentException(string.Format(NotFoundMessage, value), nameof(value))
 			: Parse<TEnum>(value);
 
 	/// <inheritdoc cref="TryParse{TEnum}(StringSegment, bool, out TEnum)"/>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static TEnum Parse<TEnum>(StringSegment value, bool ignoreCase)
 		where TEnum : Enum
-		=> TryParse<TEnum>(value, ignoreCase, out var e) ? e
-		: throw new ArgumentException(string.Format(NotFoundMessage, value), nameof(value));
+	{
+		var buffer = value.Buffer ?? throw new ArgumentNullException(nameof(value));
+		return value.Length == buffer.Length
+			? Parse<TEnum>(value.Buffer, ignoreCase)
+			: TryParse<TEnum>(value, ignoreCase, out var e)
+			? e : throw new ArgumentException(string.Format(NotFoundMessage, value), nameof(value));
+	}
 
 	/// <inheritdoc cref="TryParse{TEnum}(StringSegment, bool, out TEnum)"/>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static bool TryParse<TEnum>(StringSegment value, out TEnum e)
 		where TEnum : Enum
 		=> TryParse(value, false, out e);
+
+	/// <inheritdoc cref="TryParse{TEnum}(StringSegment, bool, out TEnum)"/>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static bool TryParse<TEnum>(string name, bool ignoreCase, out TEnum e)
+		where TEnum : Enum
+		=> ignoreCase
+		? EnumValue<TEnum>.IgnoreCaseLookup.TryGetValue(name, out e)
+		: TryParse(name, out e);
+
+	/// <inheritdoc cref="TryParse{TEnum}(StringSegment, bool, out TEnum)"/>
+	/// <remarks>Can be slightly faster than other ignore-case methods.</remarks>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static bool TryParseIgnoreCase<TEnum>(string name, out TEnum e)
+	where TEnum : Enum
+		=> EnumValue<TEnum>.IgnoreCaseLookup.TryGetValue(name, out e);
 
 	/// <summary>
 	/// Converts the string representation of the name of one or more enumerated constants to an equivalent enumerated object.
@@ -543,8 +580,9 @@ public static class EnumValue
 		if (len == 0) goto notFound;
 
 		// If this is a string, use the optimized version.
-		if (!ignoreCase && name.Buffer!.Length == len)
-			return TryParse(name.Buffer, out e);
+		string buffer = name.Buffer!;
+		if (buffer.Length == len)
+			return TryParse(buffer, ignoreCase, out e);
 
 		var lookup = EnumValue<TEnum>.Lookup;
 		if (len >= lookup.Length) goto notFound;

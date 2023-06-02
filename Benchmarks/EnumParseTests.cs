@@ -1,5 +1,6 @@
 ﻿using BenchmarkDotNet.Attributes;
 using FastEnumUtility;
+using System.Security;
 
 namespace Open.Text.Benchmarks;
 
@@ -39,7 +40,7 @@ public class EnumParseTests
 		}
 	}
 
-	[Params(false, true)]
+	[Params(false/*, true*/)]
 	public bool IgnoreCase
 	{
 		get => ignoreCase;
@@ -50,8 +51,8 @@ public class EnumParseTests
 		}
 	}
 
-	static readonly string[] ValidValues = new string[] { nameof(Greek.Alpha), nameof(Greek.Epsilon), nameof(Greek.Phi) };
-	static readonly string[] InvalidValues = new string[] { "Apple", "Orange", "Pineapple" };
+	static readonly string[] ValidValues = new string[] { nameof(Greek.Alpha), nameof(Greek.Epsilon), nameof(Greek.Phi), nameof(Greek.Beta), nameof(Greek.Gamma) };
+	static readonly string[] InvalidValues = new string[] { "Apple", "Orange", "Pineapple", "Grapefruit", "Lemon" };
 
 	// To avoid branching overhead when benchmarking.
 	abstract class Tests
@@ -65,6 +66,25 @@ public class EnumParseTests
 		public abstract Greek CompiledSwitch();
 
 		public abstract Greek CompiledSwitchByLength();
+
+		static readonly IDictionary<string, Greek> LookupD
+			= Enum
+			.GetValues<Greek>()
+			.ToDictionary(e => Enum.GetName(e)!, e => e, StringComparer.Ordinal);
+
+		protected virtual bool Lookup(string value, out Greek e)
+			=> LookupD.TryGetValue(value, out e);
+
+		public Greek DictionaryLookup()
+		{
+			Greek e = default;
+			foreach (string s in ValidValues)
+			{
+				if (!Lookup(s, out e))
+					throw new Exception("Invalid.");
+			}
+			return e;
+		}
 	}
 
 	class ValidTests : Tests
@@ -239,6 +259,14 @@ public class EnumParseTests
 			}
 			return e;
 		}
+
+		static readonly IDictionary<string, Greek> LookupD
+			= Enum
+			.GetValues<Greek>()
+			.ToDictionary(e => Enum.GetName(e)!, e => e, StringComparer.OrdinalIgnoreCase);
+
+		protected override bool Lookup(string value, out Greek e)
+			=> LookupD.TryGetValue(value, out e);
 	}
 
 	class InvalidTestsIC : Tests
@@ -281,7 +309,7 @@ public class EnumParseTests
 			Greek e = default;
 			foreach (string s in InvalidValues)
 			{
-				if (EnumValue.TryParse(s, true, out e))
+				if (EnumValue.TryParseIgnoreCase(s, out e))
 					throw new Exception("Valid.");
 			}
 			return e;
@@ -297,6 +325,14 @@ public class EnumParseTests
 			}
 			return e;
 		}
+
+		static readonly IDictionary<string, Greek> LookupD
+			= Enum
+			.GetValues<Greek>()
+			.ToDictionary(e => Enum.GetName(e)!, e => e, StringComparer.OrdinalIgnoreCase);
+
+		protected override bool Lookup(string value, out Greek e)
+			=> LookupD.TryGetValue(value, out e);
 	}
 
 	private static bool TryParseBySwitch(string value, out Greek e)
@@ -572,8 +608,12 @@ public class EnumParseTests
 	public Greek CompiledSwitchByLengths() => _tests.CompiledSwitchByLength();
 
 	[Benchmark]
+	// Uses an expression tree when case sensitive.
 	public Greek EnumValueParse() => _tests.EnumValueParse();
 
 	[Benchmark]
 	public Greek FastEnumParse() => _tests.FastEnumParse();
+
+	[Benchmark]
+	public Greek DictionaryLookup() => _tests.DictionaryLookup();
 }
