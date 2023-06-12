@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FluentAssertions;
+using System;
 using System.Linq;
 using Xunit;
 
@@ -41,6 +42,15 @@ public enum Greek
 	[Letter('Θ', 'θ')]
 	Theta,
 	None
+}
+
+public enum MultiCase
+{
+	Goodbye,
+	Hello,
+	HELLO,
+	hello,
+	goodbye
 }
 
 public enum LongEnum
@@ -122,6 +132,19 @@ public enum LargeEnum
 
 public static class EnumValueTests
 {
+	[Fact]
+	public static void EnsureMultiCase()
+	{
+		EnumValue.TryParse<MultiCase>("HELLO", out var value).Should().Be(true);
+		value.Should().Be(MultiCase.HELLO);
+
+		EnumValue.TryParse("HELLO", true, out value).Should().Be(true);
+		value.Should().Be(MultiCase.Hello);
+
+		EnumValue.TryParse("goodbye", true, out value).Should().Be(true);
+		value.Should().Be(MultiCase.Goodbye);
+	}
+
 	[Fact]
 	public static void IsIntType()
 	{

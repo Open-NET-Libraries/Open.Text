@@ -165,7 +165,18 @@ public readonly struct EnumValue<TEnum>
 	private static IReadOnlyDictionary<string, TEnum>? _ignoreCaseLookup;
 	internal static IReadOnlyDictionary<string, TEnum> IgnoreCaseLookup
 		=> LazyInitializer.EnsureInitialized(ref _ignoreCaseLookup,
-			() => Values.ToDictionary(e => Enum.GetName(typeof(TEnum), e)!, e => e, StringComparer.OrdinalIgnoreCase))!;
+			() =>
+			{
+				// If the enum has duplicate values, we want to use the first one.
+				var result = new Dictionary<string, TEnum>(StringComparer.OrdinalIgnoreCase);
+				foreach (var e in Values)
+				{
+					var v = Enum.GetName(typeof(TEnum), e);
+					if (result.ContainsKey(v)) continue;
+					result[v] = e;
+				}
+				return result;
+			})!;
 
 	static Entry[]?[] CreateLookup()
 	{
