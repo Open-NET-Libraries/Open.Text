@@ -216,7 +216,7 @@ public static class EnumValueTests
 
 	static void CheckImplicit(EnumValue<Greek> value, Greek expected)
 	{
-		Assert.Equal(expected, value);
+		Assert.Equal<Greek>(expected, value);
 		Assert.True(value == expected);
 		Assert.True(value.Equals(expected));
 		Assert.True(value == new EnumValueCaseIgnored<Greek>(expected));
@@ -226,7 +226,7 @@ public static class EnumValueTests
 
 	static void CheckImplicitCaseIgnored(EnumValueCaseIgnored<Greek> value, Greek expected)
 	{
-		Assert.Equal(expected, value);
+		Assert.Equal<Greek>(expected, value);
 		Assert.True(value == expected);
 		Assert.True(value.Equals(expected));
 		Assert.True(value == new EnumValue<Greek>(expected));
@@ -243,14 +243,14 @@ public static class EnumValueTests
 
 			{
 				var x = new EnumValue<T>(e);
-				Assert.Equal(e, x);
+				Assert.Equal<T>(e, x);
 				Assert.Equal(e.GetHashCode(), x.GetHashCode());
 				Assert.Equal(e.ToString(), x.ToString());
 			}
 
 			{
 				var x = new EnumValueCaseIgnored<T>(e);
-				Assert.Equal(e, x);
+				Assert.Equal<T>(e, x);
 				Assert.Equal(e.GetHashCode(), x.GetHashCode());
 				Assert.Equal(e.ToString(), x.ToString());
 			}
