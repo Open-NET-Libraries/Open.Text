@@ -20,6 +20,7 @@ namespace Open.Text;
 /// <remarks>String parsing or coercion is case sensitive and must be exact.</remarks>
 [SuppressMessage("Usage", "CA2225:Operator overloads have named alternates", Justification = "Already exposes via a property.")]
 [SuppressMessage("Design", "CA1000:Do not declare static members on generic types", Justification = "Intentional")]
+[SuppressMessage("Roslynator", "RCS1158:Static member in generic type should use a type parameter.")]
 [DebuggerDisplay("{GetDebuggerDisplay()}")]
 public readonly struct EnumValue<TEnum>
 	: IEquatable<EnumValue<TEnum>>, IEquatable<EnumValueCaseIgnored<TEnum>>, IEquatable<TEnum>
@@ -252,7 +253,6 @@ public readonly struct EnumValue<TEnum>
 				else
 					return middle;
 			}
-
 
 			return -1;
 		}

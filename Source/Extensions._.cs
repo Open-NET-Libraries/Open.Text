@@ -484,7 +484,6 @@ public static partial class TextExtensions
 
 				break;
 			}
-
 		}
 
 		return hash + length;
