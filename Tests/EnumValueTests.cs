@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FluentAssertions;
+using System;
 using System.Linq;
 using Xunit;
 
@@ -41,6 +42,15 @@ public enum Greek
 	[Letter('Θ', 'θ')]
 	Theta,
 	None
+}
+
+public enum MultiCase
+{
+	Goodbye,
+	Hello,
+	HELLO,
+	hello,
+	goodbye
 }
 
 public enum LongEnum
@@ -123,6 +133,19 @@ public enum LargeEnum
 public static class EnumValueTests
 {
 	[Fact]
+	public static void EnsureMultiCase()
+	{
+		EnumValue.TryParse<MultiCase>("HELLO", out var value).Should().Be(true);
+		value.Should().Be(MultiCase.HELLO);
+
+		EnumValue.TryParse("HELLO", true, out value).Should().Be(true);
+		value.Should().Be(MultiCase.Hello);
+
+		EnumValue.TryParse("goodbye", true, out value).Should().Be(true);
+		value.Should().Be(MultiCase.Goodbye);
+	}
+
+	[Fact]
 	public static void IsIntType()
 	{
 		var tInt = typeof(int);
@@ -193,7 +216,7 @@ public static class EnumValueTests
 
 	static void CheckImplicit(EnumValue<Greek> value, Greek expected)
 	{
-		Assert.Equal(expected, value);
+		Assert.Equal<Greek>(expected, value);
 		Assert.True(value == expected);
 		Assert.True(value.Equals(expected));
 		Assert.True(value == new EnumValueCaseIgnored<Greek>(expected));
@@ -203,7 +226,7 @@ public static class EnumValueTests
 
 	static void CheckImplicitCaseIgnored(EnumValueCaseIgnored<Greek> value, Greek expected)
 	{
-		Assert.Equal(expected, value);
+		Assert.Equal<Greek>(expected, value);
 		Assert.True(value == expected);
 		Assert.True(value.Equals(expected));
 		Assert.True(value == new EnumValue<Greek>(expected));
@@ -220,14 +243,14 @@ public static class EnumValueTests
 
 			{
 				var x = new EnumValue<T>(e);
-				Assert.Equal(e, x);
+				Assert.Equal<T>(e, x);
 				Assert.Equal(e.GetHashCode(), x.GetHashCode());
 				Assert.Equal(e.ToString(), x.ToString());
 			}
 
 			{
 				var x = new EnumValueCaseIgnored<T>(e);
-				Assert.Equal(e, x);
+				Assert.Equal<T>(e, x);
 				Assert.Equal(e.GetHashCode(), x.GetHashCode());
 				Assert.Equal(e.ToString(), x.ToString());
 			}
