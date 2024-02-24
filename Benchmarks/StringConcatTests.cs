@@ -78,25 +78,4 @@ public class StringConcatTests
 
 		return s;
 	}
-
-	[Benchmark]
-	public string StringConcat()
-	{
-		StringConcat s = "";
-		{
-			var len = Words.Length;
-			var span = Words.Span;
-			for (var i = 0; i < len; i++)
-				s += span[i];
-		}
-
-		{
-			var len = Segments.Length;
-			var span = Segments.Span;
-			for (var i = 0; i < len; i++)
-				s += span[i];
-		}
-
-		return s;
-	}
 }
