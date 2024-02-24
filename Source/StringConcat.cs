@@ -211,5 +211,5 @@ public sealed class StringConcat(int initialCapacity = -1) : IEnumerable<Charact
 	[return:NotNullIfNotNull(nameof(value))]
 #endif
 	public static implicit operator string?(StringConcat? value)
-		=> value?.ToString()!;
+		=> value?.ToString();
 }

@@ -223,6 +223,9 @@ csharp_style_prefer_utf8_string_literals = true:suggestion
 csharp_style_prefer_primary_constructors = true:suggestion
 dotnet_diagnostic.SYSLIB1045.severity = silent
 
+# IDE0055: Fix formatting
+dotnet_diagnostic.IDE0055.severity = silent
+
 [*.{cs,vb}]
 dotnet_style_operator_placement_when_wrapping = beginning_of_line
 tab_width = 4
