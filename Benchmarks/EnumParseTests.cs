@@ -51,8 +51,8 @@ public class EnumParseTests
 		}
 	}
 
-	static readonly string[] ValidValues = new string[] { nameof(Greek.Alpha), nameof(Greek.Epsilon), nameof(Greek.Phi), nameof(Greek.Beta), nameof(Greek.Gamma) };
-	static readonly string[] InvalidValues = new string[] { "Apple", "Orange", "Pineapple", "Grapefruit", "Lemon" };
+	static readonly string[] ValidValues = [nameof(Greek.Alpha), nameof(Greek.Epsilon), nameof(Greek.Phi), nameof(Greek.Beta), nameof(Greek.Gamma)];
+	static readonly string[] InvalidValues = ["Apple", "Orange", "Pineapple", "Grapefruit", "Lemon"];
 
 	// To avoid branching overhead when benchmarking.
 	abstract class Tests

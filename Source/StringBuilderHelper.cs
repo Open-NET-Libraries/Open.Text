@@ -9,7 +9,6 @@ namespace Open.Text;
 /// <summary>
 /// Allows for easy conversion from a string to a <see cref="StringBuilder"/> by declaring the type as <see cref="StringBuilderHelper"/>.
 /// </summary>
-
 [SuppressMessage("Usage", "CA2225:Operator overloads have named alternates", Justification = "<Pending>")]
 public class StringBuilderHelper(StringBuilder? sb = default)
 {
@@ -105,7 +104,6 @@ public class StringBuilderHelper(StringBuilder? sb = default)
             sb.Append(c);
         return helper;
     }
-
 
     /// <summary>
     /// Creates a new <see cref="StringBuilderHelper"/> instance beginning with the specified <paramref name="sequence"/>.
