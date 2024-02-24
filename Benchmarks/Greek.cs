@@ -1,16 +1,10 @@
 ﻿namespace Open.Text.Benchmarks;
 
 [AttributeUsage(AttributeTargets.Field)]
-public class LetterAttribute : Attribute
+public class LetterAttribute(char upper, char lower) : Attribute
 {
-	public LetterAttribute(char upper, char lower)
-	{
-		Upper = upper;
-		Lower = lower;
-	}
-
-	public char Upper { get; }
-	public char Lower { get; }
+	public char Upper { get; } = upper;
+	public char Lower { get; } = lower;
 
 	public bool EqualsLetter(char letter)
 		=> letter == Upper || letter == Lower;

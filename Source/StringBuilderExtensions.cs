@@ -46,6 +46,12 @@ public static class StringBuilderExtensions
 		};
 
 	/// <summary>
+	/// Creates a <see cref="StringBuilderEnumerable"/> for enumerating over the characters in the <paramref name="builder"/>.
+	/// </summary>
+	public static StringBuilderEnumerable AsEnumerable(this StringBuilder builder)
+		=> new(builder);
+
+	/// <summary>
 	/// Adds every entry to a StringBuilder.
 	/// </summary>
 	/// <typeparam name="T">The type of the source.</typeparam>
@@ -429,13 +435,26 @@ public static class StringBuilderExtensions
 		foreach (var v in value) target.Append(v);
 		return target;
 	}
-#endif
 
 	/// <summary>
-	/// Trims whitespace from the end of the <see cref="StringBuilder"/>.
+	/// Appends the characters from another <see cref="StringBuilder"/> this instance.
 	/// </summary>
-	/// <exception cref="ArgumentNullException">If <paramref name="sb"/> is null.</exception>
-	public static StringBuilder TrimEnd(this StringBuilder sb)
+    public static StringBuilder Append(this StringBuilder target, StringBuilder value)
+    {
+        if (target is null) throw new ArgumentNullException(nameof(target));
+		if (value is null) return target;
+		var len = value.Length;
+		for(var i = 0;i<len;i++)
+			target.Append(value[i]);
+        return target;
+    }
+#endif
+
+    /// <summary>
+    /// Trims whitespace from the end of the <see cref="StringBuilder"/>.
+    /// </summary>
+    /// <exception cref="ArgumentNullException">If <paramref name="sb"/> is null.</exception>
+    public static StringBuilder TrimEnd(this StringBuilder sb)
 	{
 		if (sb is null) throw new ArgumentNullException(nameof(sb));
 		Contract.EndContractBlock();

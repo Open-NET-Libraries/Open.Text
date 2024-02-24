@@ -86,7 +86,7 @@ public readonly struct StringSubsegment : IEquatable<StringSubsegment>
 		: !other.Source.HasValue;
 
 	/// <inheritdoc />
-	public override bool Equals(object obj)
+	public override bool Equals(object? obj)
 		=> obj is StringSubsegment other && Equals(other);
 
 	/// <inheritdoc />

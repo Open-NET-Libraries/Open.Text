@@ -20,9 +20,7 @@ public static partial class TextExtensions
 
 		nextIndex = i + n;
 		var segmentLen = i - start;
-		return segmentLen == 0
-			? ReadOnlySpan<char>.Empty
-			: source.AsSpan(start, segmentLen);
+		return segmentLen == 0 ? [] : source.AsSpan(start, segmentLen);
 	}
 
 	static ReadOnlySpan<char> FirstSplitSpan(ReadOnlySpan<char> rest, int i, int n, out int nextIndex)
@@ -35,7 +33,7 @@ public static partial class TextExtensions
 
 		nextIndex = i + n;
 		return i == 0
-			? ReadOnlySpan<char>.Empty
+			? []
 			: rest.Slice(0, i);
 	}
 
@@ -77,7 +75,7 @@ public static partial class TextExtensions
 		if (startIndex == len)
 		{
 			nextIndex = -1;
-			return ReadOnlySpan<char>.Empty;
+			return [];
 		}
 
 		return FirstSplitSpan(source, startIndex, source.IndexOf(splitCharacter, startIndex), 1, out nextIndex);
@@ -117,7 +115,7 @@ public static partial class TextExtensions
 		if (startIndex == len)
 		{
 			nextIndex = -1;
-			return ReadOnlySpan<char>.Empty;
+			return [];
 		}
 
 		return FirstSplitSpan(source, startIndex, source.IndexOf(splitSequence, startIndex, comparisonType), splitSequence.Length, out nextIndex);
@@ -139,7 +137,7 @@ public static partial class TextExtensions
 		if (source.Length == 0)
 		{
 			nextIndex = -1;
-			return ReadOnlySpan<char>.Empty;
+			return [];
 		}
 
 		var i = source.IndexOf(splitCharacter);
@@ -159,7 +157,7 @@ public static partial class TextExtensions
 		if (source.Length == 0)
 		{
 			nextIndex = -1;
-			return ReadOnlySpan<char>.Empty;
+			return [];
 		}
 
 		var i = source.IndexOf(splitSequence, comparisonType);
@@ -186,7 +184,7 @@ public static partial class TextExtensions
 				? Enumerable.Repeat(string.Empty, 1)
 				: SplitAsEnumerableCore(),
 			StringSplitOptions.RemoveEmptyEntries => source.Length == 0
-				? Enumerable.Empty<string>()
+				? []
 				: SplitAsEnumerableCoreOmitEmpty(),
 			_ => throw new System.ComponentModel.InvalidEnumArgumentException(),
 		};
@@ -241,7 +239,7 @@ public static partial class TextExtensions
 				? Enumerable.Repeat(string.Empty, 1)
 				: SplitAsEnumerableCore(source, splitSequence, comparisonType),
 			StringSplitOptions.RemoveEmptyEntries => source.Length == 0
-				? Enumerable.Empty<string>()
+				? []
 				: SplitAsEnumerableCoreOmitEmpty(source, splitSequence, comparisonType),
 			_ => throw new System.ComponentModel.InvalidEnumArgumentException(),
 		};
@@ -286,7 +284,7 @@ public static partial class TextExtensions
 				? Enumerable.Repeat(ReadOnlyMemory<char>.Empty, 1)
 				: SplitAsMemoryCore(source, splitCharacter),
 			StringSplitOptions.RemoveEmptyEntries => source.Length == 0
-				? Enumerable.Empty<ReadOnlyMemory<char>>()
+				? []
 				: SplitAsMemoryOmitEmpty(source, splitCharacter),
 			_ => throw new System.ComponentModel.InvalidEnumArgumentException(),
 		};
@@ -334,7 +332,7 @@ public static partial class TextExtensions
 				? Enumerable.Repeat(ReadOnlyMemory<char>.Empty, 1)
 				: SplitAsMemoryCore(source, splitSequence, comparisonType),
 			StringSplitOptions.RemoveEmptyEntries => source.Length == 0
-				? Enumerable.Empty<ReadOnlyMemory<char>>()
+				? []
 				: SplitAsMemoryOmitEmpty(source, splitSequence, comparisonType),
 			_ => throw new System.ComponentModel.InvalidEnumArgumentException(),
 		};
@@ -384,7 +382,7 @@ public static partial class TextExtensions
 				return SingleEmpty;
 
 			case StringSplitOptions.RemoveEmptyEntries when source.Length == 0:
-				return Array.Empty<string>();
+				return [];
 
 			case StringSplitOptions.RemoveEmptyEntries:
 			{
@@ -432,7 +430,7 @@ public static partial class TextExtensions
 				return SingleEmpty;
 
 			case StringSplitOptions.RemoveEmptyEntries when source.IsEmpty:
-				return Array.Empty<string>();
+				return [];
 
 			case StringSplitOptions.RemoveEmptyEntries:
 			{

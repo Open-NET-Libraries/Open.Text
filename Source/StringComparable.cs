@@ -73,7 +73,7 @@ public readonly struct StringComparable
 	/// </summary>
 	/// <returns>true if the value of <paramref name="obj"/> matches; otherwise false. </returns>
 	[ExcludeFromCodeCoverage]
-	public override bool Equals(object obj) => obj switch
+	public override bool Equals(object? obj) => obj switch
 	{
 		StringComparable sc => Equals(sc),
 		StringSegment se => Equals(se),
@@ -98,10 +98,7 @@ public readonly struct StringComparable
 
 	/// <inheritdoc />
 	[ExcludeFromCodeCoverage]
-#if NETSTANDARD2_1_OR_GREATER
-	public override int GetHashCode()
-		=> HashCode.Combine(Segment, Type);
-#else
+#if NETSTANDARD2_0
 	public override int GetHashCode()
 	{
 		int hashCode = 141257509;
@@ -109,6 +106,9 @@ public readonly struct StringComparable
 		hashCode = hashCode * -1521134295 + Type.GetHashCode();
 		return hashCode;
 	}
+#else
+	public override int GetHashCode()
+		=> HashCode.Combine(Segment, Type);
 #endif
 
 	/// <summary>
