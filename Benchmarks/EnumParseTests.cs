@@ -67,7 +67,7 @@ public class EnumParseTests
 
 		public abstract Greek CompiledSwitchByLength();
 
-		static readonly IDictionary<string, Greek> LookupD
+		static readonly Dictionary<string, Greek> LookupD
 			= Enum
 			.GetValues<Greek>()
 			.ToDictionary(e => Enum.GetName(e)!, e => e, StringComparer.Ordinal);
@@ -260,7 +260,7 @@ public class EnumParseTests
 			return e;
 		}
 
-		static readonly IDictionary<string, Greek> LookupD
+		static readonly Dictionary<string, Greek> LookupD
 			= Enum
 			.GetValues<Greek>()
 			.ToDictionary(e => Enum.GetName(e)!, e => e, StringComparer.OrdinalIgnoreCase);
@@ -326,7 +326,7 @@ public class EnumParseTests
 			return e;
 		}
 
-		static readonly IDictionary<string, Greek> LookupD
+		static readonly Dictionary<string, Greek> LookupD
 			= Enum
 			.GetValues<Greek>()
 			.ToDictionary(e => Enum.GetName(e)!, e => e, StringComparer.OrdinalIgnoreCase);
