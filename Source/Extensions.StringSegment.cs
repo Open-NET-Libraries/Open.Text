@@ -47,16 +47,6 @@ public static partial class TextExtensions
 		=> new(segment);
 
 	/// <summary>
-	/// Creates a <see cref="CharacterSequence"/> from the provided <paramref name="sequence"/>.
-	/// </summary>
-	public static CharacterSequence AsCharacterSequence(this IReadOnlyCollection<char> sequence)
-		=> sequence is null ? CharacterSequence.Empty : CharacterSequence.Create(()=>sequence.Count, sequence!);
-
-	/// <inheritdoc cref="AsCharacterSequence(IReadOnlyCollection{char})" />
-	public static CharacterSequence AsCharacterSequence(this ICollection<char> sequence)
-		=> CharacterSequence.Create(sequence?.Count ?? 0, sequence!);
-
-	/// <summary>
 	/// Finds the first instance of a string and returns a StringSegment for subsequent use.
 	/// </summary>
 	/// <param name="source">The source string to search.</param>
