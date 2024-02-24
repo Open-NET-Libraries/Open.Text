@@ -46,6 +46,12 @@ public static class StringBuilderExtensions
 		};
 
 	/// <summary>
+	/// Creates a <see cref="StringBuilderEnumerable"/> for enumerating over the characters in the <paramref name="builder"/>.
+	/// </summary>
+	public static StringBuilderEnumerable AsEnumerable(this StringBuilder builder)
+		=> new(builder);
+
+	/// <summary>
 	/// Adds every entry to a StringBuilder.
 	/// </summary>
 	/// <typeparam name="T">The type of the source.</typeparam>

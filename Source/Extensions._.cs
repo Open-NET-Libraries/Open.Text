@@ -18,8 +18,8 @@ namespace Open.Text;
 public static partial class TextExtensions
 {
 	private const uint BYTE_RED = 1024;
-	private static readonly string[] _byte_labels = new[] { "KB", "MB", "GB", "TB", "PB" };
-	private static readonly string[] _number_labels = new[] { "K", "M", "B" };
+	private static readonly string[] _byte_labels = ["KB", "MB", "GB", "TB", "PB"];
+	private static readonly string[] _number_labels = ["K", "M", "B"];
 
 	/// <summary>
 	/// Compiled pattern for finding alpha-numeric sequences.
@@ -193,8 +193,8 @@ public static partial class TextExtensions
 
 	#region Regex helper methods.
 	private static readonly Func<Capture, string> _textDelegate = (Func<Capture, string>)
-		typeof(Capture).GetProperty("Text", BindingFlags.Instance | BindingFlags.NonPublic)
-			.GetGetMethod(nonPublic: true)
+		typeof(Capture).GetProperty("Text", BindingFlags.Instance | BindingFlags.NonPublic)!
+			.GetGetMethod(nonPublic: true)!
 			.CreateDelegate(typeof(Func<Capture, string>));
 
 	/// <summary>
@@ -241,7 +241,7 @@ public static partial class TextExtensions
 		var group = groups[groupName];
 		return group.Success
 			? group.AsSpan()
-			: ReadOnlySpan<char>.Empty;
+			: [];
 	}
 
 	/// <summary>
@@ -258,7 +258,7 @@ public static partial class TextExtensions
 			: input is null
 			? throw new ArgumentNullException(nameof(input))
 			: input.Length == 0
-			? Enumerable.Empty<StringSegment>()
+			? []
 			: AsSegmentsCore(pattern, input);
 
 		static IEnumerable<StringSegment> AsSegmentsCore(Regex pattern, string input)

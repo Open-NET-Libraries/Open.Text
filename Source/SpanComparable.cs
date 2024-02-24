@@ -8,26 +8,20 @@ namespace Open.Text;
 /// <summary>
 /// A <see cref="StringComparison"/> struct for comparing a span against other values.
 /// </summary>
-public readonly ref struct SpanComparable
+/// <remarks>
+/// Constructs a <see cref="SpanComparable"/> using the provided string and comparison type.
+/// </remarks>
+public readonly ref struct SpanComparable(ReadOnlySpan<char> source, StringComparison type)
 {
-	/// <summary>
-	/// Constructs a <see cref="SpanComparable"/> using the provided string and comparison type.
-	/// </summary>
-	public SpanComparable(ReadOnlySpan<char> source, StringComparison type)
-	{
-		Source = source;
-		Type = type;
-	}
-
 	/// <summary>
 	/// The span to use for comparison.
 	/// </summary>
-	public readonly ReadOnlySpan<char> Source { get; }
+	public readonly ReadOnlySpan<char> Source { get; } = source;
 
 	/// <summary>
 	/// The type of string comparison.
 	/// </summary>
-	public readonly StringComparison Type { get; }
+	public readonly StringComparison Type { get; } = type;
 
 	/// <summary>
 	/// The length of the string.
@@ -81,7 +75,7 @@ public readonly ref struct SpanComparable
 	[SuppressMessage("Design", "CA1065:Do not raise exceptions in unexpected locations", Justification = "<Pending>")]
 	[ExcludeFromCodeCoverage]
 #pragma warning disable CS0809 // Obsolete member overrides non-obsolete member
-	public override bool Equals(object obj) => throw new NotSupportedException();
+	public override bool Equals(object? obj) => throw new NotSupportedException();
 
 #pragma warning restore CS0809 // Obsolete member overrides non-obsolete member
 
