@@ -149,7 +149,7 @@ public class StringBuilderHelper(StringBuilder? sb = default)
         => value is null ? new() : new(new StringBuilder(value.Length).Append(value));
 
     /// <summary>
-    /// Converts the <see cref="StringConcat"/> instance to a string.
+    /// Converts the <see cref="StringBuilderHelper"/> instance to a string.
     /// </summary>
 #if NETSTANDARD2_0
 #else
