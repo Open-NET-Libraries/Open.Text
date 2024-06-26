@@ -10,17 +10,27 @@ namespace Open.Text;
 /// Allows for easy conversion from a string to a <see cref="StringBuilder"/> by declaring the type as <see cref="StringBuilderHelper"/>.
 /// </summary>
 [SuppressMessage("Usage", "CA2225:Operator overloads have named alternates", Justification = "<Pending>")]
-public class StringBuilderHelper(StringBuilder? sb = default)
+public readonly record struct StringBuilderHelper
 {
     /// <summary>
     /// The underlying <see cref="Builder"/>.
     /// </summary>
-    public StringBuilder Builder { get; } = sb ?? new();
+    public StringBuilder Builder { get; }
 
-    /// <summary>
-    /// Constructs a new <see cref="StringBuilderHelper"/> with a <see cref="StringBuilder"/> of the <paramref name="initialCapacity"/>.
-    /// </summary>
-    public StringBuilderHelper(int initialCapacity)
+	/// <inheritdoc cref="StringBuilder.ToString()"/>
+	public override string ToString()
+		=> Builder.ToString();
+
+	/// <summary>
+	/// Constructs a new <see cref="StringBuilderHelper"/> with the specified <see cref="StringBuilder"/>.
+	/// </summary>
+	public StringBuilderHelper(StringBuilder? sb = default)
+			=> Builder = sb ?? new();
+
+	/// <summary>
+	/// Constructs a new <see cref="StringBuilderHelper"/> with a <see cref="StringBuilder"/> of the <paramref name="initialCapacity"/>.
+	/// </summary>
+	public StringBuilderHelper(int initialCapacity)
         : this(new StringBuilder(initialCapacity)) { }
 
     /// <summary>
@@ -28,7 +38,6 @@ public class StringBuilderHelper(StringBuilder? sb = default)
     /// </summary>
     public static StringBuilderHelper Add(StringBuilderHelper helper, string characters)
     {
-		if (helper is null) throw new ArgumentNullException(nameof(helper));
 		helper.Builder.Append(characters);
         return helper;
     }
@@ -40,7 +49,6 @@ public class StringBuilderHelper(StringBuilder? sb = default)
     /// <inheritdoc cref="Add(StringBuilderHelper, string)"/>
     public static StringBuilderHelper operator +(StringBuilderHelper helper, StringSegment characters)
     {
-		if (helper is null) throw new ArgumentNullException(nameof(helper));
         helper.Builder.AppendSegment(characters);
         return helper;
 	}
@@ -48,7 +56,6 @@ public class StringBuilderHelper(StringBuilder? sb = default)
     /// <inheritdoc cref="Add(StringBuilderHelper, string)"/>
     public static StringBuilderHelper operator +(StringBuilderHelper helper, ReadOnlySpan<char> characters)
     {
-        if (helper is null) throw new ArgumentNullException(nameof(helper));
         helper.Builder.Append(characters);
         return helper;
     }
@@ -56,7 +63,6 @@ public class StringBuilderHelper(StringBuilder? sb = default)
     /// <inheritdoc cref="Add(StringBuilderHelper, string)"/>
     public static StringBuilderHelper operator +(StringBuilderHelper helper, Span<char> characters)
     {
-        if (helper is null) throw new ArgumentNullException(nameof(helper));
         helper.Builder.Append(characters);
         return helper;
     }
@@ -64,7 +70,6 @@ public class StringBuilderHelper(StringBuilder? sb = default)
     /// <inheritdoc cref="Add(StringBuilderHelper, string)"/>
     public static StringBuilderHelper operator +(StringBuilderHelper helper, char[] characters)
     {
-        if (helper is null) throw new ArgumentNullException(nameof(helper));
         if (characters is null) return helper;
         helper.Builder.Append(characters.AsSpan());
         return helper;
@@ -73,7 +78,6 @@ public class StringBuilderHelper(StringBuilder? sb = default)
     /// <inheritdoc cref="Add(StringBuilderHelper, string)"/>
     public static StringBuilderHelper operator +(StringBuilderHelper helper, ReadOnlyMemory<char> characters)
     {
-        if (helper is null) throw new ArgumentNullException(nameof(helper));
         helper.Builder.Append(characters.Span);
         return helper;
     }
@@ -81,7 +85,6 @@ public class StringBuilderHelper(StringBuilder? sb = default)
     /// <inheritdoc cref="Add(StringBuilderHelper, string)"/>
     public static StringBuilderHelper operator +(StringBuilderHelper helper, Memory<char> characters)
     {
-        if (helper is null) throw new ArgumentNullException(nameof(helper));
         helper.Builder.Append(characters.Span);
         return helper;
     }
@@ -89,7 +92,6 @@ public class StringBuilderHelper(StringBuilder? sb = default)
     /// <inheritdoc cref="Add(StringBuilderHelper, string)"/>
     public static StringBuilderHelper operator +(StringBuilderHelper helper, ArraySegment<char> characters)
     {
-        if (helper is null) throw new ArgumentNullException(nameof(helper));
         helper.Builder.Append(characters.AsSpan());
         return helper;
     }
@@ -97,7 +99,6 @@ public class StringBuilderHelper(StringBuilder? sb = default)
     /// <inheritdoc cref="Add(StringBuilderHelper, string)"/>
     public static StringBuilderHelper operator +(StringBuilderHelper helper, IEnumerable<char> characters)
     {
-        if (helper is null) throw new ArgumentNullException(nameof(helper));
         if (characters is null) return helper;
         var sb = helper.Builder;
         foreach(var c in characters)
@@ -151,10 +152,6 @@ public class StringBuilderHelper(StringBuilder? sb = default)
     /// <summary>
     /// Converts the <see cref="StringBuilderHelper"/> instance to a string.
     /// </summary>
-#if NETSTANDARD2_0
-#else
-	[return:NotNullIfNotNull(nameof(value))]
-#endif
-    public static implicit operator string?(StringBuilderHelper? value)
-        => value?.Builder.ToString();
+    public static implicit operator string(StringBuilderHelper value)
+        => value.Builder.ToString();
 }
