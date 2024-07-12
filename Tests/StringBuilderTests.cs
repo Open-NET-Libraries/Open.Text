@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FluentAssertions;
+using System;
 using System.Linq;
 using System.Text;
 using Xunit;
@@ -243,5 +244,15 @@ public static class StringBuilderTests
 		var sb = new StringBuilder();
 		sb.Append(a).Append(b).Append(c).Append(d).Trim(" !");
 		Assert.Equal(expected, sb.ToString());
+	}
+
+	[Fact]
+	public static void StringBuilderHelperTest()
+	{
+		StringBuilderHelper sb = new();
+		sb += "Hello";
+		sb += " ";
+		sb += "World";
+		sb.ToString().Should().Be("Hello World");
 	}
 }

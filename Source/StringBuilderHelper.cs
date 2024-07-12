@@ -24,8 +24,14 @@ public readonly record struct StringBuilderHelper
 	/// <summary>
 	/// Constructs a new <see cref="StringBuilderHelper"/> with the specified <see cref="StringBuilder"/>.
 	/// </summary>
-	public StringBuilderHelper(StringBuilder? sb = default)
-			=> Builder = sb ?? new();
+	public StringBuilderHelper(StringBuilder sb)
+		=> Builder = sb ?? throw new ArgumentNullException(nameof(sb));
+
+	/// <summary>
+	/// Constructs a new <see cref="StringBuilderHelper"/> with a new <see cref="StringBuilder"/>.
+	/// </summary>
+	public StringBuilderHelper()
+		: this(new StringBuilder()) { }
 
 	/// <summary>
 	/// Constructs a new <see cref="StringBuilderHelper"/> with a <see cref="StringBuilder"/> of the <paramref name="initialCapacity"/>.
