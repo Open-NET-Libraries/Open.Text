@@ -48,8 +48,14 @@ public readonly record struct StringBuilderHelper
         return helper;
     }
 
-    /// <inheritdoc cref="Add(StringBuilderHelper, string)"/>
-    public static StringBuilderHelper operator +(StringBuilderHelper helper, string characters)
+	/// <summary>
+	/// Appends the <paramref name="character"/> to the underlying <see cref="StringBuilder"/>.
+	/// </summary>
+	public static StringBuilderHelper operator +(StringBuilderHelper helper, char character)
+		=> helper.Builder.Append(character);
+
+	/// <inheritdoc cref="Add(StringBuilderHelper, string)"/>
+	public static StringBuilderHelper operator +(StringBuilderHelper helper, string characters)
         => Add(helper, characters);
 
     /// <inheritdoc cref="Add(StringBuilderHelper, string)"/>
