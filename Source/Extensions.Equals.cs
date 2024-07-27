@@ -1,7 +1,4 @@
-﻿using Microsoft.Extensions.Primitives;
-using System;
-
-namespace Open.Text;
+﻿namespace Open.Text;
 
 public static partial class TextExtensions
 {

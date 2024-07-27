@@ -1,15 +1,4 @@
-﻿using Microsoft.Extensions.Primitives;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text.RegularExpressions;
-
-[assembly: CLSCompliant(true)]
+﻿[assembly: CLSCompliant(true)]
 namespace Open.Text;
 
 /// <summary>
@@ -30,71 +19,6 @@ public static partial class TextExtensions
 	/// Compiled pattern for finding alpha-numeric sequences and possible surrounding white-space.
 	/// </summary>
 	public static readonly Regex ValidAlphaNumericOnlyUntrimmedPattern = new(@"^\s*\w+\s*$", RegexOptions.Compiled);
-
-	/// <summary>
-	/// Reports the zero-based index position of the last occurrence of a specified string
-	/// within this instance. The search starts at a specified character position and
-	/// proceeds backward toward the beginning of the string.
-	/// </summary>
-	/// <param name="source">The source string to search in.</param>
-	/// <param name="search">The search string to look for.  If the search is null or empty this method returns null.</param>
-	/// <param name="comparisonType">The comparison type to use when searching.</param>
-	/// <returns>The source of the string before the search string.  Returns null if search string is not found.</returns>
-	public static int LastIndexOf(this ReadOnlySpan<char> source,
-		ReadOnlySpan<char> search, StringComparison comparisonType)
-	{
-		if (search.Length > source.Length)
-			return -1;
-
-		if (comparisonType == StringComparison.Ordinal)
-			return source.LastIndexOf(search);
-
-		// Nothing found?
-		var i = source.IndexOf(search, comparisonType);
-		if (i == -1)
-			return i;
-
-		// Next possible can't fit?
-		var n = i + search.Length;
-		if (n + search.Length > source.Length)
-			return i;
-
-		// Recurse to get the last one.
-		var next = source
-			.Slice(n)
-			.LastIndexOf(search, comparisonType);
-
-		return next == -1 ? i : (n + next);
-	}
-
-	/// <inheritdoc cref="LastIndexOf(ReadOnlySpan{char}, ReadOnlySpan{char}, StringComparison)"/>
-	public static int LastIndexOf(this StringSegment source,
-		ReadOnlySpan<char> search, StringComparison comparisonType = StringComparison.Ordinal)
-	{
-		if (search.Length > source.Length)
-			return -1;
-
-		if (comparisonType == StringComparison.Ordinal)
-			return source.AsSpan().LastIndexOf(search);
-
-		// Nothing found?
-		var i = source.IndexOf(search, comparisonType);
-		if (i == -1)
-			return i;
-
-		// Next possible can't fit?
-		var n = i + search.Length;
-		if (n + search.Length > source.Length)
-			return i;
-
-		// Recurse to get the last one.
-		var next = source
-			.AsSpan()
-			.Slice(n)
-			.LastIndexOf(search, comparisonType);
-
-		return next == -1 ? i : (n + next);
-	}
 
 	/// <summary>
 	/// Converts a string to title-case.

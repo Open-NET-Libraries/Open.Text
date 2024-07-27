@@ -1,8 +1,4 @@
-﻿using Microsoft.Extensions.Primitives;
-using System;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics;
 
 namespace Open.Text;
 

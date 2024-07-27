@@ -1,9 +1,4 @@
-﻿using Microsoft.Extensions.Primitives;
-using System;
-using System.Runtime.CompilerServices;
-using System.Diagnostics.CodeAnalysis;
-
-namespace Open.Text;
+﻿namespace Open.Text;
 /// <summary>
 /// Represents a search operation within a string segment.
 /// </summary>

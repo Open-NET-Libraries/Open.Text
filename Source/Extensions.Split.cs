@@ -1,11 +1,4 @@
-﻿using Microsoft.Extensions.Primitives;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Diagnostics.Contracts;
-using System.Linq;
-
-namespace Open.Text;
+﻿namespace Open.Text;
 
 public static partial class TextExtensions
 {

@@ -1,15 +1,6 @@
-﻿// Ignore Spelling: Deconstruct
-
-using Microsoft.Extensions.Primitives;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
-using System.Threading;
 using static System.Linq.Expressions.Expression;
 //using static FastExpressionCompiler.LightExpression.Expression;
 namespace Open.Text;

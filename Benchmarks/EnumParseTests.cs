@@ -1,6 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
 using FastEnumUtility;
-using System.Security;
 
 namespace Open.Text.Benchmarks;
 

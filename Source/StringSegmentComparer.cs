@@ -1,9 +1,4 @@
-﻿using Microsoft.Extensions.Primitives;
-using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-
-namespace Open.Text;
+﻿namespace Open.Text;
 
 /// <summary>
 /// A comparer for <see cref="StringSegment"/> that uses existing <see cref="StringSegment.Compare(StringSegment, StringSegment, StringComparison)"/>
