@@ -31,7 +31,7 @@ public static class FormattingTests
 	[InlineData("999.1", 999.1)]
 	[InlineData("1.1K", 1110)]
 	[InlineData("1.1M", 1110 * 1000)]
-	[InlineData("1.1B", 1110 * 1000 * 1000)]
+	[InlineData("1.1G", 1110 * 1000 * 1000)]
 	public static void ToMetricString(string expected, double bytes)
 		=> Assert.Equal(expected, bytes.ToMetricString());
 }

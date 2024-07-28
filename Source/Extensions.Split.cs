@@ -1,5 +1,9 @@
 ﻿namespace Open.Text;
 
+internal static class SingleEmpty
+{
+	public static readonly IReadOnlyList<string> Instance = Array.AsReadOnly(new[] { string.Empty });
+}
 public static partial class TextExtensions
 {
 	static ReadOnlySpan<char> FirstSplitSpan(StringSegment source, int start, int i, int n, out int nextIndex)
@@ -363,8 +367,6 @@ public static partial class TextExtensions
 		}
 	}
 
-	static readonly IReadOnlyList<string> SingleEmpty = new List<string> { string.Empty }.AsReadOnly();
-
 	/// <summary>
 	/// Splits a sequence of characters into strings using the character provided.
 	/// </summary>
@@ -379,7 +381,7 @@ public static partial class TextExtensions
 		switch (options)
 		{
 			case StringSplitOptions.None when source.Length == 0:
-				return SingleEmpty;
+				return SingleEmpty.Instance;
 
 			case StringSplitOptions.RemoveEmptyEntries when source.Length == 0:
 				return Array.Empty<string>();
@@ -427,7 +429,7 @@ public static partial class TextExtensions
 		switch (options)
 		{
 			case StringSplitOptions.None when source.IsEmpty:
-				return SingleEmpty;
+				return SingleEmpty.Instance;
 
 			case StringSplitOptions.RemoveEmptyEntries when source.IsEmpty:
 				return Array.Empty<string>();
