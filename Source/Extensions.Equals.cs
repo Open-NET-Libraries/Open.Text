@@ -3,12 +3,12 @@
 public static partial class TextExtensions
 {
 	/// <summary>
-	/// Optimized equals for comparing as span vs a string.
+	/// Compares a sequence of characters with another.
 	/// </summary>
-	/// <param name="source">The source span.</param>
-	/// <param name="other">The string to compare to.</param>
+	/// <param name="source">The source sequence.</param>
+	/// <param name="other">The other to compare to.</param>
 	/// <param name="comparisonType">The string comparison type.</param>
-	/// <returns>True if the are contents equal.</returns>
+	/// <returns><see langword="true"/> if the are contents equal; otherwise <see langword="false"/></returns>
 	public static bool Equals(this ReadOnlySpan<char> source, StringSegment other, StringComparison comparisonType)
 	{
 		if (!other.HasValue) return false;
@@ -34,13 +34,7 @@ public static partial class TextExtensions
 		};
 	}
 
-	/// <summary>
-	/// Optimized equals for comparing spans.
-	/// </summary>
-	/// <param name="source">The source span.</param>
-	/// <param name="other">The span to compare to.</param>
-	/// <param name="comparisonType">The string comparison type.</param>
-	/// <returns>True if the are contents equal.</returns>
+	/// <inheritdoc cref="Equals(ReadOnlySpan{char}, StringSegment, StringComparison)"/>
 	public static bool Equals(this Span<char> source, ReadOnlySpan<char> other, StringComparison comparisonType)
 	{
 		var len = source.Length;
@@ -52,13 +46,7 @@ public static partial class TextExtensions
 		};
 	}
 
-	/// <summary>
-	/// Optimized equals for comparing as string to a span.
-	/// </summary>
-	/// <param name="source">The source string.</param>
-	/// <param name="other">The span to compare to.</param>
-	/// <param name="comparisonType">The string comparison type.</param>
-	/// <returns>True if the are contents equal.</returns>
+	/// <inheritdoc cref="Equals(ReadOnlySpan{char}, StringSegment, StringComparison)"/>
 	public static bool Equals(this string? source, ReadOnlySpan<char> other, StringComparison comparisonType)
 	{
 		if (source is null) return false;
@@ -71,7 +59,7 @@ public static partial class TextExtensions
 		};
 	}
 
-	/// <inheritdoc cref="Equals(string, ReadOnlySpan{char}, StringComparison)" />
+	/// <inheritdoc cref="Equals(ReadOnlySpan{char}, StringSegment, StringComparison)"/>
 	public static bool Equals(this StringSegment source, ReadOnlySpan<char> other, StringComparison comparisonType)
 	{
 		if (!source.HasValue) return false;
@@ -85,27 +73,27 @@ public static partial class TextExtensions
 	}
 
 	/// <remarks>Use <see cref="Equals(ReadOnlySpan{char}, StringSegment, StringComparison)"/> for varying case sensitivity.</remarks>
-	/// <inheritdoc cref="Equals(ReadOnlySpan{char}, StringSegment, StringComparison)" />
+	/// <inheritdoc cref="Equals(ReadOnlySpan{char}, StringSegment, StringComparison)"/>
 	public static bool SequenceEqual(this ReadOnlySpan<char> source, StringSegment other)
 		=> Equals(source, other, StringComparison.Ordinal);
 
 	/// <remarks>Use <see cref="Equals(Span{char}, StringSegment, StringComparison)"/> for varying case sensitivity.</remarks>
-	/// <inheritdoc cref="Equals(Span{char}, StringSegment, StringComparison)" />
+	/// <inheritdoc cref="Equals(ReadOnlySpan{char}, StringSegment, StringComparison)"/>
 	public static bool SequenceEqual(this Span<char> source, StringSegment other)
 		=> Equals(source, other, StringComparison.Ordinal);
 
 	/// <remarks>Use <see cref="Equals(Span{char}, ReadOnlySpan{char}, StringComparison)"/> for varying case sensitivity.</remarks>
-	/// <inheritdoc cref="Equals(Span{char}, ReadOnlySpan{char}, StringComparison)" />
+	/// <inheritdoc cref="Equals(ReadOnlySpan{char}, StringSegment, StringComparison)"/>
 	public static bool SequenceEqual(this Span<char> source, Span<char> other)
 		=> Equals(source, other, StringComparison.Ordinal);
 
 	/// <remarks>Use <see cref="Equals(string?, ReadOnlySpan{char}, StringComparison)"/> for varying case sensitivity.</remarks>
-	/// <inheritdoc cref="Equals(string, ReadOnlySpan{char}, StringComparison)" />
+	/// <inheritdoc cref="Equals(ReadOnlySpan{char}, StringSegment, StringComparison)"/>
 	public static bool SequenceEqual(this string? source, ReadOnlySpan<char> other)
 		=> Equals(source, other, StringComparison.Ordinal);
 
 	/// <remarks>Use <see cref="Equals(StringSegment, ReadOnlySpan{char}, StringComparison)"/> for varying case sensitivity.</remarks>
-	/// <inheritdoc cref="Equals(StringSegment, ReadOnlySpan{char}, StringComparison)" />
+	/// <inheritdoc cref="Equals(ReadOnlySpan{char}, StringSegment, StringComparison)"/>
 	public static bool SequenceEqual(this StringSegment source, ReadOnlySpan<char> other)
 		=> Equals(source, other, StringComparison.Ordinal);
 
@@ -183,13 +171,14 @@ public static partial class TextExtensions
 		&& source.AsSpan().Trim(trimChars).Equals(other, comparisonType);
 
 	/// <summary>
-	/// Optimized equals for comparing a trimmed string with another string.
+	/// Compares a sequence of characters with leading and trailing whitespace removed with another.
 	/// </summary>
-	/// <param name="source">The source string to virtually trim.</param>
-	/// <param name="other">The string to compare to.</param>
+	/// <remarks>Only "trims" the source and not the other used to compare agains.</remarks>
+	/// <param name="source">The source sequence.</param>
+	/// <param name="other">The other to compare to.</param>
 	/// <param name="trimChars">The characters to trim.</param>
 	/// <param name="comparisonType">The string comparison type.</param>
-	/// <returns>True if the are contents equal.</returns>
+	/// <inheritdoc cref="Equals(ReadOnlySpan{char}, StringSegment, StringComparison)"/>
 	public static bool TrimmedEquals(this StringSegment source, StringSegment other, ReadOnlySpan<char> trimChars, StringComparison comparisonType = StringComparison.Ordinal)
 		=> source.HasValue
 		 ? other.HasValue

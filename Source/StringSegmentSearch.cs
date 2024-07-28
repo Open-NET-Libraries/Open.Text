@@ -171,7 +171,7 @@ public static partial class TextExtensions
 	public static StringSegmentCapture First(
 		this StringSegmentSearch search)
 	{
-		if(search.Source.Length == 0 || search.Sequence.Length == 0)
+		if (search.Source.Length == 0 || search.Sequence.Length == 0)
 			return default;
 
 		var i = search.RightToLeft
@@ -180,7 +180,7 @@ public static partial class TextExtensions
 
 		return new(search, i == -1
 			? default
-			: new(search.Source, i, search.Sequence.Length) );
+			: new(search.Source, i, search.Sequence.Length));
 	}
 
 	/// <summary>

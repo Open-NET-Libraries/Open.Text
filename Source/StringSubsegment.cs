@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace Open.Text;
+﻿namespace Open.Text;
 
 /// <summary>
 /// A struct for representing a subsegment of a <see cref="StringSegment"/>.

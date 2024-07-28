@@ -1,5 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using System.Diagnostics;
 using System.Linq.Expressions;
 using static System.Linq.Expressions.Expression;
 //using static FastExpressionCompiler.LightExpression.Expression;
@@ -357,8 +356,8 @@ public readonly struct EnumValue<TEnum>
 	/// Returns the <typeparamref name="TEnum"/> from the <paramref name="value"/> provided if it maps directly to the underlying value.
 	/// </summary>
 	public static bool TryGetValue<T>(T value, out TEnum e)
-        where T : notnull
-        => Underlying<T>.Map.TryGetValue(value, out e!);
+		where T : notnull
+		=> Underlying<T>.Map.TryGetValue(value, out e!);
 
 	private string GetDebuggerDisplay()
 	{
@@ -524,7 +523,7 @@ public static class EnumValue
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static TEnum Parse<TEnum>(StringSegment value)
 		where TEnum : notnull, Enum
-        => TryParse<TEnum>(value, false, out var e) ? e
+		=> TryParse<TEnum>(value, false, out var e) ? e
 		: throw new ArgumentException(string.Format(NotFoundMessage, value), nameof(value));
 
 	/// <inheritdoc cref="TryParse{TEnum}(StringSegment, bool, out TEnum)"/>
@@ -540,7 +539,7 @@ public static class EnumValue
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static TEnum Parse<TEnum>(StringSegment value, bool ignoreCase)
 		where TEnum : notnull, Enum
-    {
+	{
 		var buffer = value.Buffer ?? throw new ArgumentNullException(nameof(value));
 		return value.Length == buffer.Length
 			? Parse<TEnum>(value.Buffer, ignoreCase)
@@ -552,13 +551,13 @@ public static class EnumValue
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static bool TryParse<TEnum>(StringSegment value, out TEnum e)
 		where TEnum : notnull, Enum
-        => TryParse(value, false, out e);
+		=> TryParse(value, false, out e);
 
 	/// <inheritdoc cref="TryParse{TEnum}(StringSegment, bool, out TEnum)"/>
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static bool TryParse<TEnum>(string name, bool ignoreCase, out TEnum e)
 		where TEnum : notnull, Enum
-        => ignoreCase
+		=> ignoreCase
 		? EnumValue<TEnum>.IgnoreCaseLookup.TryGetValue(name, out e!)
 		: TryParse(name, out e);
 
@@ -567,7 +566,7 @@ public static class EnumValue
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static bool TryParseIgnoreCase<TEnum>(string name, out TEnum e)
 	where TEnum : notnull, Enum
-        => EnumValue<TEnum>.IgnoreCaseLookup.TryGetValue(name, out e!);
+		=> EnumValue<TEnum>.IgnoreCaseLookup.TryGetValue(name, out e!);
 
 	/// <summary>
 	/// Converts the string representation of the name of one or more enumerated constants to an equivalent enumerated object.
@@ -578,7 +577,7 @@ public static class EnumValue
 	/// <returns>true if the value was found; otherwise false.</returns>
 	public static bool TryParse<TEnum>(StringSegment name, bool ignoreCase, out TEnum e)
 		where TEnum : notnull, Enum
-    {
+	{
 		var len = name.Length;
 		if (len == 0) goto notFound;
 
@@ -617,8 +616,8 @@ public static class EnumValue
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static bool TryGetValue<TEnum, T>(T value, out TEnum e)
 		where TEnum : notnull, Enum
-        where T : notnull
-        => EnumValue<TEnum>.TryGetValue(value, out e);
+		where T : notnull
+		=> EnumValue<TEnum>.TryGetValue(value, out e);
 
 	/// <summary>
 	/// Uses an expression tree to do an fast lookup the name of the enum value.
@@ -630,14 +629,14 @@ public static class EnumValue
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static string GetName<TEnum>(this TEnum value)
 		where TEnum : notnull, Enum
-        => EnumValue<TEnum>.NameLookup(value);
+		=> EnumValue<TEnum>.NameLookup(value);
 
 	/// <summary>
 	/// Retrieves the attributes for a given enum value.
 	/// </summary>
 	public static IReadOnlyList<Attribute> GetAttributes<TEnum>(this TEnum value)
 		where TEnum : notnull, Enum
-    {
+	{
 		return EnumValue<TEnum>.Attributes.GetOrAdd(value, GetAttributesCore);
 
 		static IReadOnlyList<Attribute> GetAttributesCore(TEnum value)

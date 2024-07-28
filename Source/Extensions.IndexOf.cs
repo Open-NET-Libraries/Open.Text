@@ -39,7 +39,7 @@ public static partial class TextExtensions
 		return -1;
 	}
 
-	/// <inheritdoc cref="string.IndexOf(char)"/>
+	/// <inheritdoc cref="string.IndexOf(char, int)"/>
 	public static int IndexOf(this ReadOnlySpan<char> source, char search, int startIndex, StringComparison comparisonType)
 	{
 		if (startIndex >= source.Length)

@@ -81,7 +81,7 @@ public static class StringBuilderTests
 
 		var span = source.AsSpan();
 		var a = source.AsSpan().ToArray();
-		var joined = string.Join(""+separator, a);
+		var joined = string.Join("" + separator, a);
 		var list = a.ToList();
 		list.Insert(0, 'X');
 		var xValue = string.Join("" + separator, list);

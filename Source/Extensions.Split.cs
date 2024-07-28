@@ -4,6 +4,7 @@ internal static class SingleEmpty
 {
 	public static readonly IReadOnlyList<string> Instance = Array.AsReadOnly(new[] { string.Empty });
 }
+
 public static partial class TextExtensions
 {
 	static ReadOnlySpan<char> FirstSplitSpan(StringSegment source, int start, int i, int n, out int nextIndex)

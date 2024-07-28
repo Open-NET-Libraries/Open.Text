@@ -1,12 +1,10 @@
 ﻿using BenchmarkDotNet.Attributes;
 using Microsoft.Extensions.Primitives;
 using System.Text;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Open.Text.Benchmarks;
 
 [MemoryDiagnoser]
-[SuppressMessage("Performance", "CA1822:Mark members as static")]
 public class StringConcatTests
 {
 	public static readonly string Phrase

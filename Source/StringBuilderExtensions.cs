@@ -434,22 +434,22 @@ public static class StringBuilderExtensions
 	/// <summary>
 	/// Appends the characters from another <see cref="StringBuilder"/> this instance.
 	/// </summary>
-    public static StringBuilder Append(this StringBuilder target, StringBuilder value)
-    {
-        if (target is null) throw new ArgumentNullException(nameof(target));
+	public static StringBuilder Append(this StringBuilder target, StringBuilder value)
+	{
+		if (target is null) throw new ArgumentNullException(nameof(target));
 		if (value is null) return target;
 		var len = value.Length;
-		for(var i = 0;i<len;i++)
+		for (var i = 0; i < len; i++)
 			target.Append(value[i]);
-        return target;
-    }
+		return target;
+	}
 #endif
 
-    /// <summary>
-    /// Trims whitespace from the end of the <see cref="StringBuilder"/>.
-    /// </summary>
-    /// <exception cref="ArgumentNullException">If <paramref name="sb"/> is null.</exception>
-    public static StringBuilder TrimEnd(this StringBuilder sb)
+	/// <summary>
+	/// Trims whitespace from the end of the <see cref="StringBuilder"/>.
+	/// </summary>
+	/// <exception cref="ArgumentNullException">If <paramref name="sb"/> is null.</exception>
+	public static StringBuilder TrimEnd(this StringBuilder sb)
 	{
 		if (sb is null) throw new ArgumentNullException(nameof(sb));
 		Contract.EndContractBlock();

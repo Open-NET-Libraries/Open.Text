@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 
 namespace Open.Text.Benchmarks;
 
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Benchmarking.")]
 public class EnumToStringTests
 {
 	static readonly IReadOnlyList<Greek> Values = Enum.GetValues(typeof(Greek)).Cast<Greek>().ToArray();

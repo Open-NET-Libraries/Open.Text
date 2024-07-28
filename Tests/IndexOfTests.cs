@@ -134,7 +134,7 @@ public static class IndexOfTests
 		// We will retain modern behavior as it makes slighty more sense.
 		var expected = source.LastIndexOf(value, comparison);
 #if NET472
-		if (value == "")
+		if (value.Length == 0)
 			expected++;
 #endif
 		source.LastIndexOf(value.AsSpan(), comparison).Should().Be(expected);

@@ -8,7 +8,7 @@ public static class RegexExtensions
 	private static Func<Capture, string> GetOriginalTextDelegate()
 	{
 		var textProp = typeof(Capture).GetProperty("Text", BindingFlags.Instance | BindingFlags.NonPublic);
-		if(textProp is not null)
+		if (textProp is not null)
 		{
 			var method = textProp.GetGetMethod(nonPublic: true)
 				?? throw new InvalidOperationException("Could not find the Text property getter.");
@@ -70,5 +70,33 @@ public static class RegexExtensions
 		return group.Success
 			? group.AsSpan()
 			: [];
+	}
+
+	/// <summary>
+	/// Returns the available matches as StringSegments.
+	/// </summary>
+	/// <param name="pattern">The pattern to search with.</param>
+	/// <param name="input">The string to search.</param>
+	/// <returns>An enumerable containing the found segments.</returns>
+	/// <exception cref="ArgumentNullException">If the pattern or input is null.</exception>
+	public static IEnumerable<StringSegment> AsSegments(this Regex pattern, string input)
+	{
+		return pattern is null
+			? throw new ArgumentNullException(nameof(pattern))
+			: input is null
+			? throw new ArgumentNullException(nameof(input))
+			: input.Length == 0
+			? Enumerable.Empty<StringSegment>()
+			: AsSegmentsCore(pattern, input);
+
+		static IEnumerable<StringSegment> AsSegmentsCore(Regex pattern, string input)
+		{
+			var match = pattern.Match(input);
+			while (match.Success)
+			{
+				yield return new(input, match.Index, match.Length);
+				match = match.NextMatch();
+			}
+		}
 	}
 }
