@@ -7,8 +7,14 @@ namespace Open.Text;
 public static partial class TextExtensions
 {
 	private const uint BYTE_RED = 1024;
-	private static readonly string[] _byte_labels = ["KB", "MB", "GB", "TB", "PB"];
-	private static readonly string[] _number_labels = ["K", "M", "B"];
+	[SuppressMessage("Style",
+		"IDE0300:Simplify collection initialization",
+		Justification = "Can cause NullReferenceException when initializing a static class.")]
+	private static readonly string[] _byte_labels = new[] { "KB", "MB", "GB", "TB", "PB" };
+	[SuppressMessage("Style",
+		"IDE0300:Simplify collection initialization",
+		Justification = "Can cause NullReferenceException when initializing a static class.")]
+	private static readonly string[] _number_labels = new[] { "K", "M", "B" };
 
 	/// <summary>
 	/// Compiled pattern for finding alpha-numeric sequences.
