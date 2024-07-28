@@ -1,8 +1,6 @@
-﻿using System;
-using Xunit;
+﻿namespace Open.Text.Tests;
 
-namespace Open.Text.Tests;
-
+[ExcludeFromCodeCoverage]
 public class EqualityTests
 {
 	static readonly ReadOnlyMemory<char> Chars = new[] { ' ', '\t' };

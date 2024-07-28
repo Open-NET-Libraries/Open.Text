@@ -1,21 +1,12 @@
-﻿using FluentAssertions;
-using System;
-using System.Linq;
-using Xunit;
+﻿namespace Open.Text.Tests;
 
-namespace Open.Text.Tests;
+[ExcludeFromCodeCoverage]
 
 [AttributeUsage(AttributeTargets.Field)]
-public class LetterAttribute : Attribute
+public class LetterAttribute(char upper, char lower) : Attribute
 {
-	public LetterAttribute(char upper, char lower)
-	{
-		Upper = upper;
-		Lower = lower;
-	}
-
-	public char Upper { get; }
-	public char Lower { get; }
+	public char Upper { get; } = upper;
+	public char Lower { get; } = lower;
 
 	public bool EqualsLetter(char letter)
 		=> letter == Upper || letter == Lower;
@@ -130,6 +121,7 @@ public enum LargeEnum
 	Item065
 }
 
+[ExcludeFromCodeCoverage]
 public static class EnumValueTests
 {
 	[Fact]

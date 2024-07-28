@@ -69,7 +69,7 @@ public static partial class TextExtensions
 				? Enumerable.Repeat(StringSegment.Empty, 1)
 				: SplitAsSegmentsCore(source, splitCharacter),
 			StringSplitOptions.RemoveEmptyEntries => source.Length == 0
-				? []
+				? Enumerable.Empty<StringSegment>()
 				: SplitAsSegmentsCoreOmitEmpty(source, splitCharacter),
 			_ => throw new System.ComponentModel.InvalidEnumArgumentException(),
 		};
@@ -152,7 +152,7 @@ public static partial class TextExtensions
 			? throw new ArgumentNullException(nameof(pattern))
 			: source.Length == 0
 			? options == StringSplitOptions.RemoveEmptyEntries
-				? []
+				? Enumerable.Empty<StringSegment>()
 				: Enumerable.Repeat(StringSegment.Empty, 1)
 			: SplitCore(source, pattern, options);
 
@@ -207,7 +207,7 @@ public static partial class TextExtensions
 				? Enumerable.Repeat(StringSegment.Empty, 1)
 				: SplitAsSegmentsCore(source, splitSequence, comparisonType),
 			StringSplitOptions.RemoveEmptyEntries => source.Length == 0
-				? []
+				? Enumerable.Empty<StringSegment>()
 				: SplitAsSegmentsCoreOmitEmpty(source, splitSequence, comparisonType),
 			_ => throw new System.ComponentModel.InvalidEnumArgumentException(),
 		};

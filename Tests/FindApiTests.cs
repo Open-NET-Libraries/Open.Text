@@ -1,15 +1,14 @@
-﻿using FluentAssertions;
-using Microsoft.Extensions.Primitives;
-using Xunit;
+﻿using Microsoft.Extensions.Primitives;
 
 namespace Open.Text.Tests;
+
+[ExcludeFromCodeCoverage]
 public static class FindAPITests
 {
 	[Fact]
 	public static void Exists()
 	{
-		const string source = "Hello World!";
-		StringSegment segment = source;
+		StringSegment segment = "Hello World!";
 		{
 			var e = segment.Find("Hello");
 			e.Exists().Should().BeTrue();

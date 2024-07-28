@@ -111,43 +111,11 @@ public static partial class TextExtensions
 
 	/// <inheritdoc cref="TrimmedEquals(string?, ReadOnlySpan{char}, char, StringComparison)"/>
 	public static bool TrimmedEquals(this string? source, ReadOnlySpan<char> other, StringComparison comparisonType = StringComparison.Ordinal)
-		=> source is not null
-		&& source.Length >= other.Length
-		&& source.AsSpan().Trim().Equals(other, comparisonType);
+		=> source?.AsSpan().Trim().Equals(other, comparisonType) == true;
 
 	/// <inheritdoc cref="TrimmedEquals(string?, StringSegment, char, StringComparison)"/>
 	public static bool TrimmedEquals(this string? source, StringSegment other, StringComparison comparisonType = StringComparison.Ordinal)
-	{
-		if (source is null) return !other.HasValue;
-		if (!other.HasValue) return false;
-		int slen = source.Length, olen = other.Length;
-		if (slen < olen) return false;
-		var span = source.Trim();
-		slen = span.Length;
-		return slen == olen && slen switch
-		{
-			0 => true,
-			1 when comparisonType == StringComparison.Ordinal => span[0] == other[0],
-			_ => span.Equals(other, comparisonType),
-		};
-	}
-
-	/// <inheritdoc cref="TrimmedEquals(string?, StringSegment, char, StringComparison)"/>
-	public static bool TrimmedEquals(this string? source, string? other, StringComparison comparisonType = StringComparison.Ordinal)
-	{
-		if (source is null) return other is null;
-		if (other is null) return false;
-		int slen = source.Length, olen = other.Length;
-		if (slen < olen) return false;
-		var span = source.AsSpan().Trim();
-		slen = span.Length;
-		return slen == olen && slen switch
-		{
-			0 => true,
-			1 when comparisonType == StringComparison.Ordinal => span[0] == other[0],
-			_ => span.Equals(other.AsSpan(), comparisonType),
-		};
-	}
+		=> source is null ? !other.HasValue : other.HasValue && source.AsSpan().Trim().Equals(other, comparisonType);
 
 	/// <inheritdoc cref="TrimmedEquals(string?, StringSegment, char, StringComparison)"/>
 	public static bool TrimmedEquals(this StringSegment source, StringSegment other, StringComparison comparisonType = StringComparison.Ordinal)

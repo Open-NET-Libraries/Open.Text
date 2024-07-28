@@ -40,7 +40,7 @@ public readonly ref struct StringSegmentSearch
 	/// <inheritdoc cref="RightToLeft" path="/summary"/>
 	/// </param>
 	internal StringSegmentSearch(
-	StringSegment source,
+		StringSegment source,
 		ReadOnlySpan<char> search,
 		StringComparison comparisonType,
 		bool rightToLeft)
@@ -145,6 +145,22 @@ public static partial class TextExtensions
 	public static StringSegmentSearch Find(
 		this string source,
 		ReadOnlySpan<char> search,
+		StringComparison comparisonType = StringComparison.Ordinal,
+		bool rightToLeft = false)
+		=> new(source, search, comparisonType, rightToLeft);
+
+	/// <inheritdoc cref="Find(StringSegment, ReadOnlySpan{char}, StringComparison, bool)"/>
+	public static StringSegmentSearch Find(
+		this string source,
+		StringSegment search,
+		StringComparison comparisonType = StringComparison.Ordinal,
+		bool rightToLeft = false)
+		=> new(source, search, comparisonType, rightToLeft);
+
+	/// <inheritdoc cref="Find(StringSegment, ReadOnlySpan{char}, StringComparison, bool)"/>
+	public static StringSegmentSearch Find(
+		this StringSegment source,
+		StringSegment search,
 		StringComparison comparisonType = StringComparison.Ordinal,
 		bool rightToLeft = false)
 		=> new(source, search, comparisonType, rightToLeft);

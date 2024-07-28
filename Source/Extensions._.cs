@@ -13,12 +13,14 @@ public static partial class TextExtensions
 	/// <summary>
 	/// Compiled pattern for finding alpha-numeric sequences.
 	/// </summary>
-	public static readonly Regex ValidAlphaNumericOnlyPattern = new(@"^\w+$", RegexOptions.Compiled);
+	public static readonly Regex ValidAlphaNumericOnlyPattern
+		= new(@"^\w+$", RegexOptions.Compiled);
 
 	/// <summary>
 	/// Compiled pattern for finding alpha-numeric sequences and possible surrounding white-space.
 	/// </summary>
-	public static readonly Regex ValidAlphaNumericOnlyUntrimmedPattern = new(@"^\s*\w+\s*$", RegexOptions.Compiled);
+	public static readonly Regex ValidAlphaNumericOnlyUntrimmedPattern
+		= new(@"^\s*\w+\s*$", RegexOptions.Compiled);
 
 	/// <summary>
 	/// Converts a string to title-case.
@@ -182,7 +184,7 @@ public static partial class TextExtensions
 			: input is null
 			? throw new ArgumentNullException(nameof(input))
 			: input.Length == 0
-			? []
+			? Enumerable.Empty<StringSegment>()
 			: AsSegmentsCore(pattern, input);
 
 		static IEnumerable<StringSegment> AsSegmentsCore(Regex pattern, string input)
@@ -326,6 +328,7 @@ public static partial class TextExtensions
 	/// <summary>
 	/// String constant for carriage return and then newline.
 	/// </summary>
+	[Obsolete("Use Environment.NewLine instead.")]
 	public const string Newline = "\r\n";
 
 	/// <summary>
@@ -338,7 +341,7 @@ public static partial class TextExtensions
 		Contract.EndContractBlock();
 
 		if (s is not null) writer.Write(s);
-		writer.Write(Newline);
+		writer.Write(Environment.NewLine);
 	}
 
 	/// <summary>
@@ -371,7 +374,7 @@ public static partial class TextExtensions
 		int length = chars.Length > maxChars ? maxChars : chars.Length;
 
 		int hash = 17;
-		switch(comparisonType)
+		switch (comparisonType)
 		{
 			case StringComparison.Ordinal:
 			case StringComparison.CurrentCulture:

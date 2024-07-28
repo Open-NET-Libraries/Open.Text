@@ -157,6 +157,13 @@ public static partial class TextExtensions
 		return FirstSplitSpan(source, i, splitSequence.Length, out nextIndex);
 	}
 
+	/// <inheritdoc cref="FirstSplit(StringSegment, StringSegment, out int, int, StringComparison)"/>
+	public static ReadOnlySpan<char> FirstSplit(this ReadOnlySpan<char> source,
+		StringSegment splitSequence,
+		out int nextIndex,
+		StringComparison comparisonType = StringComparison.Ordinal)
+		=> source.FirstSplit(splitSequence.AsSpan(), out nextIndex, comparisonType);
+
 	/// <summary>
 	/// Enumerates a string by segments that are separated by the split character.
 	/// </summary>
@@ -165,8 +172,8 @@ public static partial class TextExtensions
 	/// <param name="options">Can specify to omit empty entries.</param>
 	/// <returns>An enumerable of the segments.</returns>
 	public static IEnumerable<string> SplitToEnumerable(this string source,
-		char splitCharacter,
-		StringSplitOptions options = StringSplitOptions.None)
+	char splitCharacter,
+	StringSplitOptions options = StringSplitOptions.None)
 	{
 		if (source is null) throw new ArgumentNullException(nameof(source));
 		Contract.EndContractBlock();
@@ -177,7 +184,7 @@ public static partial class TextExtensions
 				? Enumerable.Repeat(string.Empty, 1)
 				: SplitAsEnumerableCore(),
 			StringSplitOptions.RemoveEmptyEntries => source.Length == 0
-				? []
+				? Enumerable.Empty<string>()
 				: SplitAsEnumerableCoreOmitEmpty(),
 			_ => throw new System.ComponentModel.InvalidEnumArgumentException(),
 		};
@@ -232,7 +239,7 @@ public static partial class TextExtensions
 				? Enumerable.Repeat(string.Empty, 1)
 				: SplitAsEnumerableCore(source, splitSequence, comparisonType),
 			StringSplitOptions.RemoveEmptyEntries => source.Length == 0
-				? []
+				? Enumerable.Empty<string>()
 				: SplitAsEnumerableCoreOmitEmpty(source, splitSequence, comparisonType),
 			_ => throw new System.ComponentModel.InvalidEnumArgumentException(),
 		};
@@ -277,7 +284,7 @@ public static partial class TextExtensions
 				? Enumerable.Repeat(ReadOnlyMemory<char>.Empty, 1)
 				: SplitAsMemoryCore(source, splitCharacter),
 			StringSplitOptions.RemoveEmptyEntries => source.Length == 0
-				? []
+				? Enumerable.Empty<ReadOnlyMemory<char>>()
 				: SplitAsMemoryOmitEmpty(source, splitCharacter),
 			_ => throw new System.ComponentModel.InvalidEnumArgumentException(),
 		};
@@ -325,7 +332,7 @@ public static partial class TextExtensions
 				? Enumerable.Repeat(ReadOnlyMemory<char>.Empty, 1)
 				: SplitAsMemoryCore(source, splitSequence, comparisonType),
 			StringSplitOptions.RemoveEmptyEntries => source.Length == 0
-				? []
+				? Enumerable.Empty<ReadOnlyMemory<char>>()
 				: SplitAsMemoryOmitEmpty(source, splitSequence, comparisonType),
 			_ => throw new System.ComponentModel.InvalidEnumArgumentException(),
 		};
@@ -356,7 +363,7 @@ public static partial class TextExtensions
 		}
 	}
 
-	static readonly IReadOnlyList<string> SingleEmpty = Array.AsReadOnly(new[] { string.Empty });
+	static readonly IReadOnlyList<string> SingleEmpty = new List<string> { string.Empty }.AsReadOnly();
 
 	/// <summary>
 	/// Splits a sequence of characters into strings using the character provided.
@@ -375,7 +382,7 @@ public static partial class TextExtensions
 				return SingleEmpty;
 
 			case StringSplitOptions.RemoveEmptyEntries when source.Length == 0:
-				return [];
+				return Array.Empty<string>();
 
 			case StringSplitOptions.RemoveEmptyEntries:
 			{
@@ -423,7 +430,7 @@ public static partial class TextExtensions
 				return SingleEmpty;
 
 			case StringSplitOptions.RemoveEmptyEntries when source.IsEmpty:
-				return [];
+				return Array.Empty<string>();
 
 			case StringSplitOptions.RemoveEmptyEntries:
 			{
@@ -451,4 +458,11 @@ public static partial class TextExtensions
 			}
 		}
 	}
+
+	/// <inheritdoc cref="Split(ReadOnlySpan{char}, ReadOnlySpan{char}, StringSplitOptions, StringComparison)"/>
+	public static IReadOnlyList<string> Split(this ReadOnlySpan<char> source,
+		StringSegment splitSequence,
+		StringSplitOptions options = StringSplitOptions.None,
+		StringComparison comparisonType = StringComparison.Ordinal)
+		=> source.Split(splitSequence.AsSpan(), options, comparisonType);
 }

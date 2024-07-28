@@ -1,10 +1,17 @@
-﻿using System;
-using System.Linq;
-using System.Text.RegularExpressions;
-using Xunit;
+﻿using System.Text.RegularExpressions;
+using System.ComponentModel;
 
 namespace Open.Text.Tests;
 
+#if NET472
+internal static class Shim
+{
+	internal static string[] Split(this string sequence, char separator, StringSplitOptions options = StringSplitOptions.None)
+		=> sequence.Split([separator], options);
+}
+#endif
+
+[ExcludeFromCodeCoverage]
 public static class SplitTests
 {
 	private const string DefaultTestString = "Hello,there";
@@ -27,21 +34,20 @@ public static class SplitTests
 	}
 
 	[Fact]
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Roslynator", "RCS1196:Call extension method as instance method.", Justification = "Preferred.")]
 	public static void ThrowIfNull()
 	{
-		Assert.Throws<ArgumentException>(() => TextExtensions.FirstSplit(default!, ',', out _));
-		Assert.Throws<ArgumentException>(() => TextExtensions.FirstSplit(default!, ",", out _));
-		Assert.Throws<ArgumentException>(() => TextExtensions.FirstSplit(DefaultTestString, default(string)!, out _));
-		Assert.Throws<ArgumentNullException>(() => TextExtensions.SplitToEnumerable(default!, ','));
-		Assert.Throws<ArgumentNullException>(() => TextExtensions.SplitToEnumerable(default!, ","));
-		Assert.Throws<ArgumentNullException>(() => TextExtensions.SplitToEnumerable(DefaultTestString, default(string)!));
-		Assert.Throws<ArgumentNullException>(() => TextExtensions.SplitAsMemory(default!, ','));
-		Assert.Throws<ArgumentNullException>(() => TextExtensions.SplitAsMemory(default!, ","));
-		Assert.Throws<ArgumentNullException>(() => TextExtensions.SplitAsMemory(DefaultTestString, default(string)!));
-		Assert.Throws<ArgumentNullException>(() => TextExtensions.SplitAsSegments(default!, ','));
-		Assert.Throws<ArgumentNullException>(() => TextExtensions.SplitAsSegments(default!, ","));
-		Assert.Throws<ArgumentNullException>(() => TextExtensions.SplitAsSegments(DefaultTestString, default(string)!));
+		Assert.Throws<ArgumentException>(() => default(string)!.FirstSplit(',', out _));
+		Assert.Throws<ArgumentException>(() => default(string)!.FirstSplit(",", out _));
+		Assert.Throws<ArgumentException>(() => DefaultTestString.FirstSplit(default(string)!, out _));
+		Assert.Throws<ArgumentNullException>(() => default(string)!.SplitToEnumerable(','));
+		Assert.Throws<ArgumentNullException>(() => default(string)!.SplitToEnumerable(","));
+		Assert.Throws<ArgumentNullException>(() => DefaultTestString.SplitToEnumerable(default(string)!));
+		Assert.Throws<ArgumentNullException>(() => default(string)!.SplitAsMemory(','));
+		Assert.Throws<ArgumentNullException>(() => default(string)!.SplitAsMemory(","));
+		Assert.Throws<ArgumentNullException>(() => DefaultTestString.SplitAsMemory(default(string)!));
+		Assert.Throws<ArgumentNullException>(() => default(string)!.SplitAsSegments(','));
+		Assert.Throws<ArgumentNullException>(() => default(string)!.SplitAsSegments(","));
+		Assert.Throws<ArgumentNullException>(() => DefaultTestString.SplitAsSegments(default(string)!));
 	}
 
 	[Theory]
@@ -52,8 +58,9 @@ public static class SplitTests
 	[InlineData("Hello,there,I")]
 	public static void FirstSplit(string sequence)
 	{
-		Assert.Equal(sequence.FirstSplit(',', out _).ToString(), sequence.AsSpan().FirstSplit(',', out _).ToString());
-		Assert.Equal(sequence.FirstSplit(",", out _).ToString(), sequence.AsSpan().FirstSplit(",", out _).ToString());
+		var span = sequence.AsSpan();
+		Assert.Equal(sequence.FirstSplit(',', out _).ToString(), span.FirstSplit(',', out _).ToString());
+		Assert.Equal(sequence.FirstSplit(",", out _).ToString(), span.FirstSplit(",", out _).ToString());
 	}
 
 	[Theory]
@@ -91,6 +98,7 @@ public static class SplitTests
 			TextExtensions
 			.ValidAlphaNumericOnlyPattern
 			.Matches(sequence)
+			.Cast<Match>()
 			.Select(m => m.Value),
 			TextExtensions
 			.ValidAlphaNumericOnlyPattern
@@ -107,6 +115,23 @@ public static class SplitTests
 		Assert.Equal(
 			string.Join(sep, segments),
 			stringSegment.ReplaceToString(",", sep));
+	}
+
+	[Fact]
+	public static void SplitOptionsInvalid()
+	{
+		Assert.Throws<InvalidEnumArgumentException>(
+			() => "hello there".SplitAsMemory(',', (StringSplitOptions)10000));
+		Assert.Throws<InvalidEnumArgumentException>(
+			() => "hello there".SplitAsMemory(",", (StringSplitOptions)10000));
+		Assert.Throws<InvalidEnumArgumentException>(
+			() => "hello there".SplitAsSegments(',', (StringSplitOptions)10000));
+		Assert.Throws<InvalidEnumArgumentException>(
+			() => "hello there".SplitAsSegments(",", (StringSplitOptions)10000));
+		Assert.Throws<InvalidEnumArgumentException>(
+			() => "hello there".SplitAsMemory(',', (StringSplitOptions)10000));
+		Assert.Throws<InvalidEnumArgumentException>(
+			() => "hello there".SplitAsMemory(",", (StringSplitOptions)10000));
 	}
 
 	[Theory]

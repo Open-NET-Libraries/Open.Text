@@ -1,9 +1,6 @@
-﻿using FluentAssertions;
-using System;
-using Xunit;
+﻿namespace Open.Text.Tests;
 
-namespace Open.Text.Tests;
-
+[ExcludeFromCodeCoverage]
 public static class ParseTests
 {
 	[Theory]

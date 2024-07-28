@@ -29,6 +29,11 @@
 		<PackageIcon>logo.png</PackageIcon>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<NoWarn>IDE0301;IDE0079</NoWarn>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+		<NoWarn>$(NoWarn);nullable</NoWarn>
 	</PropertyGroup>
 	
 	<ItemGroup>
