@@ -1,9 +1,4 @@
-﻿using Microsoft.Extensions.Primitives;
-using System;
-using System.Runtime.CompilerServices;
-using System.Diagnostics.CodeAnalysis;
-
-namespace Open.Text;
+﻿namespace Open.Text;
 /// <summary>
 /// Represents a search operation within a string segment.
 /// </summary>
@@ -45,7 +40,7 @@ public readonly ref struct StringSegmentSearch
 	/// <inheritdoc cref="RightToLeft" path="/summary"/>
 	/// </param>
 	internal StringSegmentSearch(
-	StringSegment source,
+		StringSegment source,
 		ReadOnlySpan<char> search,
 		StringComparison comparisonType,
 		bool rightToLeft)
@@ -154,13 +149,29 @@ public static partial class TextExtensions
 		bool rightToLeft = false)
 		=> new(source, search, comparisonType, rightToLeft);
 
+	/// <inheritdoc cref="Find(StringSegment, ReadOnlySpan{char}, StringComparison, bool)"/>
+	public static StringSegmentSearch Find(
+		this string source,
+		StringSegment search,
+		StringComparison comparisonType = StringComparison.Ordinal,
+		bool rightToLeft = false)
+		=> new(source, search, comparisonType, rightToLeft);
+
+	/// <inheritdoc cref="Find(StringSegment, ReadOnlySpan{char}, StringComparison, bool)"/>
+	public static StringSegmentSearch Find(
+		this StringSegment source,
+		StringSegment search,
+		StringComparison comparisonType = StringComparison.Ordinal,
+		bool rightToLeft = false)
+		=> new(source, search, comparisonType, rightToLeft);
+
 	/// <summary>
 	/// Finds the next occurrence of the specified character sequence within the source segment.
 	/// </summary>
 	public static StringSegmentCapture First(
 		this StringSegmentSearch search)
 	{
-		if(search.Source.Length == 0 || search.Sequence.Length == 0)
+		if (search.Source.Length == 0 || search.Sequence.Length == 0)
 			return default;
 
 		var i = search.RightToLeft
@@ -169,7 +180,7 @@ public static partial class TextExtensions
 
 		return new(search, i == -1
 			? default
-			: new(search.Source, i, search.Sequence.Length) );
+			: new(search.Source, i, search.Sequence.Length));
 	}
 
 	/// <summary>

@@ -1,11 +1,8 @@
-﻿using FluentAssertions;
-using System;
-using System.Linq;
-using System.Text;
-using Xunit;
+﻿using System.Text;
 
 namespace Open.Text.Tests;
 
+[ExcludeFromCodeCoverage]
 public static class StringBuilderTests
 {
 	[Theory]
@@ -84,10 +81,10 @@ public static class StringBuilderTests
 
 		var span = source.AsSpan();
 		var a = source.AsSpan().ToArray();
-		var joined = string.Join(separator, a);
+		var joined = string.Join("" + separator, a);
 		var list = a.ToList();
 		list.Insert(0, 'X');
-		var xValue = string.Join(separator, list);
+		var xValue = string.Join("" + separator, list);
 		{
 			var sb = a.ToStringBuilder(separator);
 			Assert.Equal(joined, sb.ToString());
@@ -242,7 +239,7 @@ public static class StringBuilderTests
 	public static void TrimChars(string expected, string a, string b, string c, string d)
 	{
 		var sb = new StringBuilder();
-		sb.Append(a).Append(b).Append(c).Append(d).Trim(" !");
+		sb.Append(a).Append(b).Append(c).Append(d).Trim(" !".AsSpan());
 		Assert.Equal(expected, sb.ToString());
 	}
 

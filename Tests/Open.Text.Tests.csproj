@@ -1,10 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFrameworks>net472;net6.0;net8.0</TargetFrameworks>
 		<Nullable>enable</Nullable>
 		<IsPackable>false</IsPackable>
+		<LangVersion>latest</LangVersion>
 		<EnableNETAnalyzers>false</EnableNETAnalyzers>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<NoWarn>IDE0301</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>

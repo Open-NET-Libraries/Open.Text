@@ -4,6 +4,7 @@
 		<TargetFrameworks>netstandard2.0;netstandard2.1;net6.0;net7.0;net8.0</TargetFrameworks>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<AnalysisMode>AllEnabledByDefault</AnalysisMode>
 		<AnalysisLevel>latest</AnalysisLevel>
@@ -19,7 +20,7 @@
 		<RepositoryUrl>https://github.com/Open-NET-Libraries/Open.Text</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<PackageTags>string, span, enum, readonlyspan, text, format, split, trim, equals, trimmed equals, first, last, preceding, following, stringbuilder, extensions, stringcomparable, spancomparable, stringsegment, splitassegment</PackageTags>
-		<Version>7.0.3</Version>
+		<Version>8.0.0</Version>
 		<PackageReleaseNotes></PackageReleaseNotes>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -28,6 +29,11 @@
 		<PackageIcon>logo.png</PackageIcon>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<NoWarn>IDE0301;IDE0079</NoWarn>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+		<NoWarn>$(NoWarn);nullable</NoWarn>
 	</PropertyGroup>
 	
 	<ItemGroup>

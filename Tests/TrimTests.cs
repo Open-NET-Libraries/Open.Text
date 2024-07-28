@@ -1,9 +1,8 @@
-﻿using System;
-using System.Text.RegularExpressions;
-using Xunit;
+﻿using System.Text.RegularExpressions;
 
 namespace Open.Text.Tests;
 
+[ExcludeFromCodeCoverage]
 public static class TrimTests
 {
 	[Fact]
@@ -114,9 +113,9 @@ public static class TrimTests
 	{
 		Assert.True(string.Empty.TrimmedEquals(string.Empty));
 		Assert.True(" ".AsSegment().TrimmedEquals(string.Empty));
-		Assert.True(" ".AsSegment().TrimmedEquals(string.Empty, new[] { ' ' }.AsSpan()));
+		Assert.True(" ".AsSegment().TrimmedEquals(string.Empty, " ".AsSpan()));
 		Assert.True(" ".AsSegment().TrimmedEquals(ReadOnlySpan<char>.Empty));
-		Assert.True(" ".AsSegment().TrimmedEquals(ReadOnlySpan<char>.Empty, new[] { ' ' }.AsSpan()));
+		Assert.True(" ".AsSegment().TrimmedEquals(ReadOnlySpan<char>.Empty, " ".AsSpan()));
 		Assert.True(" ".TrimmedEquals(string.Empty));
 		Assert.False("AB ".TrimmedEquals("ABC"));
 		Assert.False("A ".TrimmedEquals("ABC"));

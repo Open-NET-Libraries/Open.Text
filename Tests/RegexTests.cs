@@ -1,10 +1,8 @@
-﻿using FluentAssertions;
-using System;
-using System.Text.RegularExpressions;
-using Xunit;
+﻿using System.Text.RegularExpressions;
 
 namespace Open.Text.Tests;
 
+[ExcludeFromCodeCoverage]
 public static class RegexTests
 {
 	[Fact]

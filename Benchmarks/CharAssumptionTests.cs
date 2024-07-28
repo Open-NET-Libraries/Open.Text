@@ -2,7 +2,6 @@
 
 namespace Open.Text.Benchmarks;
 
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "For benchmarking.")]
 public class CharAssumptionTests
 {
 	const string TestString = "abcdefghijklmnopqrstuvwxyz0123456789";

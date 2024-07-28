@@ -1,9 +1,8 @@
 ﻿using Microsoft.Extensions.Primitives;
-using System;
-using Xunit;
 
 namespace Open.Text.Tests;
 
+[ExcludeFromCodeCoverage]
 public static class StringSegmentTests
 {
 	[Fact]
@@ -35,10 +34,12 @@ public static class StringSegmentTests
 		else
 		{
 			var p = first.Preceding();
-			Assert.Equal(expected, p.ToString());
-			Assert.True(p.ToString().Equals(expected, comparisonType));
-			Assert.True(p.AsSpan().Equals(expected, comparisonType));
-			Assert.True(p.AsMemory().Span.Equals(expected, comparisonType));
+			var pString = p.ToString();
+			pString.Should().Be(expected);
+
+			pString.Equals(expected, comparisonType).Should().BeTrue();
+			p.AsSpan().Equals(expected, comparisonType).Should().BeTrue();
+			p.AsMemory().Span.Equals(expected, comparisonType).Should().BeTrue();
 		}
 	}
 

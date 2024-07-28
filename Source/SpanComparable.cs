@@ -1,7 +1,4 @@
-﻿using Microsoft.Extensions.Primitives;
-using System;
-using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.ComponentModel;
 
 namespace Open.Text;
 

@@ -1,8 +1,4 @@
-﻿using Microsoft.Extensions.Primitives;
-using System;
-using System.Diagnostics.CodeAnalysis;
-
-namespace Open.Text;
+﻿namespace Open.Text;
 
 /// <summary>
 /// A <see cref="StringComparison"/> struct for comparing a <see cref="string"/> against other values.

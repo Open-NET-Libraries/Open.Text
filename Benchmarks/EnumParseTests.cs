@@ -1,6 +1,6 @@
 ﻿using BenchmarkDotNet.Attributes;
+using CommandLine;
 using FastEnumUtility;
-using System.Security;
 
 namespace Open.Text.Benchmarks;
 
@@ -69,8 +69,9 @@ public class EnumParseTests
 
 		static readonly Dictionary<string, Greek> LookupD
 			= Enum
-			.GetValues<Greek>()
-			.ToDictionary(e => Enum.GetName(e)!, e => e, StringComparer.Ordinal);
+			.GetValues(typeof(Greek))
+			.Cast<Greek>()
+			.ToDictionary(e => e.GetName(), e => e, StringComparer.Ordinal);
 
 		protected virtual bool Lookup(string value, out Greek e)
 			=> LookupD.TryGetValue(value, out e);
@@ -262,8 +263,9 @@ public class EnumParseTests
 
 		static readonly Dictionary<string, Greek> LookupD
 			= Enum
-			.GetValues<Greek>()
-			.ToDictionary(e => Enum.GetName(e)!, e => e, StringComparer.OrdinalIgnoreCase);
+			.GetValues(typeof(Greek))
+			.Cast<Greek>()
+			.ToDictionary(e => e.GetName(), e => e, StringComparer.OrdinalIgnoreCase);
 
 		protected override bool Lookup(string value, out Greek e)
 			=> LookupD.TryGetValue(value, out e);
@@ -328,8 +330,9 @@ public class EnumParseTests
 
 		static readonly Dictionary<string, Greek> LookupD
 			= Enum
-			.GetValues<Greek>()
-			.ToDictionary(e => Enum.GetName(e)!, e => e, StringComparer.OrdinalIgnoreCase);
+			.GetValues(typeof(Greek))
+			.Cast<Greek>()
+			.ToDictionary(e => e.GetName(), e => e, StringComparer.OrdinalIgnoreCase);
 
 		protected override bool Lookup(string value, out Greek e)
 			=> LookupD.TryGetValue(value, out e);
