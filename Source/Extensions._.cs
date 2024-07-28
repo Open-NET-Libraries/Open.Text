@@ -7,26 +7,41 @@ namespace Open.Text;
 public static partial class TextExtensions
 {
 	private const uint BYTE_RED = 1024;
-	[SuppressMessage("Style",
-		"IDE0300:Simplify collection initialization",
-		Justification = "Can cause NullReferenceException when initializing a static class.")]
-	private static readonly string[] _byte_labels = new[] { "KB", "MB", "GB", "TB", "PB" };
-	[SuppressMessage("Style",
-		"IDE0300:Simplify collection initialization",
-		Justification = "Can cause NullReferenceException when initializing a static class.")]
-	private static readonly string[] _number_labels = new[] { "K", "M", "B" };
 
-	/// <summary>
-	/// Compiled pattern for finding alpha-numeric sequences.
-	/// </summary>
-	public static readonly Regex ValidAlphaNumericOnlyPattern
-		= new(@"^\w+$", RegexOptions.Compiled);
+	private static IEnumerable<string> ByteLabels {
+		get {
+			yield return "KB";
+			yield return "MB";
+			yield return "GB";
+			yield return "TB";
+			yield return "PB";
+		}
+	}
 
-	/// <summary>
-	/// Compiled pattern for finding alpha-numeric sequences and possible surrounding white-space.
-	/// </summary>
-	public static readonly Regex ValidAlphaNumericOnlyUntrimmedPattern
-		= new(@"^\s*\w+\s*$", RegexOptions.Compiled);
+	private static IEnumerable<string> NumberLabels
+	{
+		get
+		{
+			yield return "K";
+			yield return "M";
+			yield return "G";
+		}
+	}
+
+	/// <inheritdoc cref="RegexPatterns.ValidAlphaNumericOnlyPattern"/>
+	[Obsolete("Use RegexPatterns.ValidAlphaNumericOnlyPattern.")]
+	public static Regex ValidAlphaNumericOnlyPattern
+		=> RegexPatterns.ValidAlphaNumericOnlyPattern;
+
+	/// <inheritdoc cref="RegexPatterns.ValidAlphaNumericOnlyUntrimmedPattern"/>
+	[Obsolete("Use RegexPatterns.ValidAlphaNumericOnlyUntrimmedPattern.")]
+	public static Regex ValidAlphaNumericOnlyUntrimmedPattern
+		=> RegexPatterns.ValidAlphaNumericOnlyUntrimmedPattern;
+
+	/// <inheritdoc cref="RegexPatterns.WhiteSpacePattern"/>
+	[Obsolete("Use RegexPatterns.WhiteSpacePattern.")]
+	public static Regex WhiteSpacePattern
+		=> RegexPatterns.WhiteSpacePattern;
 
 	/// <summary>
 	/// Converts a string to title-case.
@@ -121,60 +136,7 @@ public static partial class TextExtensions
 	[ExcludeFromCodeCoverage]
 	public static bool IsAlphaNumeric(this string source, bool trim = false)
 		=> !string.IsNullOrWhiteSpace(source)
-		&& (trim ? ValidAlphaNumericOnlyUntrimmedPattern : ValidAlphaNumericOnlyPattern).IsMatch(source);
-
-	#region Regex helper methods.
-	private static readonly Func<Capture, string> _textDelegate = (Func<Capture, string>)
-		typeof(Capture).GetProperty("Text", BindingFlags.Instance | BindingFlags.NonPublic)!
-			.GetGetMethod(nonPublic: true)!
-			.CreateDelegate(typeof(Func<Capture, string>));
-
-	/// <summary>
-	/// Returns a ReadOnlySpan of the capture without creating a new string.
-	/// </summary>
-	/// <remarks>This is a stop-gap until .NET 6 releases the .ValueSpan property.</remarks>
-	/// <param name="capture">The capture to get the span from.</param>
-	public static ReadOnlySpan<char> AsSpan(this Capture capture)
-		=> capture is null
-		? throw new ArgumentNullException(nameof(capture))
-		: _textDelegate.Invoke(capture).AsSpan(capture.Index, capture.Length);
-
-	/// <summary>
-	/// Gets a group by name.
-	/// </summary>
-	/// <param name="groups">The group collection to get the group from.</param>
-	/// <param name="groupName">The declared name of the group.</param>
-	/// <returns>The value of the requested group or null if not found.</returns>
-	/// <exception cref="ArgumentNullException">Groups or groupName is null.</exception>
-	public static string? GetValue(this GroupCollection groups, string groupName)
-	{
-		if (groups is null)
-			throw new ArgumentNullException(nameof(groups));
-		if (groupName is null)
-			throw new ArgumentNullException(nameof(groupName));
-		Contract.EndContractBlock();
-
-		var group = groups[groupName];
-		return group.Success
-			? group.Value
-			: null;
-	}
-
-	/// <returns>The value of the requested group or an empty span if not found.</returns>
-	/// <inheritdoc cref="GetValue(GroupCollection, string)" />
-	public static ReadOnlySpan<char> GetValueSpan(this GroupCollection groups, string groupName)
-	{
-		if (groups is null)
-			throw new ArgumentNullException(nameof(groups));
-		if (groupName is null)
-			throw new ArgumentNullException(nameof(groupName));
-		Contract.EndContractBlock();
-
-		var group = groups[groupName];
-		return group.Success
-			? group.AsSpan()
-			: [];
-	}
+		&& (trim ? RegexPatterns.ValidAlphaNumericOnlyUntrimmedPattern : RegexPatterns.ValidAlphaNumericOnlyPattern).IsMatch(source);
 
 	/// <summary>
 	/// Returns the available matches as StringSegments.
@@ -203,7 +165,6 @@ public static partial class TextExtensions
 			}
 		}
 	}
-	#endregion
 
 	#region Numeric string formatting.
 	/// <summary>
@@ -251,7 +212,7 @@ public static partial class TextExtensions
 			return string.Format(cultureInfo, bytes == 1 ? BYTE : BYTES, bytes);
 
 		var label = string.Empty;
-		foreach (var s in _byte_labels)
+		foreach (var s in ByteLabels)
 		{
 			label = s;
 			bytes /= BYTE_RED;
@@ -284,7 +245,7 @@ public static partial class TextExtensions
 			return number.ToString(decimalFormat, cultureInfo ?? CultureInfo.InvariantCulture);
 
 		var label = string.Empty;
-		foreach (var s in _number_labels)
+		foreach (var s in NumberLabels)
 		{
 			label = s;
 			number /= 1000;
@@ -310,11 +271,6 @@ public static partial class TextExtensions
 	#endregion
 
 	/// <summary>
-	/// Compiled Regex for finding white-space.
-	/// </summary>
-	public static readonly Regex WhiteSpacePattern = new(@"\s+", RegexOptions.Compiled);
-
-	/// <summary>
 	/// Replaces any white-space with the specified string.
 	/// Collapses multiple white-space characters to a single space if no replacement specified.
 	/// </summary>
@@ -328,7 +284,7 @@ public static partial class TextExtensions
 		if (replace is null) throw new ArgumentNullException(nameof(replace));
 		Contract.EndContractBlock();
 
-		return WhiteSpacePattern.Replace(source, replace);
+		return RegexPatterns.WhiteSpacePattern.Replace(source, replace);
 	}
 
 	/// <summary>

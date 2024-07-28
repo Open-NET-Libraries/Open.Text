@@ -94,6 +94,8 @@ public static class SplitTests
 		Assert.Equal(segments, span.Split(',', options));
 		Assert.Equal(segments, span.Split(",", options));
 
+#pragma warning disable CS0618 // Type or member is obsolete
+		// Use obsolete values to ensure they still work.
 		Assert.Equal(
 			TextExtensions
 			.ValidAlphaNumericOnlyPattern
@@ -104,6 +106,7 @@ public static class SplitTests
 			.ValidAlphaNumericOnlyPattern
 			.AsSegments(sequence)
 			.Select(m => m.Value));
+#pragma warning restore CS0618 // Type or member is obsolete
 
 		var stringSegment = sequence.AsSegment();
 		var ss = stringSegment.SplitAsSegments(",", options).Select(s => s.Value).ToArray();
