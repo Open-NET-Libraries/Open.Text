@@ -40,16 +40,16 @@ public static partial class TextExtensions
 	}
 
 	/// <inheritdoc cref="string.IndexOf(char, int)"/>
-	public static int IndexOf(this ReadOnlySpan<char> source, char search, int startIndex, StringComparison comparisonType)
+	public static int IndexOf(this ReadOnlySpan<char> source, char value, int startIndex, StringComparison comparisonType)
 	{
 		if (startIndex >= source.Length)
 			throw new ArgumentOutOfRangeException(nameof(startIndex), startIndex, "Must be less than the length of the source.");
-		var i = source.Slice(startIndex).IndexOf(search, comparisonType);
+		var i = source.Slice(startIndex).IndexOf(value, comparisonType);
 		return i == -1 ? -1 : i + startIndex;
 	}
 
 	/// <inheritdoc cref="string.LastIndexOf(char)"/>
-	public static int LastIndexOf(this ReadOnlySpan<char> source, char search, StringComparison comparisonType)
+	public static int LastIndexOf(this ReadOnlySpan<char> source, char value, StringComparison comparisonType)
 	{
 		Func<char, char> toUpper;
 		switch (comparisonType)
@@ -57,7 +57,7 @@ public static partial class TextExtensions
 			case StringComparison.Ordinal:
 			case StringComparison.CurrentCulture:
 			case StringComparison.InvariantCulture:
-				return source.LastIndexOf(search);
+				return source.LastIndexOf(value);
 			case StringComparison.CurrentCultureIgnoreCase:
 				toUpper = static c => char.ToUpper(c, CultureInfo.CurrentCulture);
 				break;
@@ -71,14 +71,14 @@ public static partial class TextExtensions
 				throw new ArgumentException("Invalid comparison type.", nameof(comparisonType));
 		}
 
-		var searchUpper = toUpper(search);
-		if (searchUpper == search)
-			return source.LastIndexOf(search);
+		var searchUpper = toUpper(value);
+		if (searchUpper == value)
+			return source.LastIndexOf(value);
 
 		for (var i = source.Length - 1; i >= 0; i--)
 		{
 			var c = source[i];
-			if (c == search) return i;
+			if (c == value) return i;
 			if (toUpper(c) == searchUpper)
 				return i;
 		}
@@ -87,29 +87,29 @@ public static partial class TextExtensions
 	}
 
 	/// <inheritdoc cref="string.LastIndexOf(char)"/>
-	public static int LastIndexOf(this string source, char search, StringComparison comparisonType)
-		=> source.AsSpan().LastIndexOf(search, comparisonType);
+	public static int LastIndexOf(this string source, char value, StringComparison comparisonType)
+		=> source.AsSpan().LastIndexOf(value, comparisonType);
 
 	/// <inheritdoc cref="string.LastIndexOf(char)"/>
-	public static int LastIndexOf(this StringSegment source, char search, StringComparison comparisonType)
-		=> source.AsSpan().LastIndexOf(search, comparisonType);
+	public static int LastIndexOf(this StringSegment source, char value, StringComparison comparisonType)
+		=> source.AsSpan().LastIndexOf(value, comparisonType);
 
 	/// <inheritdoc cref="StringSegment.IndexOf(char)"/>
-	public static int IndexOf(this StringSegment source, char search, StringComparison comparisonType)
-		=> source.HasValue ? source.AsSpan().IndexOf(search, comparisonType) : -1;
+	public static int IndexOf(this StringSegment source, char value, StringComparison comparisonType)
+		=> source.HasValue ? source.AsSpan().IndexOf(value, comparisonType) : -1;
 
 	/// <inheritdoc cref="StringSegment.IndexOf(char)"/>
-	public static int IndexOf(this StringSegment source, char search, int startIndex, StringComparison comparisonType)
-		=> source.HasValue ? source.AsSpan().IndexOf(search, startIndex, comparisonType) : -1;
+	public static int IndexOf(this StringSegment source, char value, int startIndex, StringComparison comparisonType)
+		=> source.HasValue ? source.AsSpan().IndexOf(value, startIndex, comparisonType) : -1;
 
 #if NETSTANDARD2_0
 	/// <inheritdoc cref="StringSegment.IndexOf(char)"/>
-	public static int IndexOf(this string source, char search, StringComparison comparisonType)
-		=> source.AsSpan().IndexOf(search, comparisonType);
+	public static int IndexOf(this string source, char value, StringComparison comparisonType)
+		=> source.AsSpan().IndexOf(value, comparisonType);
 
 	/// <inheritdoc cref="StringSegment.IndexOf(char)"/>
-	public static int LastIndexOf(this string source, char search)
-		=> source.AsSpan().LastIndexOf(search);
+	public static int LastIndexOf(this string source, char value)
+		=> source.AsSpan().LastIndexOf(value);
 #endif
 
 	/// <summary>

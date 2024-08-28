@@ -23,6 +23,7 @@ public readonly struct StringComparable
 		Segment = value;
 		Type = type;
 	}
+
 	/// <summary>
 	/// The string to use for comparison.
 	/// </summary>
@@ -78,17 +79,33 @@ public readonly struct StringComparable
 	};
 
 	/// <summary>
+	/// Reports the zero-based index of the first occurrence
+	/// of the specified <paramref name="value"/>
+	/// starting from the <paramref name="startIndex"/>.
+	/// </summary>
+	public int IndexOf(StringSegment value, int startIndex = 0)
+		=> Segment.IndexOf(value, startIndex, Type);
+
+	/// <inheritdoc cref="IndexOf(StringSegment, int)"/>
+	public int IndexOf(char value, int startIndex = 0)
+		=> Segment.IndexOf(value, startIndex, Type);
+
+	/// <inheritdoc cref="IndexOf(StringSegment, int)"/>
+	public int IndexOf(ReadOnlySpan<char> value, int startIndex = 0)
+		=> Segment.IndexOf(value, startIndex, Type);
+
+	/// <summary>
 	/// Checks if <paramref name="value"/> value is contained in the sequence using the comparison type.
 	/// </summary>
 	/// <returns>true if the value of <paramref name="value"/> is contained (using the comparison type); otherwise false. </returns>
-	public bool Contains(string value)
-		=> Segment.Contains(value, Type);
-
-	/// <inheritdoc cref="Contains(string)"/>
 	public bool Contains(StringSegment value)
 		=> Segment.Contains(value, Type);
 
-	/// <inheritdoc cref="Contains(string)"/>
+	/// <inheritdoc cref="Contains(StringSegment)"/>
+	public bool Contains(char value)
+		=> Segment.Contains(value, Type);
+
+	/// <inheritdoc cref="Contains(StringSegment)"/>
 	public bool Contains(ReadOnlySpan<char> value)
 		=> Segment.Contains(value, Type);
 
