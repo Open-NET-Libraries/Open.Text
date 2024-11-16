@@ -30,21 +30,6 @@ public static partial class TextExtensions
 		}
 	}
 
-	/// <inheritdoc cref="RegexPatterns.ValidAlphaNumericOnlyPattern"/>
-	[Obsolete("Use RegexPatterns.ValidAlphaNumericOnlyPattern.")]
-	public static Regex ValidAlphaNumericOnlyPattern
-		=> RegexPatterns.ValidAlphaNumericOnlyPattern;
-
-	/// <inheritdoc cref="RegexPatterns.ValidAlphaNumericOnlyUntrimmedPattern"/>
-	[Obsolete("Use RegexPatterns.ValidAlphaNumericOnlyUntrimmedPattern.")]
-	public static Regex ValidAlphaNumericOnlyUntrimmedPattern
-		=> RegexPatterns.ValidAlphaNumericOnlyUntrimmedPattern;
-
-	/// <inheritdoc cref="RegexPatterns.WhiteSpacePattern"/>
-	[Obsolete("Use RegexPatterns.WhiteSpacePattern.")]
-	public static Regex WhiteSpacePattern
-		=> RegexPatterns.WhiteSpacePattern;
-
 	/// <summary>
 	/// Converts a string to title-case.
 	/// </summary>
