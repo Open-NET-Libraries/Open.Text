@@ -36,22 +36,6 @@ public static partial class TextExtensions
 			: rest.Slice(0, i);
 	}
 
-	private static ReadOnlyMemory<char> FirstSplitMemory(string source, int start, int i, int n, out int nextIndex)
-	{
-		Debug.Assert(start >= 0);
-		if (i == -1)
-		{
-			nextIndex = -1;
-			return start == 0 ? source.AsMemory() : source.AsMemory(start);
-		}
-
-		nextIndex = i + n;
-		int segmentLen = i - start;
-		return segmentLen == 0
-			? ReadOnlyMemory<char>.Empty
-			: source.AsMemory(start, segmentLen);
-	}
-
 	/// <summary>
 	/// Finds the first instance of a character and returns the set of characters up to that character.
 	/// </summary>
@@ -177,46 +161,17 @@ public static partial class TextExtensions
 	/// <param name="splitCharacter">The character to find.</param>
 	/// <param name="options">Can specify to omit empty entries.</param>
 	/// <returns>An enumerable of the segments.</returns>
-	public static IEnumerable<string> SplitToEnumerable(this string source,
-	char splitCharacter,
-	StringSplitOptions options = StringSplitOptions.None)
+	public static IEnumerable<string> SplitToEnumerable(
+		this string source,
+		char splitCharacter,
+		StringSplitOptions options = StringSplitOptions.None)
 	{
 		if (source is null) throw new ArgumentNullException(nameof(source));
+
 		Contract.EndContractBlock();
-
-		return options switch
-		{
-			StringSplitOptions.None => source.Length == 0
-				? Enumerable.Repeat(string.Empty, 1)
-				: SplitAsEnumerableCore(),
-			StringSplitOptions.RemoveEmptyEntries => source.Length == 0
-				? Enumerable.Empty<string>()
-				: SplitAsEnumerableCoreOmitEmpty(),
-			_ => throw new System.ComponentModel.InvalidEnumArgumentException(),
-		};
-
-		IEnumerable<string> SplitAsEnumerableCore()
-		{
-			int startIndex = 0;
-			do
-			{
-				yield return source.FirstSplit(splitCharacter, out int nextIndex, startIndex).ToString();
-				startIndex = nextIndex;
-			}
-			while (startIndex != -1);
-		}
-
-		IEnumerable<string> SplitAsEnumerableCoreOmitEmpty()
-		{
-			int startIndex = 0;
-			do
-			{
-				ReadOnlySpan<char> result = source.FirstSplit(splitCharacter, out int nextIndex, startIndex);
-				if (result.Length != 0) yield return result.ToString();
-				startIndex = nextIndex;
-			}
-			while (startIndex != -1);
-		}
+		return source.AsSegment()
+			.SplitAsSegments(splitCharacter, options)
+			.Select(s => s.ToString());
 	}
 
 	/// <summary>
@@ -229,49 +184,16 @@ public static partial class TextExtensions
 	/// <returns>An IEnumerable&lt;string&gt; of the segments.</returns>
 	public static IEnumerable<string> SplitToEnumerable(
 		this string source,
-		string splitSequence,
+		StringSegment splitSequence,
 		StringSplitOptions options = StringSplitOptions.None,
 		StringComparison comparisonType = StringComparison.Ordinal)
 	{
 		if (source is null) throw new ArgumentNullException(nameof(source));
-		if (splitSequence is null) throw new ArgumentNullException(nameof(splitSequence));
-		if (splitSequence.Length == 0)
-			throw new ArgumentException("Cannot split using empty sequence.", nameof(splitSequence));
 		Contract.EndContractBlock();
 
-		return options switch
-		{
-			StringSplitOptions.None => source.Length == 0
-				? Enumerable.Repeat(string.Empty, 1)
-				: SplitAsEnumerableCore(source, splitSequence, comparisonType),
-			StringSplitOptions.RemoveEmptyEntries => source.Length == 0
-				? Enumerable.Empty<string>()
-				: SplitAsEnumerableCoreOmitEmpty(source, splitSequence, comparisonType),
-			_ => throw new System.ComponentModel.InvalidEnumArgumentException(),
-		};
-
-		static IEnumerable<string> SplitAsEnumerableCore(string source, string splitSequence, StringComparison comparisonType)
-		{
-			int startIndex = 0;
-			do
-			{
-				yield return source.FirstSplit(splitSequence, out int nextIndex, startIndex, comparisonType).ToString();
-				startIndex = nextIndex;
-			}
-			while (startIndex != -1);
-		}
-
-		static IEnumerable<string> SplitAsEnumerableCoreOmitEmpty(string source, string splitSequence, StringComparison comparisonType)
-		{
-			int startIndex = 0;
-			do
-			{
-				ReadOnlySpan<char> result = source.FirstSplit(splitSequence, out int nextIndex, startIndex, comparisonType);
-				if (result.Length != 0) yield return result.ToString();
-				startIndex = nextIndex;
-			}
-			while (startIndex != -1);
-		}
+		return source.AsSegment()
+			.SplitAsSegments(splitSequence, options, comparisonType)
+			.Select(s => s.ToString());
 	}
 
 	/// <returns>An IEnumerable&lt;ReadOnlyMemory&lt;char&gt;&gt; of the segments.</returns>
@@ -280,94 +202,18 @@ public static partial class TextExtensions
 		this string source,
 		char splitCharacter,
 		StringSplitOptions options = StringSplitOptions.None)
-	{
-		if (source is null) throw new ArgumentNullException(nameof(source));
-		Contract.EndContractBlock();
-
-		return options switch
-		{
-			StringSplitOptions.None => source.Length == 0
-				? Enumerable.Repeat(ReadOnlyMemory<char>.Empty, 1)
-				: SplitAsMemoryCore(source, splitCharacter),
-			StringSplitOptions.RemoveEmptyEntries => source.Length == 0
-				? Enumerable.Empty<ReadOnlyMemory<char>>()
-				: SplitAsMemoryOmitEmpty(source, splitCharacter),
-			_ => throw new System.ComponentModel.InvalidEnumArgumentException(),
-		};
-
-		static IEnumerable<ReadOnlyMemory<char>> SplitAsMemoryCore(string source, char splitCharacter)
-		{
-			int startIndex = 0;
-			do
-			{
-				yield return FirstSplitMemory(source, startIndex, source.IndexOf(splitCharacter, startIndex), 1, out int nextIndex);
-				startIndex = nextIndex;
-			}
-			while (startIndex != -1);
-		}
-
-		static IEnumerable<ReadOnlyMemory<char>> SplitAsMemoryOmitEmpty(string source, char splitCharacter)
-		{
-			int startIndex = 0;
-			do
-			{
-				ReadOnlyMemory<char> result = FirstSplitMemory(source, startIndex, source.IndexOf(splitCharacter, startIndex), 1, out int nextIndex);
-				if (result.Length != 0) yield return result;
-				startIndex = nextIndex;
-			}
-			while (startIndex != -1);
-		}
-	}
+		=> SplitAsSegments(source.AsSegment(), splitCharacter, options)
+			.Select(s => s.AsMemory());
 
 	/// <returns>An IEnumerable&lt;ReadOnlyMemory&lt;char&gt;&gt; of the segments.</returns>
-	/// <inheritdoc cref="SplitToEnumerable(string, string, StringSplitOptions, StringComparison)"/>
+	/// <inheritdoc cref="SplitToEnumerable(string, StringSegment, StringSplitOptions, StringComparison)"/>
 	public static IEnumerable<ReadOnlyMemory<char>> SplitAsMemory(this string source,
 		string splitSequence,
 		StringSplitOptions options = StringSplitOptions.None,
 		StringComparison comparisonType = StringComparison.Ordinal)
-	{
-		if (source is null) throw new ArgumentNullException(nameof(source));
-		if (splitSequence is null) throw new ArgumentNullException(nameof(splitSequence));
-		if (splitSequence.Length == 0)
-			throw new ArgumentException("Cannot split using empty sequence.", nameof(splitSequence));
-		Contract.EndContractBlock();
 
-		return options switch
-		{
-			StringSplitOptions.None => source.Length == 0
-				? Enumerable.Repeat(ReadOnlyMemory<char>.Empty, 1)
-				: SplitAsMemoryCore(source, splitSequence, comparisonType),
-			StringSplitOptions.RemoveEmptyEntries => source.Length == 0
-				? Enumerable.Empty<ReadOnlyMemory<char>>()
-				: SplitAsMemoryOmitEmpty(source, splitSequence, comparisonType),
-			_ => throw new System.ComponentModel.InvalidEnumArgumentException(),
-		};
-
-		static IEnumerable<ReadOnlyMemory<char>> SplitAsMemoryOmitEmpty(string source, string splitSequence, StringComparison comparisonType)
-		{
-			int startIndex = 0;
-			int splitLen = splitSequence.Length;
-			do
-			{
-				ReadOnlyMemory<char> result = FirstSplitMemory(source, startIndex, source.IndexOf(splitSequence, startIndex, comparisonType), splitLen, out int nextIndex);
-				if (result.Length != 0) yield return result;
-				startIndex = nextIndex;
-			}
-			while (startIndex != -1);
-		}
-
-		static IEnumerable<ReadOnlyMemory<char>> SplitAsMemoryCore(string source, string splitSequence, StringComparison comparisonType)
-		{
-			int startIndex = 0;
-			int splitLen = splitSequence.Length;
-			do
-			{
-				yield return FirstSplitMemory(source, startIndex, source.IndexOf(splitSequence, startIndex, comparisonType), splitLen, out int nextIndex);
-				startIndex = nextIndex;
-			}
-			while (startIndex != -1);
-		}
-	}
+		=> SplitAsSegments(source.AsSegment(), splitSequence, options, comparisonType)
+			.Select(s => s.AsMemory());
 
 	/// <summary>
 	/// Splits a sequence of characters into strings using the character provided.
@@ -376,42 +222,46 @@ public static partial class TextExtensions
 	/// <param name="splitCharacter">The character to split by.</param>
 	/// <param name="options">Can specify to omit empty entries.</param>
 	/// <returns>The resultant list of string segments.</returns>
-	public static IReadOnlyList<string> Split(this ReadOnlySpan<char> source,
+	public static IReadOnlyList<string> Split(
+		this ReadOnlySpan<char> source,
 		char splitCharacter,
 		StringSplitOptions options = StringSplitOptions.None)
 	{
-		switch (options)
+		if (source.IsEmpty)
 		{
-			case StringSplitOptions.None when source.Length == 0:
-				return SingleEmpty.Instance;
+			return options.HasFlag(StringSplitOptions.RemoveEmptyEntries)
+				? Array.Empty<string>()
+				: SingleEmpty.Instance;
+		}
 
-			case StringSplitOptions.RemoveEmptyEntries when source.Length == 0:
-				return Array.Empty<string>();
+		var list = new List<string>();
 
-			case StringSplitOptions.RemoveEmptyEntries:
-			{
-				Debug.Assert(!source.IsEmpty);
-				var list = new List<string>();
+#if NET5_0_OR_GREATER
+		bool trimEach = options.HasFlag(StringSplitOptions.TrimEntries);
+#endif
+		if (options.HasFlag(StringSplitOptions.RemoveEmptyEntries))
+		{
+		loop:
+			ReadOnlySpan<char> result = source.FirstSplit(splitCharacter, out int nextIndex);
+#if NET5_0_OR_GREATER
+			if (trimEach) result = result.Trim();
+#endif
+			if (!result.IsEmpty) list.Add(result.ToString());
+			if (nextIndex == -1) return list;
+			source = source.Slice(nextIndex);
+			goto loop;
+		}
 
-			loop:
-				ReadOnlySpan<char> result = source.FirstSplit(splitCharacter, out int nextIndex);
-				if (!result.IsEmpty) list.Add(result.ToString());
-				if (nextIndex == -1) return list;
-				source = source.Slice(nextIndex);
-				goto loop;
-			}
-
-			default:
-			{
-				Debug.Assert(!source.IsEmpty);
-				var list = new List<string>();
-			loop:
-				ReadOnlySpan<char> result = source.FirstSplit(splitCharacter, out int nextIndex);
-				list.Add(result.IsEmpty ? string.Empty : result.ToString());
-				if (nextIndex == -1) return list;
-				source = source.Slice(nextIndex);
-				goto loop;
-			}
+		{
+		loop:
+			ReadOnlySpan<char> result = source.FirstSplit(splitCharacter, out int nextIndex);
+#if NET5_0_OR_GREATER
+			if (trimEach) result = result.Trim();
+#endif
+			list.Add(result.IsEmpty ? string.Empty : result.ToString());
+			if (nextIndex == -1) return list;
+			source = source.Slice(nextIndex);
+			goto loop;
 		}
 	}
 
@@ -428,38 +278,40 @@ public static partial class TextExtensions
 		StringSplitOptions options = StringSplitOptions.None,
 		StringComparison comparisonType = StringComparison.Ordinal)
 	{
-		switch (options)
+		if (source.IsEmpty)
 		{
-			case StringSplitOptions.None when source.IsEmpty:
-				return SingleEmpty.Instance;
+			return options.HasFlag(StringSplitOptions.RemoveEmptyEntries)
+				? Array.Empty<string>()
+				: SingleEmpty.Instance;
+		}
 
-			case StringSplitOptions.RemoveEmptyEntries when source.IsEmpty:
-				return Array.Empty<string>();
+		var list = new List<string>();
+#if NET5_0_OR_GREATER
+		bool trimEach = options.HasFlag(StringSplitOptions.TrimEntries);
+#endif
+		if (options.HasFlag(StringSplitOptions.RemoveEmptyEntries))
+		{
+		loop:
+			ReadOnlySpan<char> result = source.FirstSplit(splitSequence, out int nextIndex, comparisonType);
+#if NET5_0_OR_GREATER
+			if (trimEach) result = result.Trim();
+#endif
+			if (!result.IsEmpty) list.Add(result.ToString());
+			if (nextIndex == -1) return list;
+			source = source.Slice(nextIndex);
+			goto loop;
+		}
 
-			case StringSplitOptions.RemoveEmptyEntries:
-			{
-				Debug.Assert(!source.IsEmpty);
-				var list = new List<string>();
-
-			loop:
-				ReadOnlySpan<char> result = source.FirstSplit(splitSequence, out int nextIndex, comparisonType);
-				if (!result.IsEmpty) list.Add(result.ToString());
-				if (nextIndex == -1) return list;
-				source = source.Slice(nextIndex);
-				goto loop;
-			}
-
-			default:
-			{
-				Debug.Assert(!source.IsEmpty);
-				var list = new List<string>();
-			loop:
-				ReadOnlySpan<char> result = source.FirstSplit(splitSequence, out int nextIndex, comparisonType);
-				list.Add(result.IsEmpty ? string.Empty : result.ToString());
-				if (nextIndex == -1) return list;
-				source = source.Slice(nextIndex);
-				goto loop;
-			}
+		{
+		loop:
+			ReadOnlySpan<char> result = source.FirstSplit(splitSequence, out int nextIndex, comparisonType);
+#if NET5_0_OR_GREATER
+			if (trimEach) result = result.Trim();
+#endif
+			list.Add(result.IsEmpty ? string.Empty : result.ToString());
+			if (nextIndex == -1) return list;
+			source = source.Slice(nextIndex);
+			goto loop;
 		}
 	}
 

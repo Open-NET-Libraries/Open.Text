@@ -310,6 +310,7 @@ public static partial class TextExtensions
 		int length = chars.Length > maxChars ? maxChars : chars.Length;
 
 		int hash = 17;
+#pragma warning disable IDE0010 // Add missing cases
 		switch (comparisonType)
 		{
 			case StringComparison.Ordinal:
@@ -348,6 +349,7 @@ public static partial class TextExtensions
 				break;
 			}
 		}
+#pragma warning restore IDE0010 // Add missing cases
 
 		return hash + length;
 	}

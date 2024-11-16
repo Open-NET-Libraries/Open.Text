@@ -75,6 +75,12 @@ public static class SplitTests
 	[InlineData("Hello,there,I,am,Joe")]
 	[InlineData("Hello,there,,I,am,Joe")]
 	[InlineData("Hello,there,,I,am,Joe", StringSplitOptions.RemoveEmptyEntries)]
+	[InlineData("Hello , there,, I,am  ,Joe")]
+	[InlineData("Hello , there,, I,am  ,Joe", StringSplitOptions.RemoveEmptyEntries)]
+#if NET5_0_OR_GREATER
+	[InlineData("Hello , there,, I,am  ,Joe", StringSplitOptions.TrimEntries)]
+	[InlineData("Hello , there,, I,am  ,Joe", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)]
+#endif
 	[InlineData("Hello,there,I,am,Joe,")]
 	[InlineData(",Hello,there,I,am,Joe")]
 	[InlineData(",Hello,there,I,am,Joe,")]
@@ -93,6 +99,9 @@ public static class SplitTests
 		var span = sequence.AsSpan();
 		Assert.Equal(segments, span.Split(',', options));
 		Assert.Equal(segments, span.Split(",", options));
+//#if NET6_0_OR_GREATER
+//		Assert.Equal(sequence.Split("I,", options), span.Split("i,", options, StringComparison.OrdinalIgnoreCase));
+//#endif
 
 #pragma warning disable CS0618 // Type or member is obsolete
 		// Use obsolete values to ensure they still work.
@@ -112,29 +121,12 @@ public static class SplitTests
 		var ss = stringSegment.SplitAsSegments(",", options).Select(s => s.Value).ToArray();
 		Assert.Equal(segments, ss);
 
-		if (options == StringSplitOptions.RemoveEmptyEntries) return;
+		if (options != StringSplitOptions.None) return;
 
 		const string sep = " YES ";
 		Assert.Equal(
 			string.Join(sep, segments),
 			stringSegment.ReplaceToString(",", sep));
-	}
-
-	[Fact]
-	public static void SplitOptionsInvalid()
-	{
-		Assert.Throws<InvalidEnumArgumentException>(
-			() => "hello there".SplitAsMemory(',', (StringSplitOptions)10000));
-		Assert.Throws<InvalidEnumArgumentException>(
-			() => "hello there".SplitAsMemory(",", (StringSplitOptions)10000));
-		Assert.Throws<InvalidEnumArgumentException>(
-			() => "hello there".SplitAsSegments(',', (StringSplitOptions)10000));
-		Assert.Throws<InvalidEnumArgumentException>(
-			() => "hello there".SplitAsSegments(",", (StringSplitOptions)10000));
-		Assert.Throws<InvalidEnumArgumentException>(
-			() => "hello there".SplitAsMemory(',', (StringSplitOptions)10000));
-		Assert.Throws<InvalidEnumArgumentException>(
-			() => "hello there".SplitAsMemory(",", (StringSplitOptions)10000));
 	}
 
 	[Theory]

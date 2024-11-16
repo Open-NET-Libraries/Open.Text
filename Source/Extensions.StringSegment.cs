@@ -49,12 +49,7 @@ public static partial class TextExtensions
 		this string source,
 		char splitCharacter,
 		StringSplitOptions options = StringSplitOptions.None)
-	{
-		if (source is null) throw new ArgumentNullException(nameof(source));
-		Contract.EndContractBlock();
-
-		return SplitAsSegments(source.AsSegment(), splitCharacter, options);
-	}
+		=> SplitAsSegments(source.AsSegment(), splitCharacter, options);
 
 	/// <inheritdoc cref="SplitToEnumerable(string, char, StringSplitOptions)"/>
 	public static IEnumerable<StringSegment> SplitAsSegments(
@@ -62,18 +57,31 @@ public static partial class TextExtensions
 		char splitCharacter,
 		StringSplitOptions options = StringSplitOptions.None)
 	{
-		return options switch
+		if (!source.HasValue)
+			throw new ArgumentNullException(nameof(source), MustBeSegmentWithValue);
+
+		if (source.Length == 0)
 		{
-			StringSplitOptions.None => source.Length == 0
-				? Enumerable.Repeat(StringSegment.Empty, 1)
-				: SplitAsSegmentsCore(source, splitCharacter),
-			StringSplitOptions.RemoveEmptyEntries => source.Length == 0
+			return options.HasFlag(StringSplitOptions.RemoveEmptyEntries)
 				? Enumerable.Empty<StringSegment>()
-				: SplitAsSegmentsCoreOmitEmpty(source, splitCharacter),
-			_ => throw new System.ComponentModel.InvalidEnumArgumentException(),
-		};
+				: Enumerable.Repeat(StringSegment.Empty, 1);
+		}
+
+#if NET5_0_OR_GREATER
+		bool trimEach = options.HasFlag(StringSplitOptions.TrimEntries);
+		return options.HasFlag(StringSplitOptions.RemoveEmptyEntries)
+			? SplitAsSegmentsCoreOmitEmpty(trimEach, source, splitCharacter)
+			: SplitAsSegmentsCore(trimEach, source, splitCharacter);
+#else
+		return options.HasFlag(StringSplitOptions.RemoveEmptyEntries)
+			? SplitAsSegmentsCoreOmitEmpty(source, splitCharacter)
+			: SplitAsSegmentsCore(source, splitCharacter);
+#endif
 
 		static IEnumerable<StringSegment> SplitAsSegmentsCore(
+#if NET5_0_OR_GREATER
+			bool trimEach,
+#endif
 			StringSegment source,
 			char splitCharacter)
 		{
@@ -84,17 +92,29 @@ public static partial class TextExtensions
 			int nextIndex = source.IndexOf(splitCharacter, startIndex);
 			if (nextIndex == -1)
 			{
-				yield return source.Subsegment(startIndex);
+				StringSegment next = source.Subsegment(startIndex);
+#if NET5_0_OR_GREATER
+				if (trimEach) next = next.Trim();
+#endif
+				yield return next;
 				yield break;
 			}
 			else if (nextIndex == len)
 			{
-				yield return source.Subsegment(nextIndex, 0);
+				StringSegment next = source.Subsegment(nextIndex, 0);
+#if NET5_0_OR_GREATER
+				if (trimEach) next = next.Trim();
+#endif
+				yield return next;
 				yield break;
 			}
 			else
 			{
-				yield return source.Subsegment(startIndex, nextIndex - startIndex);
+				StringSegment next = source.Subsegment(startIndex, nextIndex - startIndex);
+#if NET5_0_OR_GREATER
+				if (trimEach) next = next.Trim();
+#endif
+				yield return next;
 				++nextIndex;
 			}
 
@@ -103,27 +123,55 @@ public static partial class TextExtensions
 		}
 
 		static IEnumerable<StringSegment> SplitAsSegmentsCoreOmitEmpty(
+#if NET5_0_OR_GREATER
+			bool trimEach,
+#endif
 			StringSegment source,
 			char splitCharacter)
 		{
 			int startIndex = 0;
 			int len = source.Length;
+			Debug.Assert(startIndex != len);
 
 			do
 			{
 				int nextIndex = source.IndexOf(splitCharacter, startIndex);
-				if (nextIndex == len)
-					yield break;
+				Debug.Assert(nextIndex < len);
 
 				if (nextIndex == -1)
 				{
-					yield return source.Subsegment(startIndex);
+					StringSegment next = source.Subsegment(startIndex);
+#if NET5_0_OR_GREATER
+					if (trimEach)
+					{
+						next = next.Trim();
+						if (next.Length == 0) yield break;
+					}
+#endif
+					yield return next;
 					yield break;
 				}
 				else
 				{
 					int length = nextIndex - startIndex;
-					if (length != 0) yield return source.Subsegment(startIndex, length);
+					if (length != 0)
+					{
+						StringSegment next = source.Subsegment(startIndex, length);
+#if NET5_0_OR_GREATER
+						if (trimEach)
+						{
+							next = next.Trim();
+							if (next.Length != 0) yield return next;
+						}
+						else
+						{
+							yield return next;
+						}
+#else
+						yield return next;
+#endif
+					}
+
 					++nextIndex;
 				}
 
@@ -150,45 +198,78 @@ public static partial class TextExtensions
 			: pattern is null
 			? throw new ArgumentNullException(nameof(pattern))
 			: source.Length == 0
-			? options == StringSplitOptions.RemoveEmptyEntries
+			? options.HasFlag(StringSplitOptions.RemoveEmptyEntries)
 				? Enumerable.Empty<StringSegment>()
 				: Enumerable.Repeat(StringSegment.Empty, 1)
 			: SplitCore(source, pattern, options);
 
 		static IEnumerable<StringSegment> SplitCore(string source, Regex pattern, StringSplitOptions options)
 		{
-			int len;
 			int nextStart = 0;
 			Match match = pattern.Match(source);
+			bool removeEmpty = options.HasFlag(StringSplitOptions.RemoveEmptyEntries);
+#if NET5_0_OR_GREATER
+			bool trimEach = options.HasFlag(StringSplitOptions.TrimEntries);
+#endif
 			while (match.Success)
 			{
-				len = match.Index - nextStart;
-				if (len != 0 || options == StringSplitOptions.None)
-					yield return new(source, nextStart, match.Index - nextStart);
+				if (!removeEmpty || match.Index - nextStart != 0)
+				{
+					StringSegment next = new(source, nextStart, match.Index - nextStart);
+#if NET5_0_OR_GREATER
+					if (trimEach)
+					{
+						next = next.Trim();
+						if (!removeEmpty || next.Length != 0) yield return next;
+					}
+					else
+					{
+						yield return next;
+					}
+#else
+					yield return next;
+#endif
+				}
+
 				nextStart = match.Index + match.Length;
 				match = match.NextMatch();
 			}
 
-			len = source.Length - nextStart;
-			if (len != 0 || options == StringSplitOptions.None)
-				yield return source.AsSegment(nextStart, len);
+			int len;
+			if(removeEmpty)
+			{
+				len = source.Length - nextStart;
+				if(len==0) yield break;
+			}
+			else
+			{
+				len = source.Length - nextStart;
+			}
+
+			{
+				StringSegment next = source.AsSegment(nextStart, len);
+#if NET5_0_OR_GREATER
+				if (trimEach)
+				{
+					next = next.Trim();
+					if (!removeEmpty || next.Length != 0) yield return next;
+					yield break;
+				}
+#endif
+
+				yield return next;
+			}
 		}
 	}
 
 	/// <returns>An IEnumerable&lt;StringSegment&gt; of the segments.</returns>
-	/// <inheritdoc cref="SplitToEnumerable(string, string, StringSplitOptions, StringComparison)"/>
+	/// <inheritdoc cref="SplitToEnumerable(string, StringSegment, StringSplitOptions, StringComparison)"/>
 	public static IEnumerable<StringSegment> SplitAsSegments(
 		this string source,
 		string splitSequence,
 		StringSplitOptions options = StringSplitOptions.None,
 		StringComparison comparisonType = StringComparison.Ordinal)
-	{
-		if (source is null) throw new ArgumentNullException(nameof(source));
-		if (splitSequence is null) throw new ArgumentNullException(nameof(splitSequence));
-		Contract.EndContractBlock();
-
-		return SplitAsSegments(source.AsSegment(), splitSequence.AsSegment(), options, comparisonType);
-	}
+		=> SplitAsSegments(source.AsSegment(), splitSequence.AsSegment(), options, comparisonType);
 
 	/// <inheritdoc cref="SplitAsSegments(string, string, StringSplitOptions, StringComparison)"/>
 	public static IEnumerable<StringSegment> SplitAsSegments(
@@ -197,22 +278,36 @@ public static partial class TextExtensions
 		StringSplitOptions options = StringSplitOptions.None,
 		StringComparison comparisonType = StringComparison.Ordinal)
 	{
+		if (!source.HasValue)
+			throw new ArgumentNullException(nameof(source), MustBeSegmentWithValue);
+		if (!splitSequence.HasValue)
+			throw new ArgumentNullException(nameof(splitSequence), "Cannot split using a null sequence.");
 		if (splitSequence.Length == 0)
 			throw new ArgumentException("Cannot split using empty sequence.", nameof(splitSequence));
 		Contract.EndContractBlock();
 
-		return options switch
+		if (source.Length == 0)
 		{
-			StringSplitOptions.None => source.Length == 0
-				? Enumerable.Repeat(StringSegment.Empty, 1)
-				: SplitAsSegmentsCore(source, splitSequence, comparisonType),
-			StringSplitOptions.RemoveEmptyEntries => source.Length == 0
+			return options.HasFlag(StringSplitOptions.RemoveEmptyEntries)
 				? Enumerable.Empty<StringSegment>()
-				: SplitAsSegmentsCoreOmitEmpty(source, splitSequence, comparisonType),
-			_ => throw new System.ComponentModel.InvalidEnumArgumentException(),
-		};
+				: Enumerable.Repeat(StringSegment.Empty, 1);
+		}
+
+#if NET5_0_OR_GREATER
+		bool trimEach = options.HasFlag(StringSplitOptions.TrimEntries);
+		return options.HasFlag(StringSplitOptions.RemoveEmptyEntries)
+			? SplitAsSegmentsCoreOmitEmpty(trimEach, source, splitSequence, comparisonType)
+			: SplitAsSegmentsCore(trimEach, source, splitSequence, comparisonType);
+#else
+		return options.HasFlag(StringSplitOptions.RemoveEmptyEntries)
+			? SplitAsSegmentsCoreOmitEmpty(source, splitSequence, comparisonType)
+			: SplitAsSegmentsCore(source, splitSequence, comparisonType);
+#endif
 
 		static IEnumerable<StringSegment> SplitAsSegmentsCore(
+#if NET5_0_OR_GREATER
+			bool trimEach,
+#endif
 			StringSegment source,
 			StringSegment splitSequence,
 			StringComparison comparisonType = StringComparison.Ordinal)
@@ -225,17 +320,29 @@ public static partial class TextExtensions
 			int nextIndex = source.IndexOf(splitSequence, startIndex, comparisonType);
 			if (nextIndex == -1)
 			{
-				yield return source.Subsegment(startIndex);
+				StringSegment next = source.Subsegment(startIndex);
+#if NET5_0_OR_GREATER
+				if (trimEach) next = next.Trim();
+#endif
+				yield return next;
 				yield break;
 			}
 			else if (nextIndex == len)
 			{
-				yield return source.Subsegment(nextIndex, 0);
+				StringSegment next = source.Subsegment(nextIndex, 0);
+#if NET5_0_OR_GREATER
+				if (trimEach) next = next.Trim();
+#endif
+				yield return next;
 				yield break;
 			}
 			else
 			{
-				yield return source.Subsegment(startIndex, nextIndex - startIndex);
+				StringSegment next = source.Subsegment(startIndex, nextIndex - startIndex);
+#if NET5_0_OR_GREATER
+				if (trimEach) next = next.Trim();
+#endif
+				yield return next;
 				nextIndex += s;
 			}
 
@@ -244,29 +351,57 @@ public static partial class TextExtensions
 		}
 
 		static IEnumerable<StringSegment> SplitAsSegmentsCoreOmitEmpty(
+#if NET5_0_OR_GREATER
+			bool trimEach,
+#endif
 			StringSegment source,
 			StringSegment splitSequence,
 			StringComparison comparisonType = StringComparison.Ordinal)
 		{
 			int startIndex = 0;
 			int len = source.Length;
+			Debug.Assert(startIndex != len);
 			int s = splitSequence.Length;
 
 			do
 			{
 				int nextIndex = source.IndexOf(splitSequence, startIndex, comparisonType);
-				if (nextIndex == len)
-					yield break;
+				Debug.Assert(nextIndex < len);
 
 				if (nextIndex == -1)
 				{
-					yield return source.Subsegment(startIndex);
+					StringSegment next = source.Subsegment(startIndex);
+#if NET5_0_OR_GREATER
+					if (trimEach)
+					{
+						next = next.Trim();
+						if (next.Length == 0) yield break;
+					}
+#endif
+					yield return next;
 					yield break;
 				}
 				else
 				{
 					int length = nextIndex - startIndex;
-					if (length != 0) yield return source.Subsegment(startIndex, length);
+					if (length != 0)
+					{
+						StringSegment next = source.Subsegment(startIndex, length);
+#if NET5_0_OR_GREATER
+						if (trimEach)
+						{
+							next = next.Trim();
+							if (next.Length != 0) yield return next;
+						}
+						else
+						{
+							yield return next;
+						}
+#else
+						yield return next;
+#endif
+					}
+
 					nextIndex += s;
 				}
 
