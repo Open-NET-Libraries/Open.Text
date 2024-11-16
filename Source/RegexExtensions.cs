@@ -5,6 +5,8 @@
 /// </summary>
 public static class RegexExtensions
 {
+#if NET6_0_OR_GREATER
+#else
 	private static Func<Capture, string> GetOriginalTextDelegate()
 	{
 		PropertyInfo? textProp = typeof(Capture).GetProperty("Text", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -13,11 +15,7 @@ public static class RegexExtensions
 			MethodInfo method = textProp.GetGetMethod(nonPublic: true)
 				?? throw new InvalidOperationException("Could not find the Text property getter.");
 
-#if NET6_0_OR_GREATER
-			return method.CreateDelegate<Func<Capture, string>>();
-#else
 			return (Func<Capture, string>)method.CreateDelegate(typeof(Func<Capture, string>));
-#endif
 		}
 
 			// Some older versions of .NET use this instead.
@@ -27,17 +25,31 @@ public static class RegexExtensions
 			: throw new NotSupportedException("Capture: could not find the Text property or _text field.");
 	}
 
-	private static readonly Func<Capture, string> _textDelegate = GetOriginalTextDelegate();
+	private static readonly Func<Capture, string> _textDelegate
+		= GetOriginalTextDelegate();
+#endif
 
+#if NET6_0_OR_GREATER
 	/// <summary>
 	/// Returns a ReadOnlySpan of the capture without creating a new string.
 	/// </summary>
-	/// <remarks>This is a stop-gap until .NET 6 releases the .ValueSpan property.</remarks>
 	/// <param name="capture">The capture to get the span from.</param>
+	/// <remarks>Obsolete: use .ValueSpan instead.</remarks>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+	/// <summary>
+	/// Returns a ReadOnlySpan of the capture without creating a new string.
+	/// </summary>
+	/// <param name="capture">The capture to get the span from.</param>
+#endif
 	public static ReadOnlySpan<char> AsSpan(this Capture capture)
 		=> capture is null
 		? throw new ArgumentNullException(nameof(capture))
+#if NET6_0_OR_GREATER
+		: capture.ValueSpan;
+#else
 		: _textDelegate(capture).AsSpan(capture.Index, capture.Length);
+#endif
 
 	/// <summary>
 	/// Gets a group by name.

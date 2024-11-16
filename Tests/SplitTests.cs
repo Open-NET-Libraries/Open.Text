@@ -99,9 +99,9 @@ public static class SplitTests
 		var span = sequence.AsSpan();
 		Assert.Equal(segments, span.Split(',', options));
 		Assert.Equal(segments, span.Split(",", options));
-//#if NET6_0_OR_GREATER
-//		Assert.Equal(sequence.Split("I,", options), span.Split("i,", options, StringComparison.OrdinalIgnoreCase));
-//#endif
+#if NET6_0_OR_GREATER
+		Assert.Equal(sequence.Split("I,", options), span.Split("i,", options, StringComparison.OrdinalIgnoreCase));
+#endif
 
 #pragma warning disable CS0618 // Type or member is obsolete
 		// Use obsolete values to ensure they still work.
