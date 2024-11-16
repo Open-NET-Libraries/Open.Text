@@ -48,7 +48,7 @@ public struct StringSegmentEnumerator(StringSegment segment) : IEnumerator<char>
 /// </summary>
 public readonly record struct StringSegmentEnumerable : IEnumerable<char>
 {
-	readonly StringSegment _segment;
+	private readonly StringSegment _segment;
 
 	/// <summary>
 	/// Constructs a new <see cref="StringSegmentEnumerable"/> for the specified <see cref="StringSegment"/>.

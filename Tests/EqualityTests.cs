@@ -76,6 +76,7 @@ public class EqualityTests
 			Assert.False(value.TrimmedEquals(oRoSpan, ' ', comparison));
 			Assert.False(value.TrimmedEquals(oRoSpan, Chars.Span, comparison));
 		}
+
 		Assert.False(span.Equals(other, comparison));
 	}
 

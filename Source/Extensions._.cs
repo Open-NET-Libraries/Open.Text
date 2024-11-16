@@ -185,8 +185,8 @@ public static partial class TextExtensions
 		if (Math.Abs(bytes) < BYTE_RED)
 			return string.Format(cultureInfo, bytes == 1 ? BYTE : BYTES, bytes);
 
-		var label = string.Empty;
-		foreach (var s in ByteLabels)
+		string label = string.Empty;
+		foreach (string s in ByteLabels)
 		{
 			label = s;
 			bytes /= BYTE_RED;
@@ -218,8 +218,8 @@ public static partial class TextExtensions
 		if (Math.Abs(number) < 1000)
 			return number.ToString(decimalFormat, cultureInfo ?? CultureInfo.InvariantCulture);
 
-		var label = string.Empty;
-		foreach (var s in NumberLabels)
+		string label = string.Empty;
+		foreach (string s in NumberLabels)
 		{
 			label = s;
 			number /= 1000;

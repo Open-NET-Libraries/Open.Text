@@ -60,10 +60,11 @@ public readonly struct EnumValue<TEnum>
 	internal static ConcurrentDictionary<TEnum, IReadOnlyList<Attribute>> Attributes
 		=> LazyInitializer.EnsureInitialized(ref _attributes)!;
 
-	static Func<TEnum, string> GetEnumNameDelegate()
+	private static Func<TEnum, string> GetEnumNameDelegate()
 	{
-		var tResult = typeof(string);
-		var eValue = Parameter(typeof(TEnum), "value"); // (TEnum value)
+		Type tResult = typeof(string);
+		ParameterExpression eValue
+			= Parameter(typeof(TEnum), "value"); // (TEnum value)
 
 		return Lambda<Func<TEnum, string>>(
 			Switch(tResult, eValue,
@@ -85,12 +86,12 @@ public readonly struct EnumValue<TEnum>
 			GetEnumNameDelegate)!;
 	internal static Func<string, ValueLookupResult> GetEnumTryParseDelegate()
 	{
-		var valueParam = Parameter(typeof(string), "value");
-		var lengthParam = Variable(typeof(int), "length");
-		var defaultExpression = CreateNewTuple(false, default!);
-		var enumValues = Values.Select(v => (value: v, name: string.Intern(v.ToString())));
-		var nameGroups = enumValues.GroupBy(v => v.name.Length).OrderBy(g => g.Key);
-		var lengthCheckCases = nameGroups.Select(group =>
+		ParameterExpression valueParam = Parameter(typeof(string), "value");
+		ParameterExpression lengthParam = Variable(typeof(int), "length");
+		Expression defaultExpression = CreateNewTuple(false, default!);
+		IEnumerable<(TEnum value, string name)> enumValues = Values.Select(v => (value: v, name: string.Intern(v.ToString())));
+		IOrderedEnumerable<IGrouping<int, (TEnum value, string name)>> nameGroups = enumValues.GroupBy(v => v.name.Length).OrderBy(g => g.Key);
+		SwitchCase[] lengthCheckCases = nameGroups.Select(group =>
 			SwitchCase(
 				Switch(
 					valueParam,
@@ -150,31 +151,32 @@ public readonly struct EnumValue<TEnum>
 			{
 				// If the enum has duplicate values, we want to use the first one.
 				var result = new Dictionary<string, TEnum>(StringComparer.OrdinalIgnoreCase);
-				foreach (var e in Values)
+				foreach (TEnum e in Values)
 				{
-					var v = Enum.GetName(typeof(TEnum), e)!;
+					string v = Enum.GetName(typeof(TEnum), e)!;
 					if (result.ContainsKey(v)) continue;
 					result[v] = e;
 				}
+
 				return result;
 			})!;
 
-	static Entry[]?[] CreateLookup()
+	private static Entry[]?[] CreateLookup()
 	{
-		var longest = 0;
+		int longest = 0;
 		var d = new Dictionary<int, List<Entry>>();
 
-		foreach (var e in Values)
+		foreach (TEnum e in Values)
 		{
-			var n = string.Intern(e.ToString());
-			var len = n.Length;
+			string n = string.Intern(e.ToString());
+			int len = n.Length;
 			if (len > longest) longest = len;
-			if (!d.TryGetValue(len, out var v)) d.Add(len, v = []);
+			if (!d.TryGetValue(len, out List<Entry>? v)) d.Add(len, v = []);
 			v.Add(new(n, e));
 		}
 
 		var result = new Entry[]?[longest + 1];
-		foreach (var i in d.Keys)
+		foreach (int i in d.Keys)
 			result[i] = [.. d[i].OrderBy(v => v.Name)];
 
 		return result;
@@ -194,10 +196,10 @@ public readonly struct EnumValue<TEnum>
 		public static int Find(Span<Entry> span, ReadOnlySpan<char> name, StringComparison sc)
 		{
 			// Small enough? Just brute force the index.
-			var len = span.Length;
+			int len = span.Length;
 			if (len < 12)
 			{
-				for (var i = 0; i < len; i++)
+				for (int i = 0; i < len; i++)
 				{
 					ref Entry e = ref span[i];
 					if (name.Equals(e.Name, sc))
@@ -214,12 +216,12 @@ public readonly struct EnumValue<TEnum>
 			while (left <= right)
 			{
 				int middle = left + (right - left) / 2;
-				var middleKey = span[middle].Name.AsSpan();
+				ReadOnlySpan<char> middleKey = span[middle].Name.AsSpan();
 
 				if (right - left < 4 && name.Equals(middleKey, sc))
 					return middle;
 
-				var comparison = name.CompareTo(middleKey, sc);
+				int comparison = name.CompareTo(middleKey, sc);
 				if (comparison < 0)
 					right = middle - 1;
 				else if (comparison > 0)
@@ -326,7 +328,7 @@ public readonly struct EnumValue<TEnum>
 	/// </summary>
 	public static implicit operator EnumValue<TEnum>(string value) => new(value);
 
-	static class Underlying<T>
+	private static class Underlying<T>
 		where T : notnull
 	{
 		public static readonly Dictionary<T, TEnum> Map = [];
@@ -336,7 +338,7 @@ public readonly struct EnumValue<TEnum>
 		{
 			if (typeof(T) != UnderlyingType) return;
 
-			foreach (var e in Values)
+			foreach (TEnum e in Values)
 			{
 				var i = (T)System.Convert.ChangeType(e, typeof(T));
 				Map.Add(i, e);
@@ -361,7 +363,7 @@ public readonly struct EnumValue<TEnum>
 
 	private string GetDebuggerDisplay()
 	{
-		var eType = typeof(TEnum);
+		Type eType = typeof(TEnum);
 		return $"{eType.Name}.{Value} [EnumValue<{eType.FullName}>]";
 	}
 }
@@ -481,7 +483,7 @@ public readonly struct EnumValueCaseIgnored<TEnum>
 
 	private string GetDebuggerDisplay()
 	{
-		var eType = typeof(TEnum);
+		Type eType = typeof(TEnum);
 		return $"{eType.Name}.{ToString()} [EnumValueCaseIgnored<{eType.FullName}>]";
 	}
 }
@@ -501,7 +503,7 @@ public static class EnumValue
 	public static TEnum Parse<TEnum>(string value)
 		where TEnum : notnull, Enum
 	{
-		var (success, result) = EnumValue<TEnum>.ValueLookup(value);
+		(bool success, TEnum result) = EnumValue<TEnum>.ValueLookup(value);
 		return success ? result
 			: throw new ArgumentException(string.Format(NotFoundMessage, value), nameof(value));
 	}
@@ -511,7 +513,7 @@ public static class EnumValue
 	public static bool TryParse<TEnum>(string value, out TEnum e)
 		where TEnum : notnull, Enum
 	{
-		var result = EnumValue<TEnum>.ValueLookup(value);
+		EnumValue<TEnum>.ValueLookupResult result = EnumValue<TEnum>.ValueLookup(value);
 		e = result.Value;
 		return result.Success;
 	}
@@ -523,7 +525,7 @@ public static class EnumValue
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static TEnum Parse<TEnum>(StringSegment value)
 		where TEnum : notnull, Enum
-		=> TryParse<TEnum>(value, false, out var e) ? e
+		=> TryParse<TEnum>(value, false, out TEnum? e) ? e
 		: throw new ArgumentException(string.Format(NotFoundMessage, value), nameof(value));
 
 	/// <inheritdoc cref="TryParse{TEnum}(StringSegment, bool, out TEnum)"/>
@@ -531,7 +533,7 @@ public static class EnumValue
 	public static TEnum Parse<TEnum>(string value, bool ignoreCase)
 		where TEnum : notnull, Enum
 		=> ignoreCase
-			? EnumValue<TEnum>.IgnoreCaseLookup.TryGetValue(value, out var e) ? e
+			? EnumValue<TEnum>.IgnoreCaseLookup.TryGetValue(value, out TEnum? e) ? e
 				: throw new ArgumentException(string.Format(NotFoundMessage, value), nameof(value))
 			: Parse<TEnum>(value);
 
@@ -540,10 +542,10 @@ public static class EnumValue
 	public static TEnum Parse<TEnum>(StringSegment value, bool ignoreCase)
 		where TEnum : notnull, Enum
 	{
-		var buffer = value.Buffer ?? throw new ArgumentNullException(nameof(value));
+		string buffer = value.Buffer ?? throw new ArgumentNullException(nameof(value));
 		return value.Length == buffer.Length
 			? Parse<TEnum>(value.Buffer, ignoreCase)
-			: TryParse<TEnum>(value, ignoreCase, out var e)
+			: TryParse<TEnum>(value, ignoreCase, out TEnum? e)
 			? e : throw new ArgumentException(string.Format(NotFoundMessage, value), nameof(value));
 	}
 
@@ -578,7 +580,7 @@ public static class EnumValue
 	public static bool TryParse<TEnum>(StringSegment name, bool ignoreCase, out TEnum e)
 		where TEnum : notnull, Enum
 	{
-		var len = name.Length;
+		int len = name.Length;
 		if (len == 0) goto notFound;
 
 		// If this is a string, use the optimized version.
@@ -586,19 +588,19 @@ public static class EnumValue
 		if (buffer.Length == len)
 			return TryParse(buffer, ignoreCase, out e);
 
-		var lookup = EnumValue<TEnum>.Lookup;
+		EnumValue<TEnum>.Entry[]?[] lookup = EnumValue<TEnum>.Lookup;
 		if (len >= lookup.Length) goto notFound;
 
-		var r = lookup[len];
+		EnumValue<TEnum>.Entry[]? r = lookup[len];
 		if (r is null) goto notFound;
 		Debug.Assert(r.Length != 0);
 
-		var sc = ignoreCase
+		StringComparison sc = ignoreCase
 			? StringComparison.OrdinalIgnoreCase
 			: StringComparison.Ordinal;
 
-		var span = r.AsSpan();
-		var index = EnumValue<TEnum>.Entry.Find(span, name, sc);
+		Span<EnumValue<TEnum>.Entry> span = r.AsSpan();
+		int index = EnumValue<TEnum>.Entry.Find(span, name, sc);
 		if (index != -1)
 		{
 			e = span[index].Value;
@@ -641,8 +643,8 @@ public static class EnumValue
 
 		static IReadOnlyList<Attribute> GetAttributesCore(TEnum value)
 		{
-			var memInfo = typeof(TEnum).GetMember(value.GetName());
-			var attributes = memInfo[0].GetCustomAttributes(false);
+			MemberInfo[] memInfo = typeof(TEnum).GetMember(value.GetName());
+			object[] attributes = memInfo[0].GetCustomAttributes(false);
 			return attributes.Length is 0
 				? Array.Empty<Attribute>()
 				: Array.AsReadOnly(attributes.OfType<Attribute>().ToArray());

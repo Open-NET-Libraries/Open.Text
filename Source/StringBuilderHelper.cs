@@ -40,7 +40,7 @@ public readonly record struct StringBuilderHelper
 	/// </summary>
 	public static StringBuilderHelper Add(StringBuilderHelper helper, string characters)
 	{
-		helper.Builder.Append(characters);
+		_ = helper.Builder.Append(characters);
 		return helper;
 	}
 
@@ -57,21 +57,21 @@ public readonly record struct StringBuilderHelper
 	/// <inheritdoc cref="Add(StringBuilderHelper, string)"/>
 	public static StringBuilderHelper operator +(StringBuilderHelper helper, StringSegment characters)
 	{
-		helper.Builder.AppendSegment(characters);
+		_ = helper.Builder.AppendSegment(characters);
 		return helper;
 	}
 
 	/// <inheritdoc cref="Add(StringBuilderHelper, string)"/>
 	public static StringBuilderHelper operator +(StringBuilderHelper helper, ReadOnlySpan<char> characters)
 	{
-		helper.Builder.Append(characters);
+		_ = helper.Builder.Append(characters);
 		return helper;
 	}
 
 	/// <inheritdoc cref="Add(StringBuilderHelper, string)"/>
 	public static StringBuilderHelper operator +(StringBuilderHelper helper, Span<char> characters)
 	{
-		helper.Builder.Append(characters);
+		_ = helper.Builder.Append(characters);
 		return helper;
 	}
 
@@ -79,28 +79,28 @@ public readonly record struct StringBuilderHelper
 	public static StringBuilderHelper operator +(StringBuilderHelper helper, char[] characters)
 	{
 		if (characters is null) return helper;
-		helper.Builder.Append(characters.AsSpan());
+		_ = helper.Builder.Append(characters.AsSpan());
 		return helper;
 	}
 
 	/// <inheritdoc cref="Add(StringBuilderHelper, string)"/>
 	public static StringBuilderHelper operator +(StringBuilderHelper helper, ReadOnlyMemory<char> characters)
 	{
-		helper.Builder.Append(characters.Span);
+		_ = helper.Builder.Append(characters.Span);
 		return helper;
 	}
 
 	/// <inheritdoc cref="Add(StringBuilderHelper, string)"/>
 	public static StringBuilderHelper operator +(StringBuilderHelper helper, Memory<char> characters)
 	{
-		helper.Builder.Append(characters.Span);
+		_ = helper.Builder.Append(characters.Span);
 		return helper;
 	}
 
 	/// <inheritdoc cref="Add(StringBuilderHelper, string)"/>
 	public static StringBuilderHelper operator +(StringBuilderHelper helper, ArraySegment<char> characters)
 	{
-		helper.Builder.Append(characters.AsSpan());
+		_ = helper.Builder.Append(characters.AsSpan());
 		return helper;
 	}
 
@@ -108,8 +108,8 @@ public readonly record struct StringBuilderHelper
 	public static StringBuilderHelper operator +(StringBuilderHelper helper, IEnumerable<char> characters)
 	{
 		if (characters is null) return helper;
-		var sb = helper.Builder;
-		foreach (var c in characters)
+		StringBuilder sb = helper.Builder;
+		foreach (char c in characters)
 			sb.Append(c);
 		return helper;
 	}

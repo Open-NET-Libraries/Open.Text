@@ -15,6 +15,7 @@ public static class FindAPITests
 			e.First().Success.Should().BeTrue();
 			e.First().Index.Should().Be(0);
 		}
+
 		{
 			var e = segment.Find("xxx");
 			e.Exists().Should().BeFalse();

@@ -49,7 +49,7 @@ public struct StringBuilderEnumerator(StringBuilder builder) : IEnumerator<char>
 /// </summary>
 public readonly record struct StringBuilderEnumerable : IEnumerable<char>
 {
-	readonly StringBuilder _builder;
+	private readonly StringBuilder _builder;
 
 	/// <summary>
 	/// Constructs a new <see cref="StringBuilderEnumerable"/> for the specified <paramref name="builder"/>.

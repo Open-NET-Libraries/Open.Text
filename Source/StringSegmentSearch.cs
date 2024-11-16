@@ -174,7 +174,7 @@ public static partial class TextExtensions
 		if (search.Source.Length == 0 || search.Sequence.Length == 0)
 			return default;
 
-		var i = search.RightToLeft
+		int i = search.RightToLeft
 			? search.Source.LastIndexOf(search.Sequence, search.Comparison)
 			: search.Source.IndexOf(search.Sequence, search.Comparison);
 
@@ -189,14 +189,14 @@ public static partial class TextExtensions
 	public static StringSegmentCapture Next(
 		this StringSegmentCapture capture)
 	{
-		var value = capture.Value;
-		var len = value.Length;
+		StringSubsegment value = capture.Value;
+		int len = value.Length;
 		if (len == 0)
 			return default;
 
-		var search = capture.Search;
-		var source = search.Source;
-		var i = capture.Search.RightToLeft
+		StringSegmentSearch search = capture.Search;
+		StringSegment source = search.Source;
+		int i = capture.Search.RightToLeft
 			? source.Subsegment(0, value.Offset).LastIndexOf(search.Sequence, search.Comparison)
 			: source.IndexOf(search.Sequence, value.Offset + value.Length, search.Comparison);
 
@@ -221,7 +221,7 @@ public static partial class TextExtensions
 		if (search.Source.Length == 0 || search.Sequence.Length == 0)
 			return default;
 
-		var i = search.RightToLeft
+		int i = search.RightToLeft
 			? search.Source.IndexOf(search.Sequence, search.Comparison)
 			: search.Source.LastIndexOf(search.Sequence, search.Comparison);
 
@@ -250,7 +250,7 @@ public static partial class TextExtensions
 		this StringSegmentCapture capture,
 		StringSubsegment defaultValue)
 	{
-		var value = capture.Value;
+		StringSubsegment value = capture.Value;
 		return value.HasValue ? value : defaultValue;
 	}
 

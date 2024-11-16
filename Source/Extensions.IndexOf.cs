@@ -24,13 +24,13 @@ public static partial class TextExtensions
 				throw new ArgumentException("Invalid comparison type.", nameof(comparisonType));
 		}
 
-		var searchUpper = toUpper(search);
+		char searchUpper = toUpper(search);
 		if (searchUpper == search)
 			return source.IndexOf(search);
 
-		for (var i = 0; i < source.Length; i++)
+		for (int i = 0; i < source.Length; i++)
 		{
-			var c = source[i];
+			char c = source[i];
 			if (c == search) return i;
 			if (toUpper(c) == searchUpper)
 				return i;
@@ -44,7 +44,7 @@ public static partial class TextExtensions
 	{
 		if (startIndex >= source.Length)
 			throw new ArgumentOutOfRangeException(nameof(startIndex), startIndex, "Must be less than the length of the source.");
-		var i = source.Slice(startIndex).IndexOf(value, comparisonType);
+		int i = source.Slice(startIndex).IndexOf(value, comparisonType);
 		return i == -1 ? -1 : i + startIndex;
 	}
 
@@ -71,13 +71,13 @@ public static partial class TextExtensions
 				throw new ArgumentException("Invalid comparison type.", nameof(comparisonType));
 		}
 
-		var searchUpper = toUpper(value);
+		char searchUpper = toUpper(value);
 		if (searchUpper == value)
 			return source.LastIndexOf(value);
 
-		for (var i = source.Length - 1; i >= 0; i--)
+		for (int i = source.Length - 1; i >= 0; i--)
 		{
-			var c = source[i];
+			char c = source[i];
 			if (c == value) return i;
 			if (toUpper(c) == searchUpper)
 				return i;
@@ -155,7 +155,7 @@ public static partial class TextExtensions
 		int i = -1;
 		while (max > i++)
 		{
-			var span = source.Slice(i, sequenceLength);
+			ReadOnlySpan<char> span = source.Slice(i, sequenceLength);
 			// Note: in rare cases, this will still convert to strings for comparison and could allocate.
 			if (span.Equals(sequence, StringComparison.OrdinalIgnoreCase))
 				return i;
@@ -224,7 +224,7 @@ public static partial class TextExtensions
 		int max = sourceLength - sequenceLength;
 		do
 		{
-			var span = source.Slice(max, sequenceLength);
+			ReadOnlySpan<char> span = source.Slice(max, sequenceLength);
 			// Note: in rare cases, this will still convert to strings for comparison and could allocate.
 			if (span.Equals(sequence, StringComparison.OrdinalIgnoreCase))
 				return max;
@@ -293,8 +293,8 @@ public static partial class TextExtensions
 		if (startIndex == 0)
 			return IndexOf(source, sequence, comparisonType);
 
-		var span = source.Slice(startIndex);
-		var index = span.IndexOf(sequence, comparisonType);
+		ReadOnlySpan<char> span = source.Slice(startIndex);
+		int index = span.IndexOf(sequence, comparisonType);
 		return index == -1 ? -1 : index + startIndex;
 	}
 

@@ -7,7 +7,7 @@ public static partial class TextExtensions
 
 	private static StringSegment TrimStartPatternCore(StringSegment source, ReadOnlySpan<char> pattern, StringComparison comparisonType, int max)
 	{
-		var pLen = pattern.Length;
+		int pLen = pattern.Length;
 		if (max == -1)
 		{
 			while (source.IndexOf(pattern, comparisonType) == 0)
@@ -30,8 +30,8 @@ public static partial class TextExtensions
 
 	private static StringSegment TrimEndPatternCore(StringSegment source, ReadOnlySpan<char> pattern, StringComparison comparisonType, int max)
 	{
-		var pLen = pattern.Length;
-		var expectedIndex = source.Length - pLen;
+		int pLen = pattern.Length;
+		int expectedIndex = source.Length - pLen;
 		if (max == -1)
 		{
 			while (source.LastIndexOf(pattern, comparisonType) == expectedIndex)
@@ -56,7 +56,7 @@ public static partial class TextExtensions
 
 	private static ReadOnlySpan<char> TrimStartPatternCore(ReadOnlySpan<char> source, ReadOnlySpan<char> pattern, StringComparison comparisonType, int max)
 	{
-		var pLen = pattern.Length;
+		int pLen = pattern.Length;
 
 		if (max == -1)
 		{
@@ -80,8 +80,8 @@ public static partial class TextExtensions
 
 	private static ReadOnlySpan<char> TrimEndPatternCore(ReadOnlySpan<char> source, ReadOnlySpan<char> pattern, StringComparison comparisonType, int max)
 	{
-		var pLen = pattern.Length;
-		var expectedIndex = source.Length - pLen;
+		int pLen = pattern.Length;
+		int expectedIndex = source.Length - pLen;
 
 		if (max == -1)
 		{
@@ -197,18 +197,18 @@ public static partial class TextExtensions
 		if (max == 0 || source.Length == 0)
 			return source;
 
-		var i = pattern.RightToLeft ? RightToLeft() : LeftToRight();
+		int i = pattern.RightToLeft ? RightToLeft() : LeftToRight();
 		return i == 0 ? source : source.AsSegment(i);
 
 		int RightToLeft()
 		{
-			var i = 0;
-			var matches = pattern.Matches(source);
+			int i = 0;
+			MatchCollection matches = pattern.Matches(source);
 			if (max == -1)
 			{
-				for (var m = matches.Count - 1; m >= 0; m--)
+				for (int m = matches.Count - 1; m >= 0; m--)
 				{
-					var match = matches[m];
+					Match match = matches[m];
 					if (!match.Success || match.Index != i)
 						break;
 					i += match.Length;
@@ -216,9 +216,9 @@ public static partial class TextExtensions
 			}
 			else
 			{
-				for (var m = matches.Count - 1; max != 0 && m >= 0; m--)
+				for (int m = matches.Count - 1; max != 0 && m >= 0; m--)
 				{
-					var match = matches[m];
+					Match match = matches[m];
 					if (!match.Success || match.Index != i)
 						break;
 					i += match.Length;
@@ -231,8 +231,8 @@ public static partial class TextExtensions
 
 		int LeftToRight()
 		{
-			var i = 0;
-			var match = pattern.Match(source);
+			int i = 0;
+			Match match = pattern.Match(source);
 			if (max == -1)
 			{
 				while (match.Success && match.Index == i)
@@ -349,13 +349,13 @@ public static partial class TextExtensions
 		if (max == 0 || (len = source.Length) == 0)
 			return source;
 
-		var i = pattern.RightToLeft ? RightToLeft() : LeftToRight();
+		int i = pattern.RightToLeft ? RightToLeft() : LeftToRight();
 		return i == len ? source : source.AsSegment(0, i);
 
 		int RightToLeft()
 		{
-			var i = len;
-			var match = pattern.Match(source);
+			int i = len;
+			Match match = pattern.Match(source);
 			if (max == -1)
 			{
 				int n;
@@ -381,14 +381,14 @@ public static partial class TextExtensions
 
 		int LeftToRight()
 		{
-			var i = len;
-			var matches = pattern.Matches(source);
+			int i = len;
+			MatchCollection matches = pattern.Matches(source);
 			if (max == -1)
 			{
 				int n;
-				for (var m = matches.Count - 1; m >= 0; m--)
+				for (int m = matches.Count - 1; m >= 0; m--)
 				{
-					var match = matches[m];
+					Match match = matches[m];
 					if (!match.Success || match.Index != (n = i - match.Length))
 						break;
 					i = n;
@@ -397,9 +397,9 @@ public static partial class TextExtensions
 			else
 			{
 				int n;
-				for (var m = matches.Count - 1; max != 0 && m >= 0; m--)
+				for (int m = matches.Count - 1; max != 0 && m >= 0; m--)
 				{
-					var match = matches[m];
+					Match match = matches[m];
 					if (!match.Success || match.Index != (n = i - match.Length))
 						break;
 					i = n;

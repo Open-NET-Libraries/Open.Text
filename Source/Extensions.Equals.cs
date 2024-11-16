@@ -12,7 +12,7 @@ public static partial class TextExtensions
 	public static bool Equals(this ReadOnlySpan<char> source, StringSegment other, StringComparison comparisonType)
 	{
 		if (!other.HasValue) return false;
-		var len = source.Length;
+		int len = source.Length;
 		return len == other.Length && len switch
 		{
 			0 => true,
@@ -25,7 +25,7 @@ public static partial class TextExtensions
 	public static bool Equals(this Span<char> source, StringSegment other, StringComparison comparisonType)
 	{
 		if (!other.HasValue) return false;
-		var len = source.Length;
+		int len = source.Length;
 		return len == other.Length && len switch
 		{
 			0 => true,
@@ -37,7 +37,7 @@ public static partial class TextExtensions
 	/// <inheritdoc cref="Equals(ReadOnlySpan{char}, StringSegment, StringComparison)"/>
 	public static bool Equals(this Span<char> source, ReadOnlySpan<char> other, StringComparison comparisonType)
 	{
-		var len = source.Length;
+		int len = source.Length;
 		return len == other.Length && len switch
 		{
 			0 => true,
@@ -50,7 +50,7 @@ public static partial class TextExtensions
 	public static bool Equals(this string? source, ReadOnlySpan<char> other, StringComparison comparisonType)
 	{
 		if (source is null) return false;
-		var len = source.Length;
+		int len = source.Length;
 		return len == other.Length && len switch
 		{
 			0 => true,
@@ -63,7 +63,7 @@ public static partial class TextExtensions
 	public static bool Equals(this StringSegment source, ReadOnlySpan<char> other, StringComparison comparisonType)
 	{
 		if (!source.HasValue) return false;
-		var len = source.Length;
+		int len = source.Length;
 		return len == other.Length && len switch
 		{
 			0 => true,
@@ -136,12 +136,12 @@ public static partial class TextExtensions
 	/// <inheritdoc cref="TrimmedEquals(string?, StringSegment, ReadOnlySpan{char}, StringComparison)"/>
 	public static bool TrimmedEquals(this string? source, StringSegment other, char trimChar, StringComparison comparisonType = StringComparison.Ordinal)
 	{
-		var otherHasValue = !other.HasValue;
+		bool otherHasValue = !other.HasValue;
 		if (source is null) return otherHasValue;
 		if (otherHasValue) return false;
 		int slen = source.Length, olen = other.Length;
 		if (slen < olen) return false;
-		var span = source.AsSpan().Trim(trimChar);
+		ReadOnlySpan<char> span = source.AsSpan().Trim(trimChar);
 		slen = span.Length;
 		return slen == olen && slen switch
 		{
@@ -193,7 +193,7 @@ public static partial class TextExtensions
 		if (!other.HasValue) return false;
 		int slen = source.Length, olen = other.Length;
 		if (slen < olen) return false;
-		var trimmed = source.AsSpan().Trim(trimChars);
+		ReadOnlySpan<char> trimmed = source.AsSpan().Trim(trimChars);
 		slen = trimmed.Length;
 		return slen == olen && slen switch
 		{

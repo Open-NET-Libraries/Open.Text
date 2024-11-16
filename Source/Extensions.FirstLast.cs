@@ -19,7 +19,7 @@ public static partial class TextExtensions
 		if (search.Length == 0)
 			return default;
 
-		var i = source.IndexOf(search, comparisonType);
+		int i = source.IndexOf(search, comparisonType);
 		return i == -1 ? default : source.Subsegment(i, search.Length);
 	}
 
@@ -29,7 +29,7 @@ public static partial class TextExtensions
 		if (!source.HasValue) throw new ArgumentException(MustBeSegmentWithValue, nameof(source));
 		Contract.EndContractBlock();
 
-		var i = source.IndexOf(search, comparisonType);
+		int i = source.IndexOf(search, comparisonType);
 		return i == -1 ? default : source.Subsegment(i, 1);
 	}
 
@@ -39,7 +39,7 @@ public static partial class TextExtensions
 		if (source is null) throw new ArgumentNullException(nameof(source));
 		Contract.EndContractBlock();
 
-		var i = source.IndexOf(search, comparisonType);
+		int i = source.IndexOf(search, comparisonType);
 		return i == -1 ? default : source.AsSegment(i, 1);
 	}
 
@@ -69,7 +69,7 @@ public static partial class TextExtensions
 		if (pattern is null) throw new ArgumentNullException(nameof(pattern));
 		Contract.EndContractBlock();
 
-		var match = pattern.Match(source);
+		Match match = pattern.Match(source);
 		return match.Success ? new(source, match.Index, match.Length) : default;
 	}
 
@@ -82,7 +82,7 @@ public static partial class TextExtensions
 		if (search.IsEmpty)
 			return default;
 
-		var i = source.AsSpan().IndexOf(search, comparisonType);
+		int i = source.AsSpan().IndexOf(search, comparisonType);
 		return i == -1 ? default : new(source.Buffer, source.Offset + i, search.Length);
 	}
 
@@ -98,7 +98,7 @@ public static partial class TextExtensions
 		if (search.Length == 0)
 			return default;
 
-		var i = source.AsSpan().LastIndexOf(search, comparisonType);
+		int i = source.AsSpan().LastIndexOf(search, comparisonType);
 		return i == -1 ? default : source.Subsegment(i, search.Length);
 	}
 
@@ -117,9 +117,9 @@ public static partial class TextExtensions
 		if (pattern is null) throw new ArgumentNullException(nameof(pattern));
 		Contract.EndContractBlock();
 
-		var matches = pattern.Matches(source);
+		MatchCollection matches = pattern.Matches(source);
 		if (matches.Count == 0) return default;
-		var match = matches[matches.Count - 1];
+		Match match = matches[matches.Count - 1];
 		return new(source, match.Index, match.Length);
 	}
 
@@ -131,7 +131,7 @@ public static partial class TextExtensions
 		if (search.IsEmpty)
 			return default;
 
-		var i = source.AsSpan().LastIndexOf(search, comparisonType);
+		int i = source.AsSpan().LastIndexOf(search, comparisonType);
 		return i == -1 ? default : new(source.Buffer, source.Offset + i, search.Length);
 	}
 }

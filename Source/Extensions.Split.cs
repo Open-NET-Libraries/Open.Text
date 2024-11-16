@@ -2,12 +2,13 @@
 
 internal static class SingleEmpty
 {
-	public static readonly IReadOnlyList<string> Instance = Array.AsReadOnly(new[] { string.Empty });
+	public static readonly IReadOnlyList<string> Instance
+		= Array.AsReadOnly([string.Empty]);
 }
 
 public static partial class TextExtensions
 {
-	static ReadOnlySpan<char> FirstSplitSpan(StringSegment source, int start, int i, int n, out int nextIndex)
+	private static ReadOnlySpan<char> FirstSplitSpan(StringSegment source, int start, int i, int n, out int nextIndex)
 	{
 		Debug.Assert(start >= 0);
 		if (i == -1)
@@ -17,11 +18,11 @@ public static partial class TextExtensions
 		}
 
 		nextIndex = i + n;
-		var segmentLen = i - start;
+		int segmentLen = i - start;
 		return segmentLen == 0 ? [] : source.AsSpan(start, segmentLen);
 	}
 
-	static ReadOnlySpan<char> FirstSplitSpan(ReadOnlySpan<char> rest, int i, int n, out int nextIndex)
+	private static ReadOnlySpan<char> FirstSplitSpan(ReadOnlySpan<char> rest, int i, int n, out int nextIndex)
 	{
 		if (i == -1)
 		{
@@ -35,7 +36,7 @@ public static partial class TextExtensions
 			: rest.Slice(0, i);
 	}
 
-	static ReadOnlyMemory<char> FirstSplitMemory(string source, int start, int i, int n, out int nextIndex)
+	private static ReadOnlyMemory<char> FirstSplitMemory(string source, int start, int i, int n, out int nextIndex)
 	{
 		Debug.Assert(start >= 0);
 		if (i == -1)
@@ -45,7 +46,7 @@ public static partial class TextExtensions
 		}
 
 		nextIndex = i + n;
-		var segmentLen = i - start;
+		int segmentLen = i - start;
 		return segmentLen == 0
 			? ReadOnlyMemory<char>.Empty
 			: source.AsMemory(start, segmentLen);
@@ -66,7 +67,7 @@ public static partial class TextExtensions
 	{
 		if (!source.HasValue)
 			throw new ArgumentException("Cannot split a null string or sequence that has no value.", nameof(source));
-		var len = source.Length;
+		int len = source.Length;
 		if (startIndex > len) throw new ArgumentOutOfRangeException(nameof(startIndex), startIndex, "Is greater than the length of the provided string.");
 		Contract.EndContractBlock();
 
@@ -105,7 +106,7 @@ public static partial class TextExtensions
 			throw new ArgumentException("Cannot split a null string or sequence that has no value.", nameof(source));
 		if (splitSequence.Length == 0)
 			throw new ArgumentException("Cannot split using empty sequence.", nameof(splitSequence));
-		var len = source.Length;
+		int len = source.Length;
 		if (startIndex > source.Length)
 			throw new ArgumentOutOfRangeException(nameof(startIndex), startIndex, "Is greater than the length of the provided string.");
 		Contract.EndContractBlock();
@@ -138,7 +139,7 @@ public static partial class TextExtensions
 			return [];
 		}
 
-		var i = source.IndexOf(splitCharacter);
+		int i = source.IndexOf(splitCharacter);
 		return FirstSplitSpan(source, i, 1, out nextIndex);
 	}
 
@@ -158,7 +159,7 @@ public static partial class TextExtensions
 			return [];
 		}
 
-		var i = source.IndexOf(splitSequence, comparisonType);
+		int i = source.IndexOf(splitSequence, comparisonType);
 		return FirstSplitSpan(source, i, splitSequence.Length, out nextIndex);
 	}
 
@@ -196,10 +197,10 @@ public static partial class TextExtensions
 
 		IEnumerable<string> SplitAsEnumerableCore()
 		{
-			var startIndex = 0;
+			int startIndex = 0;
 			do
 			{
-				yield return source.FirstSplit(splitCharacter, out var nextIndex, startIndex).ToString();
+				yield return source.FirstSplit(splitCharacter, out int nextIndex, startIndex).ToString();
 				startIndex = nextIndex;
 			}
 			while (startIndex != -1);
@@ -207,10 +208,10 @@ public static partial class TextExtensions
 
 		IEnumerable<string> SplitAsEnumerableCoreOmitEmpty()
 		{
-			var startIndex = 0;
+			int startIndex = 0;
 			do
 			{
-				var result = source.FirstSplit(splitCharacter, out var nextIndex, startIndex);
+				ReadOnlySpan<char> result = source.FirstSplit(splitCharacter, out int nextIndex, startIndex);
 				if (result.Length != 0) yield return result.ToString();
 				startIndex = nextIndex;
 			}
@@ -251,10 +252,10 @@ public static partial class TextExtensions
 
 		static IEnumerable<string> SplitAsEnumerableCore(string source, string splitSequence, StringComparison comparisonType)
 		{
-			var startIndex = 0;
+			int startIndex = 0;
 			do
 			{
-				yield return source.FirstSplit(splitSequence, out var nextIndex, startIndex, comparisonType).ToString();
+				yield return source.FirstSplit(splitSequence, out int nextIndex, startIndex, comparisonType).ToString();
 				startIndex = nextIndex;
 			}
 			while (startIndex != -1);
@@ -262,10 +263,10 @@ public static partial class TextExtensions
 
 		static IEnumerable<string> SplitAsEnumerableCoreOmitEmpty(string source, string splitSequence, StringComparison comparisonType)
 		{
-			var startIndex = 0;
+			int startIndex = 0;
 			do
 			{
-				var result = source.FirstSplit(splitSequence, out var nextIndex, startIndex, comparisonType);
+				ReadOnlySpan<char> result = source.FirstSplit(splitSequence, out int nextIndex, startIndex, comparisonType);
 				if (result.Length != 0) yield return result.ToString();
 				startIndex = nextIndex;
 			}
@@ -296,10 +297,10 @@ public static partial class TextExtensions
 
 		static IEnumerable<ReadOnlyMemory<char>> SplitAsMemoryCore(string source, char splitCharacter)
 		{
-			var startIndex = 0;
+			int startIndex = 0;
 			do
 			{
-				yield return FirstSplitMemory(source, startIndex, source.IndexOf(splitCharacter, startIndex), 1, out var nextIndex);
+				yield return FirstSplitMemory(source, startIndex, source.IndexOf(splitCharacter, startIndex), 1, out int nextIndex);
 				startIndex = nextIndex;
 			}
 			while (startIndex != -1);
@@ -307,10 +308,10 @@ public static partial class TextExtensions
 
 		static IEnumerable<ReadOnlyMemory<char>> SplitAsMemoryOmitEmpty(string source, char splitCharacter)
 		{
-			var startIndex = 0;
+			int startIndex = 0;
 			do
 			{
-				var result = FirstSplitMemory(source, startIndex, source.IndexOf(splitCharacter, startIndex), 1, out var nextIndex);
+				ReadOnlyMemory<char> result = FirstSplitMemory(source, startIndex, source.IndexOf(splitCharacter, startIndex), 1, out int nextIndex);
 				if (result.Length != 0) yield return result;
 				startIndex = nextIndex;
 			}
@@ -344,11 +345,11 @@ public static partial class TextExtensions
 
 		static IEnumerable<ReadOnlyMemory<char>> SplitAsMemoryOmitEmpty(string source, string splitSequence, StringComparison comparisonType)
 		{
-			var startIndex = 0;
-			var splitLen = splitSequence.Length;
+			int startIndex = 0;
+			int splitLen = splitSequence.Length;
 			do
 			{
-				var result = FirstSplitMemory(source, startIndex, source.IndexOf(splitSequence, startIndex, comparisonType), splitLen, out var nextIndex);
+				ReadOnlyMemory<char> result = FirstSplitMemory(source, startIndex, source.IndexOf(splitSequence, startIndex, comparisonType), splitLen, out int nextIndex);
 				if (result.Length != 0) yield return result;
 				startIndex = nextIndex;
 			}
@@ -357,11 +358,11 @@ public static partial class TextExtensions
 
 		static IEnumerable<ReadOnlyMemory<char>> SplitAsMemoryCore(string source, string splitSequence, StringComparison comparisonType)
 		{
-			var startIndex = 0;
-			var splitLen = splitSequence.Length;
+			int startIndex = 0;
+			int splitLen = splitSequence.Length;
 			do
 			{
-				yield return FirstSplitMemory(source, startIndex, source.IndexOf(splitSequence, startIndex, comparisonType), splitLen, out var nextIndex);
+				yield return FirstSplitMemory(source, startIndex, source.IndexOf(splitSequence, startIndex, comparisonType), splitLen, out int nextIndex);
 				startIndex = nextIndex;
 			}
 			while (startIndex != -1);
@@ -393,7 +394,7 @@ public static partial class TextExtensions
 				var list = new List<string>();
 
 			loop:
-				var result = source.FirstSplit(splitCharacter, out var nextIndex);
+				ReadOnlySpan<char> result = source.FirstSplit(splitCharacter, out int nextIndex);
 				if (!result.IsEmpty) list.Add(result.ToString());
 				if (nextIndex == -1) return list;
 				source = source.Slice(nextIndex);
@@ -405,7 +406,7 @@ public static partial class TextExtensions
 				Debug.Assert(!source.IsEmpty);
 				var list = new List<string>();
 			loop:
-				var result = source.FirstSplit(splitCharacter, out var nextIndex);
+				ReadOnlySpan<char> result = source.FirstSplit(splitCharacter, out int nextIndex);
 				list.Add(result.IsEmpty ? string.Empty : result.ToString());
 				if (nextIndex == -1) return list;
 				source = source.Slice(nextIndex);
@@ -441,7 +442,7 @@ public static partial class TextExtensions
 				var list = new List<string>();
 
 			loop:
-				var result = source.FirstSplit(splitSequence, out var nextIndex, comparisonType);
+				ReadOnlySpan<char> result = source.FirstSplit(splitSequence, out int nextIndex, comparisonType);
 				if (!result.IsEmpty) list.Add(result.ToString());
 				if (nextIndex == -1) return list;
 				source = source.Slice(nextIndex);
@@ -453,7 +454,7 @@ public static partial class TextExtensions
 				Debug.Assert(!source.IsEmpty);
 				var list = new List<string>();
 			loop:
-				var result = source.FirstSplit(splitSequence, out var nextIndex, comparisonType);
+				ReadOnlySpan<char> result = source.FirstSplit(splitSequence, out int nextIndex, comparisonType);
 				list.Add(result.IsEmpty ? string.Empty : result.ToString());
 				if (nextIndex == -1) return list;
 				source = source.Slice(nextIndex);

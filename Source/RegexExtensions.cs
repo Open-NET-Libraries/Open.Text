@@ -7,17 +7,21 @@ public static class RegexExtensions
 {
 	private static Func<Capture, string> GetOriginalTextDelegate()
 	{
-		var textProp = typeof(Capture).GetProperty("Text", BindingFlags.Instance | BindingFlags.NonPublic);
+		PropertyInfo? textProp = typeof(Capture).GetProperty("Text", BindingFlags.Instance | BindingFlags.NonPublic);
 		if (textProp is not null)
 		{
-			var method = textProp.GetGetMethod(nonPublic: true)
+			MethodInfo method = textProp.GetGetMethod(nonPublic: true)
 				?? throw new InvalidOperationException("Could not find the Text property getter.");
 
+#if NET6_0_OR_GREATER
+			return method.CreateDelegate<Func<Capture, string>>();
+#else
 			return (Func<Capture, string>)method.CreateDelegate(typeof(Func<Capture, string>));
+#endif
 		}
 
-		// Some older versions of .NET use this instead.
-		var textField = typeof(Capture).GetField("_text", BindingFlags.Instance | BindingFlags.NonPublic);
+			// Some older versions of .NET use this instead.
+			FieldInfo? textField = typeof(Capture).GetField("_text", BindingFlags.Instance | BindingFlags.NonPublic);
 		return textField is not null
 			? (capture => (string)textField.GetValue(capture)!)
 			: throw new NotSupportedException("Capture: could not find the Text property or _text field.");
@@ -50,7 +54,7 @@ public static class RegexExtensions
 			throw new ArgumentNullException(nameof(groupName));
 		Contract.EndContractBlock();
 
-		var group = groups[groupName];
+		Group group = groups[groupName];
 		return group.Success
 			? group.Value
 			: null;
@@ -66,7 +70,7 @@ public static class RegexExtensions
 			throw new ArgumentNullException(nameof(groupName));
 		Contract.EndContractBlock();
 
-		var group = groups[groupName];
+		Group group = groups[groupName];
 		return group.Success
 			? group.AsSpan()
 			: [];
@@ -91,7 +95,7 @@ public static class RegexExtensions
 
 		static IEnumerable<StringSegment> AsSegmentsCore(Regex pattern, string input)
 		{
-			var match = pattern.Match(input);
+			Match match = pattern.Match(input);
 			while (match.Success)
 			{
 				yield return new(input, match.Index, match.Length);

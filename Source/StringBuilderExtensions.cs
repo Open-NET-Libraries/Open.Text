@@ -54,10 +54,10 @@ public static class StringBuilderExtensions
 	/// <returns>The resultant StringBuilder.</returns>
 	public static StringBuilder ToStringBuilder<T>(this ReadOnlySpan<T> source)
 	{
-		var len = source.Length;
+		int len = source.Length;
 		var sb = new StringBuilder(len);
 
-		for (var i = 0; i < len; i++)
+		for (int i = 0; i < len; i++)
 			sb.Append<T>(source[i]);
 
 		return sb;
@@ -66,10 +66,10 @@ public static class StringBuilderExtensions
 	/// <inheritdoc cref="ToStringBuilder{T}(ReadOnlySpan{T})" />
 	public static StringBuilder ToStringBuilder<T>(this Span<T> source)
 	{
-		var len = source.Length;
+		int len = source.Length;
 		var sb = new StringBuilder(len);
 
-		for (var i = 0; i < len; i++)
+		for (int i = 0; i < len; i++)
 			sb.Append<T>(source[i]);
 
 		return sb;
@@ -85,7 +85,7 @@ public static class StringBuilderExtensions
 	{
 		if (source is null) throw new ArgumentNullException(nameof(source));
 		var sb = new StringBuilder();
-		foreach (var s in source)
+		foreach (T? s in source)
 			sb.Append<T>(s);
 
 		return sb;
@@ -100,14 +100,14 @@ public static class StringBuilderExtensions
 	/// <returns>The resultant StringBuilder.</returns>
 	public static StringBuilder ToStringBuilder<T>(this ReadOnlySpan<T> source, string? separator)
 	{
-		var len = source.Length;
+		int len = source.Length;
 		if (len < 2 || string.IsNullOrEmpty(separator))
 			return ToStringBuilder(source);
 
 		var sb = new StringBuilder(2 * len - 1);
 
 		sb.Append<T>(source[0]);
-		for (var i = 1; i < len; i++)
+		for (int i = 1; i < len; i++)
 		{
 			sb.Append(separator);
 			sb.Append<T>(source[i]);
@@ -119,14 +119,14 @@ public static class StringBuilderExtensions
 	/// <inheritdoc cref="ToStringBuilder{T}(ReadOnlySpan{T}, string)" />
 	public static StringBuilder ToStringBuilder<T>(this Span<T> source, string? separator)
 	{
-		var len = source.Length;
+		int len = source.Length;
 		if (len < 2 || string.IsNullOrEmpty(separator))
 			return ToStringBuilder(source);
 
 		var sb = new StringBuilder(2 * len - 1);
 
 		sb.Append<T>(source[0]);
-		for (var i = 1; i < len; i++)
+		for (int i = 1; i < len; i++)
 		{
 			sb.Append(separator);
 			sb.Append<T>(source[i]);
@@ -144,13 +144,13 @@ public static class StringBuilderExtensions
 	/// <returns>The resultant StringBuilder.</returns>
 	public static StringBuilder ToStringBuilder<T>(this ReadOnlySpan<T> source, char separator)
 	{
-		var len = source.Length;
+		int len = source.Length;
 		if (len < 2) return ToStringBuilder(source);
 
 		var sb = new StringBuilder(2 * len - 1);
 
 		sb.Append<T>(source[0]);
-		for (var i = 1; i < len; i++)
+		for (int i = 1; i < len; i++)
 		{
 			sb.Append(separator);
 			sb.Append<T>(source[i]);
@@ -162,13 +162,13 @@ public static class StringBuilderExtensions
 	/// <inheritdoc cref="ToStringBuilder{T}(ReadOnlySpan{T}, char)" />
 	public static StringBuilder ToStringBuilder<T>(this Span<T> source, char separator)
 	{
-		var len = source.Length;
+		int len = source.Length;
 		if (len < 2) return ToStringBuilder(source);
 
 		var sb = new StringBuilder(2 * len - 1);
 
 		sb.Append<T>(source[0]);
-		for (var i = 1; i < len; i++)
+		for (int i = 1; i < len; i++)
 		{
 			sb.Append(separator);
 			sb.Append<T>(source[i]);
@@ -217,7 +217,7 @@ public static class StringBuilderExtensions
 		Contract.EndContractBlock();
 
 		if (values == null) return target;
-		foreach (var value in values)
+		foreach (T? value in values)
 			target.Append<T>(value);
 		return target;
 	}
@@ -236,7 +236,7 @@ public static class StringBuilderExtensions
 		if (string.IsNullOrEmpty(separator))
 			return target.AppendAll(values);
 
-		using var e = values.GetEnumerator();
+		using IEnumerator<T> e = values.GetEnumerator();
 		if (!e.MoveNext()) return target;
 		if (target.Length != 0) target.Append(separator);
 		target.Append<T>(e.Current);
@@ -257,7 +257,7 @@ public static class StringBuilderExtensions
 
 		if (values == null) return target;
 
-		using var e = values.GetEnumerator();
+		using IEnumerator<T> e = values.GetEnumerator();
 		if (!e.MoveNext()) return target;
 		if (target.Length != 0) target.Append(separator);
 		target.Append<T>(e.Current);
@@ -276,7 +276,7 @@ public static class StringBuilderExtensions
 			throw new ArgumentNullException(nameof(values));
 		Contract.EndContractBlock();
 
-		foreach (var value in values)
+		foreach (T? value in values)
 			target.Append<T>(value);
 		return target;
 	}
@@ -293,7 +293,7 @@ public static class StringBuilderExtensions
 		if (string.IsNullOrEmpty(separator))
 			return target.AppendAll(values);
 
-		var e = values.GetEnumerator();
+		ReadOnlySpan<T>.Enumerator e = values.GetEnumerator();
 		if (!e.MoveNext()) return target;
 		if (target.Length != 0) target.Append(separator);
 		target.Append<T>(e.Current);
@@ -312,7 +312,7 @@ public static class StringBuilderExtensions
 			throw new ArgumentNullException(nameof(values));
 		Contract.EndContractBlock();
 
-		var e = values.GetEnumerator();
+		ReadOnlySpan<T>.Enumerator e = values.GetEnumerator();
 		if (!e.MoveNext()) return target;
 		if (target.Length != 0) target.Append(separator);
 		target.Append<T>(e.Current);
@@ -334,7 +334,7 @@ public static class StringBuilderExtensions
 		if (string.IsNullOrEmpty(separator))
 		{
 			target.Append(value);
-			foreach (var v in values)
+			foreach (object v in values)
 				target.Append(v);
 		}
 		else
@@ -342,7 +342,7 @@ public static class StringBuilderExtensions
 			if (target.Length != 0)
 				target.Append(separator);
 			target.Append(value);
-			foreach (var v in values)
+			foreach (object v in values)
 				target.Append(separator).Append(v);
 		}
 
@@ -361,7 +361,7 @@ public static class StringBuilderExtensions
 		if (target.Length != 0)
 			target.Append(separator);
 		target.Append(value);
-		foreach (var v in values)
+		foreach (object v in values)
 			target.Append(separator).Append(v);
 
 		return target;
@@ -385,7 +385,7 @@ public static class StringBuilderExtensions
 			throw new ArgumentNullException(nameof(keyValueSeparator));
 		Contract.EndContractBlock();
 
-		if (source.TryGetValue(key, out var result))
+		if (source.TryGetValue(key, out T? result))
 		{
 			target
 				.AppendWithSeparator(itemSeparator, key)
@@ -427,7 +427,7 @@ public static class StringBuilderExtensions
 	public static StringBuilder Append(this StringBuilder target, ReadOnlySpan<char> value)
 	{
 		if (target is null) throw new ArgumentNullException(nameof(target));
-		foreach (var v in value) target.Append(v);
+		foreach (char v in value) target.Append(v);
 		return target;
 	}
 
@@ -438,8 +438,8 @@ public static class StringBuilderExtensions
 	{
 		if (target is null) throw new ArgumentNullException(nameof(target));
 		if (value is null) return target;
-		var len = value.Length;
-		for (var i = 0; i < len; i++)
+		int len = value.Length;
+		for (int i = 0; i < len; i++)
 			target.Append(value[i]);
 		return target;
 	}
@@ -454,10 +454,10 @@ public static class StringBuilderExtensions
 		if (sb is null) throw new ArgumentNullException(nameof(sb));
 		Contract.EndContractBlock();
 
-		var last = sb.Length - 1;
+		int last = sb.Length - 1;
 		if (last == -1) return sb;
 
-		var end = last;
+		int end = last;
 		while (end >= 0 && char.IsWhiteSpace(sb[end]))
 			end--;
 
@@ -476,10 +476,10 @@ public static class StringBuilderExtensions
 		if (sb is null) throw new ArgumentNullException(nameof(sb));
 		Contract.EndContractBlock();
 
-		var last = sb.Length - 1;
+		int last = sb.Length - 1;
 		if (last == -1) return sb;
 
-		var end = last;
+		int end = last;
 		while (end >= 0 && characters.IndexOf(sb[end]) != -1)
 			end--;
 
@@ -498,7 +498,7 @@ public static class StringBuilderExtensions
 		if (sb is null) throw new ArgumentNullException(nameof(sb));
 		Contract.EndContractBlock();
 
-		var start = 0;
+		int start = 0;
 		while (start < sb.Length && char.IsWhiteSpace(sb[start]))
 			start++;
 
@@ -517,7 +517,7 @@ public static class StringBuilderExtensions
 		if (sb is null) throw new ArgumentNullException(nameof(sb));
 		Contract.EndContractBlock();
 
-		var start = 0;
+		int start = 0;
 		while (start < sb.Length && characters.IndexOf(sb[start]) != -1)
 			start++;
 
