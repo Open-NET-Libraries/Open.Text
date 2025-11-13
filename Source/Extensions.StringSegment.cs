@@ -182,6 +182,27 @@ public static partial class TextExtensions
 	}
 
 	/// <summary>
+	/// Determines whether the specified <see cref="StringSegment"/> is null or empty.
+	/// </summary>
+	/// <remarks>This method is a convenience extension for checking whether a <see cref="StringSegment"/> has no
+	/// value or contains no characters.</remarks>
+	/// <param name="segment">The <see cref="StringSegment"/> to check.</param>
+	/// <returns><see langword="true"/> if the <paramref name="segment"/> is null or its length is zero; otherwise, <see
+	/// langword="false"/>.</returns>
+	public static bool IsNullOrEmpty(this StringSegment segment)
+		=> !segment.HasValue || segment.Length == 0;
+
+	/// <summary>
+	/// Determines whether the specified <see cref="StringSegment"/> is null, empty, or consists only of white-space
+	/// characters.
+	/// </summary>
+	/// <param name="segment">The <see cref="StringSegment"/> to evaluate.</param>
+	/// <returns><see langword="true"/> if the <paramref name="segment"/> is null, empty, or contains only white-space characters;
+	/// otherwise, <see langword="false"/>.</returns>
+	public static bool IsNullOrWhiteSpace(this StringSegment segment)
+		=> !segment.HasValue || segment.AsSpan().Trim().Length == 0;
+
+	/// <summary>
 	/// Enumerates a string by segments that are separated by the regular expression matches.
 	/// </summary>
 	/// <param name="source">The source characters to look through.</param>
@@ -236,10 +257,10 @@ public static partial class TextExtensions
 			}
 
 			int len;
-			if(removeEmpty)
+			if (removeEmpty)
 			{
 				len = source.Length - nextStart;
-				if(len==0) yield break;
+				if (len == 0) yield break;
 			}
 			else
 			{
