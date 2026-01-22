@@ -9,6 +9,30 @@ A set of useful extensions for working with strings, string-segments, spans, enu
 * Avoids allocation wherever possible.
 * v3.x is a major overhaul with much improved methods and expanded tests and coverage.
 * v4.x favored use of `Microsoft.Extensions.Primitives.StringSegments` for string manipulation.
+* **NEW:** Roslyn analyzers to detect inefficient string patterns and suggest modern alternatives!
+
+---
+
+## 🔍 Roslyn Analyzers
+
+Open.Text now includes **Roslyn analyzers** that help you write more efficient code by detecting common string manipulation anti-patterns and suggesting better alternatives using spans and string segments.
+
+### Installation
+
+```bash
+dotnet add package Open.Text.Analyzers
+```
+
+### What it does
+
+The analyzers detect patterns like:
+- `.Substring()` → suggests `.AsSpan()` or span slicing
+- `.Split()` → suggests `.SplitAsSegments()` for zero allocations
+- `.Split()[0]` → suggests `.FirstSplit()` to avoid array allocation
+- String concatenation in loops → suggests `StringBuilder`
+- `.Trim().Equals()` → suggests `.TrimEquals()` to avoid intermediate string
+
+See the [Analyzers README](Analyzers/README.md) for complete documentation.
 
 ---
 
