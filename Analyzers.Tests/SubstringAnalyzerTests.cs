@@ -22,7 +22,7 @@ class TestClass
     void TestMethod()
     {
         string text = ""Hello World"";
-        string sub = text.{|OPENTXT001:Substring(6)|};
+        string sub = {|OPENTXT001:text.Substring(6)|};
     }
 }";
 
@@ -38,7 +38,7 @@ class TestClass
     void TestMethod()
     {
         string text = ""Hello World"";
-        string sub = text.{|OPENTXT001:Substring(0, 5)|};
+        string sub = {|OPENTXT001:text.Substring(0, 5)|};
     }
 }";
 

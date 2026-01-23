@@ -31,6 +31,9 @@ public static class CSharpAnalyzerVerifier<TAnalyzer>
 					is_global = true
 					build_property.TargetFramework = net8.0
 					"""));
+			
+			// Add reference to Open.Text library for extension methods
+			TestState.AdditionalReferences.Add(typeof(Open.Text.TextExtensions).Assembly);
 		}
 	}
 }
@@ -68,6 +71,10 @@ public static class CSharpCodeFixVerifier<TAnalyzer, TCodeFix>
 					is_global = true
 					build_property.TargetFramework = net8.0
 					"""));
+			
+			// Add reference to Open.Text library for extension methods
+			TestState.AdditionalReferences.Add(typeof(Open.Text.TextExtensions).Assembly);
+			FixedState.AdditionalReferences.Add(typeof(Open.Text.TextExtensions).Assembly);
 		}
 	}
 }

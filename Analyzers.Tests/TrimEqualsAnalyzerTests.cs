@@ -15,7 +15,7 @@ class TestClass
     void TestMethod()
     {
         string text = ""  hello  "";
-        bool isEqual = text.Trim().{|OPENTXT005:Equals(""hello"")|};
+        bool isEqual = {|OPENTXT005:text.Trim().Equals(""hello"")|};
     }
 }";
 

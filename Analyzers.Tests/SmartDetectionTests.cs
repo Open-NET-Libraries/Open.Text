@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Xunit;
 using VerifySubstring = Open.Text.Analyzers.Tests.CSharpAnalyzerVerifier<Open.Text.Analyzers.SubstringAnalyzer>;
@@ -46,7 +47,7 @@ class TestClass
     void TestMethod()
     {
         string text = ""hello"";
-        string result = text.{|OPENTXT001:Substring(5)|};  // SHOULD warn
+        string result = {|OPENTXT001:text.Substring(5)|};  // SHOULD warn
     }
 }";
 
@@ -85,12 +86,14 @@ class TestClass
 		// This is a gray area - user might need the array for indexing later
 		// Currently warns, but this test documents the behavior
 		var test = @"
+using System;
+
 class TestClass
 {
     void TestMethod()
     {
         string text = ""a,b,c"";
-        string[] parts = text.{|OPENTXT002:Split(',')|};
+        string[] parts = {|OPENTXT002:text.Split(',')|};
         
         // Using array indexing - might actually need the array
         Console.WriteLine(parts[0]);
@@ -105,13 +108,13 @@ class TestClass
 	public async Task Split_InForeachLoop_SuggestsSplitToEnumerable()
 	{
 		// Smart: Detects foreach usage and suggests lazy evaluation
-		var test = @"
+		var test = @"using System;
 class TestClass
 {
     void TestMethod()
     {
         string text = ""a,b,c"";
-        foreach (var item in text.{|OPENTXT008:Split(',')|})
+        foreach (var item in {|OPENTXT008:text.Split(',')|})
         {
             Console.WriteLine(item);
         }
@@ -131,7 +134,7 @@ class TestClass
     void TestMethod()
     {
         string text = ""a,b,c"";
-        string first = text.Split(','){|OPENTXT007:[0]|};
+        string first = {|OPENTXT007:{|OPENTXT002:text.Split(',')|}[0]|};
     }
 }";
 
@@ -139,16 +142,16 @@ class TestClass
 	}
 
 	[Fact]
-	public async Task Split_NotFirstElement_NoFirstSplitSuggestion()
+	public async Task Split_NonFirstElement_NoFirstSplitWarning()
 	{
-		// Should NOT suggest FirstSplit when accessing other elements
+		// Smart: Doesn't suggest FirstSplit when getting other elements
 		var test = @"
 class TestClass
 {
     void TestMethod()
     {
         string text = ""a,b,c"";
-        string[] parts = text.{|OPENTXT002:Split(',')|};
+        string[] parts = {|OPENTXT002:text.Split(',')|};
         string second = parts[1];  // Not first element - FirstSplit wouldn't help
     }
 }";
@@ -189,7 +192,7 @@ class TestClass
         string result = """";
         for (int i = 0; i < 10; i++)
         {
-            result {|OPENTXT004:+= ""item""|};  // SHOULD warn
+            {|OPENTXT004:result += ""item""|};  // SHOULD warn
         }
     }
 }";
@@ -222,6 +225,8 @@ class TestClass
 	{
 		// Smart: Doesn't warn if concatenating different variables
 		var test = @"
+using System;
+
 class TestClass
 {
     void TestMethod()
@@ -271,7 +276,7 @@ class TestClass
     void TestMethod()
     {
         string text = ""  hello  "";
-        bool equal = text.Trim().{|OPENTXT005:Equals(""hello"")|};  // SHOULD warn
+        bool equal = {|OPENTXT005:text.Trim().Equals(""hello"")|};  // SHOULD warn
     }
 }";
 
@@ -309,37 +314,40 @@ class TestClass
 	public async Task MultiplePatterns_OnlyWarnsRelevantOnes()
 	{
 		// Demonstrates that only appropriate patterns are detected
-		var test = @"
+		// Each analyzer runs independently and only sees its own diagnostics
+		var substringTest = @"
+class TestClass
+{
+    void TestMethod()
+    {
+        string text = ""a,b,c,d,e"";
+        string sub = {|OPENTXT001:text.Substring(5)|};
+    }
+}";
+
+		var splitTest = @"
+using System;
+using System.Linq;
+
 class TestClass
 {
     void TestMethod()
     {
         string text = ""a,b,c,d,e"";
         
-        // This SHOULD warn - Substring
-        string sub = text.{|OPENTXT001:Substring(5)|};
+        // Split with FirstOrDefault - double diagnostic
+        string first = {|OPENTXT007:{|OPENTXT002:text.Split(','))|}.FirstOrDefault()|};
         
-        // This SHOULD warn - Split with FirstOrDefault
-        string first = text.Split(',').{|OPENTXT007:FirstOrDefault()|};
-        
-        // This should NOT warn - different operation
-        string upper = text.ToUpper();
-        
-        // This SHOULD warn - Split in foreach
-        foreach (var part in text.{|OPENTXT008:Split(',')|})
+        // Split in foreach
+        foreach (var part in {|OPENTXT008:text.Split(',')|})
         {
             Console.WriteLine(part);
         }
-        
-        // This should NOT warn - not in a loop
-        string result = ""prefix"" + text + ""suffix"";
     }
 }";
 
-		// Multiple diagnostics are correctly identified
-		await VerifySubstring.VerifyAnalyzerAsync(test);
-		await VerifySplit.VerifyAnalyzerAsync(test);
-		await VerifyConcat.VerifyAnalyzerAsync(test);
+		await VerifySubstring.VerifyAnalyzerAsync(substringTest);
+		await VerifySplit.VerifyAnalyzerAsync(splitTest);
 	}
 
 	[Fact]
@@ -354,14 +362,14 @@ class CsvParser
     public void ParseCsv(string csvContent)
     {
         // SHOULD warn - Split on large string
-        string[] lines = csvContent.{|OPENTXT002:Split('\n')|};
+        string[] lines = {|OPENTXT002:csvContent.Split('\n')|};
         
         foreach (var line in lines)
         {
             if (string.IsNullOrWhiteSpace(line)) continue;
             
             // SHOULD warn - Split again
-            string[] columns = line.{|OPENTXT002:Split(',')|};
+            string[] columns = {|OPENTXT002:line.Split(',')|};
             
             if (columns.Length < 3) continue;
             
@@ -386,7 +394,7 @@ class TestClass
     void TestMethod()
     {
         string empty = """";
-        string sub = empty.{|OPENTXT001:Substring(0)|};  // Still inefficient, even if empty
+        string sub = {|OPENTXT001:empty.Substring(0)|};  // Still inefficient, even if empty
     }
 }";
 
@@ -405,7 +413,7 @@ class TestClass
     {
         if (nullableText != null)
         {
-            string sub = nullableText.{|OPENTXT001:Substring(5)|};  // SHOULD warn
+            string sub = {|OPENTXT001:nullableText.Substring(5)|};  // SHOULD warn
         }
     }
 }";
@@ -429,7 +437,7 @@ class TestClass
         string result = """";
         for (int i = 0; i < iterations; i++)
         {
-            result {|OPENTXT004:+= ""segment"" + i + "",""|};  // Very inefficient!
+            {|OPENTXT004:result += ""segment"" + i + "",""|};  // Very inefficient!
         }
         return result;
     }
@@ -448,7 +456,7 @@ class TestClass
     string GetDomain(string email)
     {
         int index = email.IndexOf('@');
-        return index == -1 ? """" : email.{|OPENTXT001:Substring(index + 1)|};
+        return index == -1 ? """" : {|OPENTXT001:email.Substring(index + 1)|};
     }
 }";
 

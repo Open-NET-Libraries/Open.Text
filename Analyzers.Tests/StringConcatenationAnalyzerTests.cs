@@ -17,7 +17,7 @@ class TestClass
         string result = """";
         for (int i = 0; i < 10; i++)
         {
-            result {|OPENTXT004:+= ""a""|};
+            {|OPENTXT004:result += ""a""|};
         }
     }
 }";
@@ -36,7 +36,7 @@ class TestClass
         string result = """";
         foreach (var item in new[] { ""a"", ""b"", ""c"" })
         {
-            result {|OPENTXT004:+= item|};
+            {|OPENTXT004:result += item|};
         }
     }
 }";
@@ -56,7 +56,7 @@ class TestClass
         int i = 0;
         while (i < 10)
         {
-            result {|OPENTXT004:= result + ""a""|};
+            {|OPENTXT004:result = result + ""a""|};
             i++;
         }
     }

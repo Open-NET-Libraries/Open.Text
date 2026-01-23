@@ -43,7 +43,7 @@ internal static class DiagnosticDescriptors
 	public static readonly DiagnosticDescriptor UseStringBuilderInLoop = new(
 		id: "OPENTXT004",
 		title: "Avoid string concatenation in loops",
-		messageFormat: "String concatenation in a loop creates multiple string allocations. Consider using StringBuilder",
+		messageFormat: "String concatenation in a loop creates multiple string allocations. Consider using StringBuilder.",
 		category: Category,
 		defaultSeverity: DiagnosticSeverity.Warning,
 		isEnabledByDefault: true,
