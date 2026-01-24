@@ -1,10 +1,8 @@
-using System;
-using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.Testing;
+using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Testing;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Microsoft.CodeAnalysis.CodeFixes;
-using Xunit;
+using Microsoft.CodeAnalysis.Testing;
+using System.Threading.Tasks;
 
 namespace Open.Text.Analyzers.Tests;
 
@@ -31,7 +29,7 @@ public static class CSharpAnalyzerVerifier<TAnalyzer>
 					is_global = true
 					build_property.TargetFramework = net8.0
 					"""));
-			
+
 			// Add reference to Open.Text library for extension methods
 			TestState.AdditionalReferences.Add(typeof(Open.Text.TextExtensions).Assembly);
 		}
@@ -46,10 +44,10 @@ public static class CSharpCodeFixVerifier<TAnalyzer, TCodeFix>
 		=> CSharpCodeFixVerifier<TAnalyzer, TCodeFix, DefaultVerifier>.Diagnostic(diagnosticId);
 
 	public static Task VerifyCodeFixAsync(string source, string fixedSource)
-		=> VerifyCodeFixAsync(source, Array.Empty<DiagnosticResult>(), fixedSource);
+		=> VerifyCodeFixAsync(source, [], fixedSource);
 
 	public static Task VerifyCodeFixAsync(string source, DiagnosticResult expected, string fixedSource)
-		=> VerifyCodeFixAsync(source, new[] { expected }, fixedSource);
+		=> VerifyCodeFixAsync(source, [expected], fixedSource);
 
 	public static Task VerifyCodeFixAsync(string source, DiagnosticResult[] expected, string fixedSource)
 	{
@@ -71,7 +69,7 @@ public static class CSharpCodeFixVerifier<TAnalyzer, TCodeFix>
 					is_global = true
 					build_property.TargetFramework = net8.0
 					"""));
-			
+
 			// Add reference to Open.Text library for extension methods
 			TestState.AdditionalReferences.Add(typeof(Open.Text.TextExtensions).Assembly);
 			FixedState.AdditionalReferences.Add(typeof(Open.Text.TextExtensions).Assembly);

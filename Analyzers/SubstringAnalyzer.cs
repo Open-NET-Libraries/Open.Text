@@ -1,8 +1,8 @@
-using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Collections.Immutable;
 
 namespace Open.Text.Analyzers;
 
@@ -12,7 +12,7 @@ namespace Open.Text.Analyzers;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class SubstringAnalyzer : DiagnosticAnalyzer
 {
-	public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(DiagnosticDescriptors.UseSpanInsteadOfSubstring);
+	public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [DiagnosticDescriptors.UseSpanInsteadOfSubstring];
 
 	public override void Initialize(AnalysisContext context)
 	{

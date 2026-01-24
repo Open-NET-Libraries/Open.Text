@@ -1,8 +1,8 @@
-using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Collections.Immutable;
 
 namespace Open.Text.Analyzers;
 
@@ -18,7 +18,7 @@ public class StringConcatenationAnalyzer : DiagnosticAnalyzer
 	{
 		context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 		context.EnableConcurrentExecution();
-		context.RegisterSyntaxNodeAction(AnalyzeAssignment, 
+		context.RegisterSyntaxNodeAction(AnalyzeAssignment,
 			SyntaxKind.AddAssignmentExpression,
 			SyntaxKind.SimpleAssignmentExpression);
 	}

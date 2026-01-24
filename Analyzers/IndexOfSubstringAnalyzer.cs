@@ -1,9 +1,9 @@
-using System.Collections.Immutable;
-using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Collections.Immutable;
+using System.Linq;
 
 namespace Open.Text.Analyzers;
 
@@ -13,7 +13,7 @@ namespace Open.Text.Analyzers;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class IndexOfSubstringAnalyzer : DiagnosticAnalyzer
 {
-	public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(DiagnosticDescriptors.UseSpanForIndexOfSubstring);
+	public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [DiagnosticDescriptors.UseSpanForIndexOfSubstring];
 
 	public override void Initialize(AnalysisContext context)
 	{
@@ -97,7 +97,7 @@ public class IndexOfSubstringAnalyzer : DiagnosticAnalyzer
 	private static bool IsIndexOfCall(InvocationExpressionSyntax invocation, SyntaxNodeAnalysisContext context)
 	{
 		if (invocation.Expression is MemberAccessExpressionSyntax memberAccess &&
-			(memberAccess.Name.Identifier.Text == "IndexOf" || 
+			(memberAccess.Name.Identifier.Text == "IndexOf" ||
 			 memberAccess.Name.Identifier.Text == "LastIndexOf"))
 		{
 			var symbolInfo = context.SemanticModel.GetSymbolInfo(memberAccess, context.CancellationToken);

@@ -279,7 +279,7 @@ public static partial class TextExtensions
 		{
 			0 => format,
 			1 => string.Format(cultureInfo ?? CultureInfo.InvariantCulture, format, values[0]),
-			_ => string.Format(cultureInfo ?? CultureInfo.InvariantCulture, format, values as object[] ?? values.Cast<object>().ToArray()),
+			_ => string.Format(cultureInfo ?? CultureInfo.InvariantCulture, format, values as object[] ?? [.. values.Cast<object>()]),
 		};
 
 	/// <summary>

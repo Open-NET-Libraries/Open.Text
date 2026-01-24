@@ -5,7 +5,7 @@ namespace Open.Text.Benchmarks;
 
 public class EnumToStringTests
 {
-	static readonly IReadOnlyList<Greek> Values = Enum.GetValues(typeof(Greek)).Cast<Greek>().ToArray();
+	static readonly IReadOnlyList<Greek> Values = [.. Enum.GetValues(typeof(Greek)).Cast<Greek>()];
 
 	[Benchmark(Baseline = true)]
 	public void EnumToString()

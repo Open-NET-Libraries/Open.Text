@@ -1,13 +1,13 @@
-using System.Collections.Immutable;
-using System.Composition;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Collections.Immutable;
+using System.Composition;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Open.Text.Analyzers;
 
@@ -29,7 +29,7 @@ public class SplitCodeFixProvider : CodeFixProvider
 		var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 		if (root == null) return;
 
-		var diagnostic = context.Diagnostics.First();
+		var diagnostic = context.Diagnostics[0];
 		var diagnosticSpan = diagnostic.Location.SourceSpan;
 
 		foreach (var diagnosticId in context.Diagnostics.Select(d => d.Id).Distinct())
@@ -37,67 +37,66 @@ public class SplitCodeFixProvider : CodeFixProvider
 			switch (diagnosticId)
 			{
 				case "OPENTXT002": // UseSplitAsSegments
+				{
+					var invocation = root.FindToken(diagnosticSpan.Start).Parent?
+						.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().FirstOrDefault();
+					if (invocation != null)
 					{
-						var invocation = root.FindToken(diagnosticSpan.Start).Parent?
-							.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().FirstOrDefault();
-						if (invocation != null)
-						{
-							context.RegisterCodeFix(
-								CodeAction.Create(
-									title: "Use SplitAsSegments",
-									createChangedDocument: c => ReplaceMethodNameAsync(context.Document, invocation, "SplitAsSegments", c),
-									equivalenceKey: "UseSplitAsSegments"),
-								diagnostic);
-						}
-						break;
+						context.RegisterCodeFix(
+							CodeAction.Create(
+								title: "Use SplitAsSegments",
+								createChangedDocument: c => ReplaceMethodNameAsync(context.Document, invocation, "SplitAsSegments", c),
+								equivalenceKey: "UseSplitAsSegments"),
+							diagnostic);
 					}
+					break;
+				}
 
 				case "OPENTXT007": // UseFirstSplitInsteadOfSplitFirst
-					{
-						var node = root.FindToken(diagnosticSpan.Start).Parent?
-							.AncestorsAndSelf().FirstOrDefault(n => 
-								n is InvocationExpressionSyntax || 
-								n is ElementAccessExpressionSyntax);
+				{
+					var node = root.FindToken(diagnosticSpan.Start).Parent?
+						.AncestorsAndSelf().FirstOrDefault(n =>
+							n is InvocationExpressionSyntax or ElementAccessExpressionSyntax);
 
-						if (node is InvocationExpressionSyntax invocation &&
-							invocation.Expression is MemberAccessExpressionSyntax memberAccess &&
-							memberAccess.Expression is InvocationExpressionSyntax splitInvocation)
-						{
-							context.RegisterCodeFix(
-								CodeAction.Create(
-									title: "Use FirstSplit",
-									createChangedDocument: c => ReplaceWithFirstSplitAsync(context.Document, invocation, splitInvocation, c),
-									equivalenceKey: "UseFirstSplit"),
-								diagnostic);
-						}
-						else if (node is ElementAccessExpressionSyntax elementAccess &&
-								 elementAccess.Expression is InvocationExpressionSyntax splitInv)
-						{
-							context.RegisterCodeFix(
-								CodeAction.Create(
-									title: "Use FirstSplit",
-									createChangedDocument: c => ReplaceElementAccessWithFirstSplitAsync(context.Document, elementAccess, splitInv, c),
-									equivalenceKey: "UseFirstSplit"),
-								diagnostic);
-						}
-						break;
+					if (node is InvocationExpressionSyntax invocation &&
+						invocation.Expression is MemberAccessExpressionSyntax memberAccess &&
+						memberAccess.Expression is InvocationExpressionSyntax splitInvocation)
+					{
+						context.RegisterCodeFix(
+							CodeAction.Create(
+								title: "Use FirstSplit",
+								createChangedDocument: c => ReplaceWithFirstSplitAsync(context.Document, invocation, splitInvocation, c),
+								equivalenceKey: "UseFirstSplit"),
+							diagnostic);
 					}
+					else if (node is ElementAccessExpressionSyntax elementAccess &&
+							 elementAccess.Expression is InvocationExpressionSyntax splitInv)
+					{
+						context.RegisterCodeFix(
+							CodeAction.Create(
+								title: "Use FirstSplit",
+								createChangedDocument: c => ReplaceElementAccessWithFirstSplitAsync(context.Document, elementAccess, splitInv, c),
+								equivalenceKey: "UseFirstSplit"),
+							diagnostic);
+					}
+					break;
+				}
 
 				case "OPENTXT008": // UseSplitToEnumerable
+				{
+					var invocation = root.FindToken(diagnosticSpan.Start).Parent?
+						.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().FirstOrDefault();
+					if (invocation != null)
 					{
-						var invocation = root.FindToken(diagnosticSpan.Start).Parent?
-							.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().FirstOrDefault();
-						if (invocation != null)
-						{
-							context.RegisterCodeFix(
-								CodeAction.Create(
-									title: "Use SplitToEnumerable",
-									createChangedDocument: c => ReplaceMethodNameAsync(context.Document, invocation, "SplitToEnumerable", c),
-									equivalenceKey: "UseSplitToEnumerable"),
-								diagnostic);
-						}
-						break;
+						context.RegisterCodeFix(
+							CodeAction.Create(
+								title: "Use SplitToEnumerable",
+								createChangedDocument: c => ReplaceMethodNameAsync(context.Document, invocation, "SplitToEnumerable", c),
+								equivalenceKey: "UseSplitToEnumerable"),
+							diagnostic);
 					}
+					break;
+				}
 			}
 		}
 	}
@@ -136,7 +135,7 @@ public class SplitCodeFixProvider : CodeFixProvider
 		{
 			// Create: source.FirstSplit(args, out int nextIndex)
 			var newMemberAccess = splitMemberAccess.WithName(SyntaxFactory.IdentifierName("FirstSplit"));
-			
+
 			// Add the "out int nextIndex" parameter
 			var newArguments = splitInvocation.ArgumentList.Arguments.Add(
 				SyntaxFactory.Argument(
@@ -177,7 +176,7 @@ public class SplitCodeFixProvider : CodeFixProvider
 		if (splitInvocation.Expression is MemberAccessExpressionSyntax splitMemberAccess)
 		{
 			var newMemberAccess = splitMemberAccess.WithName(SyntaxFactory.IdentifierName("FirstSplit"));
-			
+
 			var newArguments = splitInvocation.ArgumentList.Arguments.Add(
 				SyntaxFactory.Argument(
 					SyntaxFactory.DeclarationExpression(

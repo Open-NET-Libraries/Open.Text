@@ -1,6 +1,7 @@
 ﻿using BenchmarkDotNet.Attributes;
 using CommandLine;
 using FastEnumUtility;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Open.Text.Benchmarks;
 
@@ -16,26 +17,24 @@ namespace Open.Text.Benchmarks;
 |           FastEnumParse |     True |       True | 72.12 ns | 0.451 ns | 0.352 ns |  4.17 |    0.05 |         - |
 */
 
+[SuppressMessage("Usage", "BDN1302:Unnecessary single value passed to [Params] attribute")]
 [MemoryDiagnoser]
 public class EnumParseTests
 {
-	private bool useValid;
-	private bool ignoreCase;
-
 	Tests _tests = new InvalidTests();
 
 	void SetTests()
-		=> _tests = useValid
-			? (ignoreCase ? new ValidTestsIC() : new ValidTests())
-			: (ignoreCase ? new InvalidTestsIC() : new InvalidTests());
+		=> _tests = UseValid
+			? (IgnoreCase ? new ValidTestsIC() : new ValidTests())
+			: (IgnoreCase ? new InvalidTestsIC() : new InvalidTests());
 
 	[Params(true/*, false*/)]
 	public bool UseValid
 	{
-		get => useValid;
+		get;
 		set
 		{
-			useValid = value;
+			field = value;
 			SetTests();
 		}
 	}
@@ -43,10 +42,10 @@ public class EnumParseTests
 	[Params(false/*, true*/)]
 	public bool IgnoreCase
 	{
-		get => ignoreCase;
+		get;
 		set
 		{
-			ignoreCase = value;
+			field = value;
 			SetTests();
 		}
 	}
@@ -262,8 +261,7 @@ public class EnumParseTests
 		}
 
 		static readonly Dictionary<string, Greek> LookupD
-			= Enum
-			.GetValues(typeof(Greek))
+			= Enum.GetValues(typeof(Greek))
 			.Cast<Greek>()
 			.ToDictionary(e => e.GetName(), e => e, StringComparer.OrdinalIgnoreCase);
 

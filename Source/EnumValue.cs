@@ -16,13 +16,11 @@ public readonly struct EnumValue<TEnum>
 	: IEquatable<EnumValue<TEnum>>, IEquatable<EnumValueCaseIgnored<TEnum>>, IEquatable<TEnum>
 	where TEnum : notnull, Enum
 {
-	private static Type? _underlyingType;
-
 	/// <summary>
 	/// The underlying type of <typeparamref name="TEnum"/>.
 	/// </summary>
 	[SuppressMessage("Roslynator", "RCS1158:Static member in generic type should use a type parameter.")]
-	public static Type UnderlyingType => _underlyingType ??= Enum.GetUnderlyingType(typeof(TEnum));
+	public static Type UnderlyingType => field ??= Enum.GetUnderlyingType(typeof(TEnum));
 
 	/// <summary>
 	/// Constructs an <see cref="EnumValue{TEnum}"/> using the provided <typeparamref name="TEnum"/> value.
@@ -48,17 +46,15 @@ public readonly struct EnumValue<TEnum>
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public override string ToString() => NameLookup(Value);
 
-	private static IReadOnlyList<TEnum>? _values;
 	/// <summary>
 	/// Precompiled typed list of all enum values.
 	/// </summary>
 	public static IReadOnlyList<TEnum> Values
-		=> LazyInitializer.EnsureInitialized(ref _values,
+		=> LazyInitializer.EnsureInitialized(ref field,
 			() => Array.AsReadOnly(Enum.GetValues(typeof(TEnum)).Cast<TEnum>().ToArray()))!;
 
-	private static ConcurrentDictionary<TEnum, IReadOnlyList<Attribute>>? _attributes;
 	internal static ConcurrentDictionary<TEnum, IReadOnlyList<Attribute>> Attributes
-		=> LazyInitializer.EnsureInitialized(ref _attributes)!;
+		=> LazyInitializer.EnsureInitialized(ref field)!;
 
 	private static Func<TEnum, string> GetEnumNameDelegate()
 	{
@@ -73,16 +69,15 @@ public readonly struct EnumValue<TEnum>
 					Default(tResult)
 				),
 				null,
-				Values.OrderBy(v => string.Intern(v.ToString())).Select(v => SwitchCase(
+				[.. Values.OrderBy(v => string.Intern(v.ToString())).Select(v => SwitchCase(
 					Constant(string.Intern(v.ToString())),
 					Constant(v)
-				)).ToArray()
+				))]
 			), eValue).Compile();
 	}
 
-	private static Func<TEnum, string>? _nameLookup;
 	internal static Func<TEnum, string> NameLookup
-		=> LazyInitializer.EnsureInitialized(ref _nameLookup,
+		=> LazyInitializer.EnsureInitialized(ref field,
 			GetEnumNameDelegate)!;
 	internal static Func<string, ValueLookupResult> GetEnumTryParseDelegate()
 	{
@@ -91,21 +86,20 @@ public readonly struct EnumValue<TEnum>
 		Expression defaultExpression = CreateNewTuple(false, default!);
 		IEnumerable<(TEnum value, string name)> enumValues = Values.Select(v => (value: v, name: string.Intern(v.ToString())));
 		IOrderedEnumerable<IGrouping<int, (TEnum value, string name)>> nameGroups = enumValues.GroupBy(v => v.name.Length).OrderBy(g => g.Key);
-		SwitchCase[] lengthCheckCases = nameGroups.Select(group =>
+		SwitchCase[] lengthCheckCases = [.. nameGroups.Select(group =>
 			SwitchCase(
 				Switch(
 					valueParam,
 					defaultExpression,
 					null,
-					group.OrderBy(v => v.name).Select(v => SwitchCase(
+					[.. group.OrderBy(v => v.name).Select(v => SwitchCase(
 						CreateNewTuple(true, v.value),
 						Constant(v.name)
-					))
-					.ToArray()
+					))]
 				),
 				Constant(group.Key)
 			)
-		).ToArray();
+		)];
 
 		return Lambda<Func<string, ValueLookupResult>>(
 			Block([lengthParam],
@@ -140,26 +134,24 @@ public readonly struct EnumValue<TEnum>
 		}
 	}
 
-	private static Func<string, ValueLookupResult>? _valueLookup;
 	internal static Func<string, ValueLookupResult> ValueLookup
-		=> LazyInitializer.EnsureInitialized(ref _valueLookup, GetEnumTryParseDelegate)!;
+		=> LazyInitializer.EnsureInitialized(ref field, GetEnumTryParseDelegate)!;
 
-	private static IReadOnlyDictionary<string, TEnum>? _ignoreCaseLookup;
 	internal static IReadOnlyDictionary<string, TEnum> IgnoreCaseLookup
-		=> LazyInitializer.EnsureInitialized(ref _ignoreCaseLookup,
-			() =>
+		=> LazyInitializer.EnsureInitialized(ref field,
+		() =>
+		{
+			// If the enum has duplicate values, we want to use the first one.
+			var result = new Dictionary<string, TEnum>(StringComparer.OrdinalIgnoreCase);
+			foreach (TEnum e in Values)
 			{
-				// If the enum has duplicate values, we want to use the first one.
-				var result = new Dictionary<string, TEnum>(StringComparer.OrdinalIgnoreCase);
-				foreach (TEnum e in Values)
-				{
-					string v = Enum.GetName(typeof(TEnum), e)!;
-					if (result.ContainsKey(v)) continue;
-					result[v] = e;
-				}
+				string v = Enum.GetName(typeof(TEnum), e)!;
+				if (result.ContainsKey(v)) continue;
+				result[v] = e;
+			}
 
-				return result;
-			})!;
+			return result;
+		})!;
 
 	private static Entry[]?[] CreateLookup()
 	{
@@ -234,9 +226,8 @@ public readonly struct EnumValue<TEnum>
 		}
 	}
 
-	private static Entry[]?[]? _lookup;
 	internal static Entry[]?[] Lookup
-		=> LazyInitializer.EnsureInitialized(ref _lookup,
+		=> LazyInitializer.EnsureInitialized(ref field,
 			() => CreateLookup())!;
 
 	/// <summary>
