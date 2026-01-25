@@ -34,6 +34,16 @@ public static partial class TextExtensions
 		};
 	}
 
+	// Cover the edge case of string null:
+
+	/// <inheritdoc cref="Equals(ReadOnlySpan{char}, StringSegment, StringComparison)"/>
+	public static bool Equals(this Span<char> source, string? other, StringComparison comparisonType)
+		=> other is not null && source.Equals(other.AsSpan(), comparisonType);
+
+	/// <inheritdoc cref="Equals(ReadOnlySpan{char}, StringSegment, StringComparison)"/>
+	public static bool Equals(this ReadOnlySpan<char> source, string? other, StringComparison comparisonType)
+		=> other is not null && source.Equals(other.AsSpan(), comparisonType);
+
 	/// <inheritdoc cref="Equals(ReadOnlySpan{char}, StringSegment, StringComparison)"/>
 	public static bool Equals(this Span<char> source, ReadOnlySpan<char> other, StringComparison comparisonType)
 	{
