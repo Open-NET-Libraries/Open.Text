@@ -29,7 +29,7 @@ public class IndexOfSubstringAnalyzer : DiagnosticAnalyzer
 		if (method.Body != null)
 			AnalyzeBlock(context, method.Body.Statements);
 		else if (method.ExpressionBody != null)
-			AnalyzeExpressionBody(context, method.ExpressionBody);
+			AnalyzeExpressionBody();
 	}
 
 	private static void AnalyzeLocalFunction(SyntaxNodeAnalysisContext context)
@@ -38,7 +38,7 @@ public class IndexOfSubstringAnalyzer : DiagnosticAnalyzer
 		if (localFunction.Body != null)
 			AnalyzeBlock(context, localFunction.Body.Statements);
 		else if (localFunction.ExpressionBody != null)
-			AnalyzeExpressionBody(context, localFunction.ExpressionBody);
+			AnalyzeExpressionBody();
 	}
 
 	private static void AnalyzeBlock(SyntaxNodeAnalysisContext context, SyntaxList<StatementSyntax> statements)
@@ -56,7 +56,7 @@ public class IndexOfSubstringAnalyzer : DiagnosticAnalyzer
 						{
 							// Look ahead for Substring call using this variable
 							var variableName = variable.Identifier.Text;
-							if (FindSubstringUsage(statements.Skip(i + 1), variableName, context, out var substringLocation))
+							if (FindSubstringUsage(statements.Skip(i + 1), variableName, out var substringLocation))
 							{
 								var diagnostic = Diagnostic.Create(
 									DiagnosticDescriptors.UseSpanForIndexOfSubstring,
@@ -76,7 +76,7 @@ public class IndexOfSubstringAnalyzer : DiagnosticAnalyzer
 				if (IsIndexOfCall(indexOfCall, context))
 				{
 					var variableName = identifier.Identifier.Text;
-					if (FindSubstringUsage(statements.Skip(i + 1), variableName, context, out var substringLocation))
+				if (FindSubstringUsage(statements.Skip(i + 1), variableName, out var substringLocation))
 					{
 						var diagnostic = Diagnostic.Create(
 							DiagnosticDescriptors.UseSpanForIndexOfSubstring,
@@ -88,7 +88,7 @@ public class IndexOfSubstringAnalyzer : DiagnosticAnalyzer
 		}
 	}
 
-	private static void AnalyzeExpressionBody(SyntaxNodeAnalysisContext context, ArrowExpressionClauseSyntax expressionBody)
+	private static void AnalyzeExpressionBody()
 	{
 		// For expression-bodied members, we can check if there's a chained pattern
 		// This is a simplified check for common patterns
@@ -114,7 +114,6 @@ public class IndexOfSubstringAnalyzer : DiagnosticAnalyzer
 	private static bool FindSubstringUsage(
 		System.Collections.Generic.IEnumerable<StatementSyntax> statements,
 		string variableName,
-		SyntaxNodeAnalysisContext context,
 		out Location? location)
 	{
 		location = null;
