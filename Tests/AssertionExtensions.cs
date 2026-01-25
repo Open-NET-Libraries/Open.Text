@@ -7,42 +7,30 @@ public static class AssertionExtensions
 {
 	public static AssertionResult<T> Should<T>(this T actual) => new(actual);
 
-	public readonly struct AssertionResult<T>
+	public readonly struct AssertionResult<T>(T actual)
 	{
-		private readonly T _actual;
+		public void Be(T expected) => Assert.Equal(expected, actual);
 
-		public AssertionResult(T actual) => _actual = actual;
-
-		public void Be(T expected) => Assert.Equal(expected, _actual);
-		
-		public void BeEquivalentTo(T expected) => Assert.Equal(expected, _actual);
+		public void BeEquivalentTo(T expected) => Assert.Equal(expected, actual);
 	}
 
 	public static BoolAssertionResult Should(this bool actual) => new(actual);
 
-	public readonly struct BoolAssertionResult
+	public readonly struct BoolAssertionResult(bool actual)
 	{
-		private readonly bool _actual;
+		public void Be(bool expected) => Assert.Equal(expected, actual);
 
-		public BoolAssertionResult(bool actual) => _actual = actual;
+		public void BeTrue() => Assert.True(actual);
 
-		public void Be(bool expected) => Assert.Equal(expected, _actual);
-		
-		public void BeTrue() => Assert.True(_actual);
-		
-		public void BeFalse() => Assert.False(_actual);
+		public void BeFalse() => Assert.False(actual);
 	}
 
 	public static StringAssertionResult Should(this string? actual) => new(actual);
 
-	public readonly struct StringAssertionResult
+	public readonly struct StringAssertionResult(string? actual)
 	{
-		private readonly string? _actual;
+		public void Be(string? expected) => Assert.Equal(expected, actual);
 
-		public StringAssertionResult(string? actual) => _actual = actual;
-
-		public void Be(string? expected) => Assert.Equal(expected, _actual);
-		
-		public void BeEquivalentTo(string? expected) => Assert.Equal(expected, _actual);
+		public void BeEquivalentTo(string? expected) => Assert.Equal(expected, actual);
 	}
 }

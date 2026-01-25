@@ -12,7 +12,7 @@ namespace Open.Text.Analyzers;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class StringConcatenationAnalyzer : DiagnosticAnalyzer
 {
-	public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(DiagnosticDescriptors.UseStringBuilderInLoop);
+	public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [DiagnosticDescriptors.UseStringBuilderInLoop];
 
 	public override void Initialize(AnalysisContext context)
 	{

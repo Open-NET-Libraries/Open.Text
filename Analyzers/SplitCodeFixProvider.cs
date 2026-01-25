@@ -17,10 +17,11 @@ namespace Open.Text.Analyzers;
 [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(SplitCodeFixProvider)), Shared]
 public class SplitCodeFixProvider : CodeFixProvider
 {
-	public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(
-			DiagnosticDescriptors.UseSplitAsSegments.Id,
-			DiagnosticDescriptors.UseFirstSplitInsteadOfSplitFirst.Id,
-			DiagnosticDescriptors.UseSplitToEnumerable.Id);
+	public override ImmutableArray<string> FixableDiagnosticIds => [
+		DiagnosticDescriptors.UseSplitAsSegments.Id,
+		DiagnosticDescriptors.UseFirstSplitInsteadOfSplitFirst.Id,
+		DiagnosticDescriptors.UseSplitToEnumerable.Id,
+	];
 
 	public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
