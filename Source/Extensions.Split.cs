@@ -1,4 +1,6 @@
-﻿namespace Open.Text;
+﻿using ZLinq;
+
+namespace Open.Text;
 
 internal static class SingleEmpty
 {
@@ -238,9 +240,16 @@ public static partial class TextExtensions
 		if (source is null) throw new ArgumentNullException(nameof(source));
 
 		Contract.EndContractBlock();
+#if NET9_0_OR_GREATER
+		// ValueEnumerator is a ref struct in NET9+, so we must materialize
 		return source.AsSegment()
 			.SplitAsSegments(splitCharacter, options)
-			.Select(s => s.ToString());
+			.Select(s => s.ToString())
+			.ToArray();
+#else
+		foreach (var segment in source.AsSegment().SplitAsSegments(splitCharacter, options))
+			yield return segment.ToString();
+#endif
 	}
 
 	/// <summary>
@@ -271,8 +280,17 @@ public static partial class TextExtensions
 		this string source,
 		char splitCharacter,
 		StringSplitOptions options = StringSplitOptions.None)
-		=> SplitAsSegments(source.AsSegment(), splitCharacter, options)
-			.Select(s => s.AsMemory());
+	{
+#if NET9_0_OR_GREATER
+		// ValueEnumerator is a ref struct in NET9+, so we must materialize
+		return SplitAsSegments(source.AsSegment(), splitCharacter, options)
+			.Select(s => s.AsMemory())
+			.ToArray();
+#else
+		foreach (var segment in SplitAsSegments(source.AsSegment(), splitCharacter, options))
+			yield return segment.AsMemory();
+#endif
+	}
 
 	/// <returns>An IEnumerable&lt;ReadOnlyMemory&lt;char&gt;&gt; of the segments.</returns>
 	/// <inheritdoc cref="SplitToEnumerable(string, StringSegment, StringSplitOptions, StringComparison)"/>

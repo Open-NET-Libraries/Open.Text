@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using ZLinq;
 
 namespace Open.Text;
 
@@ -45,14 +46,22 @@ public static partial class TextExtensions
 		=> new(segment);
 
 	/// <inheritdoc cref="SplitToEnumerable(string, char, StringSplitOptions)"/>
-	public static IEnumerable<StringSegment> SplitAsSegments(
+	/// <summary>
+	/// Splits a string by character with zero allocations for direct foreach iteration.
+	/// Returns a ZLinq ValueEnumerable that avoids heap allocations and supports LINQ operations.
+	/// </summary>
+	/// <param name="source">The string to split.</param>
+	/// <param name="splitCharacter">The character to split by.</param>
+	/// <param name="options">String split options.</param>
+	/// <returns>A zero-allocation ValueEnumerable of StringSegment.</returns>
+	public static ValueEnumerable<StringSegmentSplitEnumerator, StringSegment> SplitAsSegments(
 		this string source,
 		char splitCharacter,
 		StringSplitOptions options = StringSplitOptions.None)
 		=> SplitAsSegments(source.AsSegment(), splitCharacter, options);
 
-	/// <inheritdoc cref="SplitToEnumerable(string, char, StringSplitOptions)"/>
-	public static IEnumerable<StringSegment> SplitAsSegments(
+	/// <inheritdoc cref="SplitAsSegments(string, char, StringSplitOptions)"/>
+	public static ValueEnumerable<StringSegmentSplitEnumerator, StringSegment> SplitAsSegments(
 		this StringSegment source,
 		char splitCharacter,
 		StringSplitOptions options = StringSplitOptions.None)
@@ -60,125 +69,8 @@ public static partial class TextExtensions
 		if (!source.HasValue)
 			throw new ArgumentNullException(nameof(source), MustBeSegmentWithValue);
 
-		if (source.Length == 0)
-		{
-			return options.HasFlag(StringSplitOptions.RemoveEmptyEntries)
-				? Enumerable.Empty<StringSegment>()
-				: Enumerable.Repeat(StringSegment.Empty, 1);
-		}
-
-#if NET5_0_OR_GREATER
-		bool trimEach = options.HasFlag(StringSplitOptions.TrimEntries);
-		return options.HasFlag(StringSplitOptions.RemoveEmptyEntries)
-			? SplitAsSegmentsCoreOmitEmpty(trimEach, source, splitCharacter)
-			: SplitAsSegmentsCore(trimEach, source, splitCharacter);
-#else
-		return options.HasFlag(StringSplitOptions.RemoveEmptyEntries)
-			? SplitAsSegmentsCoreOmitEmpty(source, splitCharacter)
-			: SplitAsSegmentsCore(source, splitCharacter);
-#endif
-
-		static IEnumerable<StringSegment> SplitAsSegmentsCore(
-#if NET5_0_OR_GREATER
-			bool trimEach,
-#endif
-			StringSegment source,
-			char splitCharacter)
-		{
-			int startIndex = 0;
-			int len = source.Length;
-
-		loop:
-			int nextIndex = source.IndexOf(splitCharacter, startIndex);
-			if (nextIndex == -1)
-			{
-				StringSegment next = source.Subsegment(startIndex);
-#if NET5_0_OR_GREATER
-				if (trimEach) next = next.Trim();
-#endif
-				yield return next;
-				yield break;
-			}
-			else if (nextIndex == len)
-			{
-				StringSegment next = source.Subsegment(nextIndex, 0);
-#if NET5_0_OR_GREATER
-				if (trimEach) next = next.Trim();
-#endif
-				yield return next;
-				yield break;
-			}
-			else
-			{
-				StringSegment next = source.Subsegment(startIndex, nextIndex - startIndex);
-#if NET5_0_OR_GREATER
-				if (trimEach) next = next.Trim();
-#endif
-				yield return next;
-				++nextIndex;
-			}
-
-			startIndex = nextIndex;
-			goto loop;
-		}
-
-		static IEnumerable<StringSegment> SplitAsSegmentsCoreOmitEmpty(
-#if NET5_0_OR_GREATER
-			bool trimEach,
-#endif
-			StringSegment source,
-			char splitCharacter)
-		{
-			int startIndex = 0;
-			int len = source.Length;
-			Debug.Assert(startIndex != len);
-
-			do
-			{
-				int nextIndex = source.IndexOf(splitCharacter, startIndex);
-				Debug.Assert(nextIndex < len);
-
-				if (nextIndex == -1)
-				{
-					StringSegment next = source.Subsegment(startIndex);
-#if NET5_0_OR_GREATER
-					if (trimEach)
-					{
-						next = next.Trim();
-						if (next.Length == 0) yield break;
-					}
-#endif
-					yield return next;
-					yield break;
-				}
-				else
-				{
-					int length = nextIndex - startIndex;
-					if (length != 0)
-					{
-						StringSegment next = source.Subsegment(startIndex, length);
-#if NET5_0_OR_GREATER
-						if (trimEach)
-						{
-							next = next.Trim();
-							if (next.Length != 0) yield return next;
-						}
-						else
-						{
-							yield return next;
-						}
-#else
-						yield return next;
-#endif
-					}
-
-					++nextIndex;
-				}
-
-				startIndex = nextIndex;
-			}
-			while (startIndex != len);
-		}
+		return new ValueEnumerable<StringSegmentSplitEnumerator, StringSegment>(
+			new StringSegmentSplitEnumerator(source, splitCharacter, options));
 	}
 
 	/// <summary>

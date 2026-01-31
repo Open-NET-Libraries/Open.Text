@@ -12,6 +12,7 @@
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.15.8" />
     <PackageReference Include="FastEnum" Version="2.0.6" />
+    <PackageReference Include="ZLinq" Version="1.5.4" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,6 +1,13 @@
 ﻿using BenchmarkDotNet.Running;
 using Open.Text.Benchmarks;
 
+// Quick allocation test if --quicktest argument provided
+if (args.Length > 0 && args.Contains("--quicktest"))
+{
+	SplitAsSegmentsQuickTest.Run();
+	return;
+}
+
 //BenchmarkSwitcher
 //	.FromAssembly(typeof(Program).Assembly)
 //	.Run(args); // crucial to make it work
@@ -11,4 +18,4 @@ using Open.Text.Benchmarks;
 //BenchmarkRunner.Run<EnumAttributeTests>();
 //BenchmarkRunner.Run<IsDefinedTests>();
 //BenchmarkRunner.Run<StringConcatTests>();
-BenchmarkRunner.Run<IndexOfTests>();
+BenchmarkRunner.Run<SplitAsSegmentsBaselineBenchmark>();
