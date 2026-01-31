@@ -50,39 +50,34 @@ public class IndexOfSubstringAnalyzer : DiagnosticAnalyzer
 			{
 				foreach (var variable in localDecl.Declaration.Variables)
 				{
-					if (variable.Initializer?.Value is InvocationExpressionSyntax indexOfCall)
+					if (variable.Initializer?.Value is InvocationExpressionSyntax indexOfCall && IsIndexOfCall(indexOfCall, context))
 					{
-						if (IsIndexOfCall(indexOfCall, context))
+						// Look ahead for Substring call using this variable
+						var variableName = variable.Identifier.Text;
+						if (FindSubstringUsage(statements.Skip(i + 1), variableName, out var substringLocation))
 						{
-							// Look ahead for Substring call using this variable
-							var variableName = variable.Identifier.Text;
-							if (FindSubstringUsage(statements.Skip(i + 1), variableName, out var substringLocation))
-							{
-								var diagnostic = Diagnostic.Create(
-									DiagnosticDescriptors.UseSpanForIndexOfSubstring,
-									substringLocation);
-								context.ReportDiagnostic(diagnostic);
-							}
+							var diagnostic = Diagnostic.Create(
+								DiagnosticDescriptors.UseSpanForIndexOfSubstring,
+								substringLocation);
+							context.ReportDiagnostic(diagnostic);
 						}
 					}
 				}
 			}
 			// Look for assignment of IndexOf to existing variable
-			else if (statements[i] is ExpressionStatementSyntax exprStmt &&
-					 exprStmt.Expression is AssignmentExpressionSyntax assignment &&
-					 assignment.Left is IdentifierNameSyntax identifier &&
-					 assignment.Right is InvocationExpressionSyntax indexOfCall)
+			else if (statements[i] is ExpressionStatementSyntax exprStmt
+				&& exprStmt.Expression is AssignmentExpressionSyntax assignment
+				&& assignment.Left is IdentifierNameSyntax identifier
+				&& assignment.Right is InvocationExpressionSyntax indexOfCall
+				&& IsIndexOfCall(indexOfCall, context))
 			{
-				if (IsIndexOfCall(indexOfCall, context))
+				var variableName = identifier.Identifier.Text;
+				if (FindSubstringUsage(statements.Skip(i + 1), variableName, out var substringLocation))
 				{
-					var variableName = identifier.Identifier.Text;
-					if (FindSubstringUsage(statements.Skip(i + 1), variableName, out var substringLocation))
-					{
-						var diagnostic = Diagnostic.Create(
-							DiagnosticDescriptors.UseSpanForIndexOfSubstring,
-							substringLocation);
-						context.ReportDiagnostic(diagnostic);
-					}
+					var diagnostic = Diagnostic.Create(
+						DiagnosticDescriptors.UseSpanForIndexOfSubstring,
+						substringLocation);
+					context.ReportDiagnostic(diagnostic);
 				}
 			}
 		}
@@ -120,8 +115,7 @@ public class IndexOfSubstringAnalyzer : DiagnosticAnalyzer
 
 		foreach (var statement in statements)
 		{
-			var invocations = statement.DescendantNodes().OfType<InvocationExpressionSyntax>();
-			foreach (var invocation in invocations)
+			foreach (var invocation in statement.DescendantNodes().OfType<InvocationExpressionSyntax>())
 			{
 				if (invocation.Expression is MemberAccessExpressionSyntax memberAccess &&
 					memberAccess.Name.Identifier.Text == "Substring")
