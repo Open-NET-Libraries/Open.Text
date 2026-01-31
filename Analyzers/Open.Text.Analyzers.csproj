@@ -15,7 +15,7 @@
     <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
     
     <PackageId>Open.Text.Analyzers</PackageId>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <Authors>electricessence</Authors>
     <Description>Roslyn analyzers for detecting inefficient string patterns and suggesting modern alternatives using Span&lt;char&gt;, ReadOnlySpan&lt;char&gt;, and StringSegment.</Description>
     <PackageTags>roslyn;analyzer;string;span;performance;Open.Text</PackageTags>
