@@ -13,3 +13,4 @@ OPENTXT005 | Performance | Info | UseTrimEquals
 OPENTXT006 | Performance | Info | UseAsSegment
 OPENTXT007 | Performance | Info | UseFirstSplitInsteadOfSplitFirst
 OPENTXT008 | Performance | Info | UseSplitToEnumerable
+OPENTXT009 | Performance | Info | UseSplitAsSegmentsNoAlloc

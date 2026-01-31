@@ -9,7 +9,34 @@ A set of useful extensions for working with strings, string-segments, spans, enu
 * Avoids allocation wherever possible.
 * v3.x is a major overhaul with much improved methods and expanded tests and coverage.
 * v4.x favored use of `Microsoft.Extensions.Primitives.StringSegments` for string manipulation.
+* **NEW:** Zero-allocation `*NoAlloc` methods via [ZLinq](https://github.com/Cysharp/ZLinq) integration!
 * **NEW:** Roslyn analyzers to detect inefficient string patterns and suggest modern alternatives!
+
+---
+
+## 📊 Benchmark Summary
+
+Comparing `string.Split()` (BCL) vs `SplitAsSegments` (IEnumerable) vs `SplitAsSegmentsNoAlloc` (ValueEnumerable via ZLinq):
+
+| Category | Method | Time | Allocated |
+|----------|--------|-----:|----------:|
+| **Count** | BCL Split + LINQ Count | 46.9 ns | 256 B |
+| | SplitAsSegments + LINQ Count | 61.9 ns | 88 B |
+| | **SplitAsSegmentsNoAlloc + ZLinq Count** | 55.3 ns | **0 B** ✅ |
+| **LINQ-Chain** | **SplitAsSegmentsNoAlloc + ZLinq** | 50.8 ns | **0 B** ✅ |
+| | BCL + System.Linq | 65.5 ns | 304 B |
+| | SplitAsSegments + System.Linq | 104.4 ns | 152 B |
+| **Large-Foreach** | BCL Split (1000 items) | 7,342 ns | 47,952 B |
+| | SplitAsSegments (1000 items) | 11,740 ns | 88 B |
+| | **SplitAsSegmentsNoAlloc (1000 items)** | 11,557 ns | **0 B** ✅ |
+| **Small-Foreach** | BCL Split | 42.5 ns | 256 B |
+| | **SplitAsSegmentsNoAlloc** | 45.6 ns | **0 B** ✅ |
+| | SplitAsSegments | 72.4 ns | 88 B |
+| **Seq-Split** | **SplitAsSegmentsNoAlloc(string)** | 177.6 ns | **0 B** ✅ |
+| | SplitAsSegments(string) | 215.2 ns | 128 B |
+| | BCL Split(string) | 227.1 ns | 696 B |
+
+> **Key Takeaway:** The `*NoAlloc` methods achieve **zero heap allocations** while maintaining competitive performance—ideal for high-throughput scenarios where GC pressure matters.
 
 ---
 

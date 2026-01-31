@@ -23,11 +23,11 @@ internal static class DiagnosticDescriptors
 	public static readonly DiagnosticDescriptor UseSplitAsSegments = new(
 		id: "OPENTXT002",
 		title: "Use SplitAsSegments to reduce string allocations",
-		messageFormat: "Consider using '.SplitAsSegments({0})' instead of '.Split({0})' to avoid allocating an array and individual strings. Use '.SplitToEnumerable({0})' if you still need strings with lazy evaluation.",
+		messageFormat: "Consider using '.SplitAsSegments({0})' instead of '.Split({0})' to avoid allocating an array and individual strings. For zero-allocation enumeration, use '.SplitAsSegmentsNoAlloc({0})' with ZLinq.",
 		category: Category,
 		defaultSeverity: DiagnosticSeverity.Info,
 		isEnabledByDefault: true,
-		description: "SplitAsSegments returns IEnumerable<StringSegment> which defers string allocation until ToString() is called. SplitToEnumerable provides lazy string allocation with IEnumerable<string>.",
+		description: "SplitAsSegments returns IEnumerable<StringSegment> which defers string allocation until ToString() is called. SplitAsSegmentsNoAlloc returns a ValueEnumerable for zero-allocation foreach loops when used with ZLinq.",
 		helpLinkUri: HelpLinkUriBase + "OPENTXT002.md");
 
 	public static readonly DiagnosticDescriptor UseSpanForIndexOfSubstring = new(
@@ -83,10 +83,20 @@ internal static class DiagnosticDescriptors
 	public static readonly DiagnosticDescriptor UseSplitToEnumerable = new(
 		id: "OPENTXT008",
 		title: "Use SplitToEnumerable for lazy string evaluation",
-		messageFormat: "Consider using '.SplitToEnumerable({0})' instead of '.Split({0})' when iterating results to avoid allocating the full array upfront. For even less allocation, use '.SplitAsSegments({0})' which returns StringSegments.",
+		messageFormat: "Consider using '.SplitToEnumerable({0})' instead of '.Split({0})' when iterating results to avoid allocating the full array upfront. For zero-allocation enumeration, use '.SplitAsSegmentsNoAlloc({0})' with ZLinq, or '.SplitAsSegments({0})' for minimal allocation.",
 		category: Category,
 		defaultSeverity: DiagnosticSeverity.Info,
 		isEnabledByDefault: true,
-		description: "SplitToEnumerable returns IEnumerable<string> with lazy evaluation, avoiding the upfront allocation of the full string array. Strings are still created on demand during iteration.",
+		description: "SplitToEnumerable returns IEnumerable<string> with lazy evaluation, avoiding the upfront allocation of the full string array. For even better performance, use SplitAsSegmentsNoAlloc which returns a ValueEnumerable for zero-allocation foreach loops.",
 		helpLinkUri: HelpLinkUriBase + "OPENTXT008.md");
+
+	public static readonly DiagnosticDescriptor UseSplitAsSegmentsNoAlloc = new(
+		id: "OPENTXT009",
+		title: "Use SplitAsSegmentsNoAlloc for zero-allocation enumeration",
+		messageFormat: "Consider using '.SplitAsSegmentsNoAlloc({0})' for zero-allocation foreach loops. Requires 'using ZLinq;' for LINQ operations.",
+		category: Category,
+		defaultSeverity: DiagnosticSeverity.Info,
+		isEnabledByDefault: true,
+		description: "SplitAsSegmentsNoAlloc returns a ValueEnumerable<StringSegmentSplitEnumerator, StringSegment> that enables zero-allocation enumeration when used with foreach or ZLinq operations.",
+		helpLinkUri: HelpLinkUriBase + "OPENTXT009.md");
 }

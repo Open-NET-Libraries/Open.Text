@@ -1,4 +1,7 @@
-﻿namespace Open.Text.Tests;
+﻿using System.Text.RegularExpressions;
+using ZLinq;
+
+namespace Open.Text.Tests;
 
 [ExcludeFromCodeCoverage]
 public static class StringSegmentTests
@@ -172,6 +175,64 @@ public static class StringSegmentTests
 		var segment = new[] { input.AsSegment() };
 		var result = segment.ReplaceEach(search, replace).JoinToString("");
 		Assert.Equal(expected, result);
+	}
+
+	// Unit tests for Replace/ReplaceNoAlloc
+	[Theory]
+	[InlineData("Hello world", "world", "universe", "Hello universe")]
+	[InlineData("Hello world world", "world", "universe", "Hello universe universe")]
+	[InlineData("aaa", "a", "bb", "bbbbbb")]
+	public static void Replace(string input, string search, string replace, string expected)
+	{
+		var segment = input.AsSegment();
+		// Original Replace
+		var result = segment.Replace(search, replace).JoinToString("");
+		Assert.Equal(expected, result);
+		// NoAlloc variant should produce identical result
+		var resultNoAlloc = segment.ReplaceNoAlloc(search, replace).Select(s => s.ToString()).ToArray();
+		Assert.Equal(expected, string.Concat(resultNoAlloc));
+	}
+
+	// Unit tests for ReplaceAsSegments/ReplaceAsSegmentsNoAlloc
+	[Theory]
+	[InlineData("Hello world", "world", "universe", "Hello universe")]
+	[InlineData("abc123def456ghi", @"\d+", "NUM", "abcNUMdefNUMghi")]
+	public static void ReplaceAsSegments(string input, string pattern, string replace, string expected)
+	{
+		if (pattern.StartsWith(@"\"))
+		{
+			// Regex pattern
+			var regex = new Regex(pattern);
+			var result = input.ReplaceAsSegments(regex, replace).Select(s => s.ToString()).ToArray();
+			Assert.Equal(expected, string.Concat(result));
+			// NoAlloc variant
+			var resultNoAlloc = input.ReplaceAsSegmentsNoAlloc(regex, replace).Select(s => s.ToString()).ToArray();
+			Assert.Equal(expected, string.Concat(resultNoAlloc));
+		}
+		else
+		{
+			// String pattern
+			var result = input.ReplaceAsSegments(pattern, replace).Select(s => s.ToString()).ToArray();
+			Assert.Equal(expected, string.Concat(result));
+			// NoAlloc variant
+			var resultNoAlloc = input.ReplaceAsSegmentsNoAlloc(pattern, replace).Select(s => s.ToString()).ToArray();
+			Assert.Equal(expected, string.Concat(resultNoAlloc));
+		}
+	}
+
+	// Unit tests for Join/JoinNoAlloc
+	[Theory]
+	[InlineData("Hello,there,I,am,Joe", ",", "-", "Hello-there-I-am-Joe")]
+	[InlineData("one::two::three", "::", " | ", "one | two | three")]
+	public static void Join(string input, string splitBy, string joinBy, string expected)
+	{
+		var segments = input.SplitAsSegments(splitBy).ToArray().AsEnumerable();
+		// Original Join
+		var result = segments.Join(joinBy).JoinToString("");
+		Assert.Equal(expected, result);
+		// NoAlloc variant
+		var resultNoAlloc = segments.JoinNoAlloc(joinBy).Select(s => s.ToString()).ToArray();
+		Assert.Equal(expected, string.Concat(resultNoAlloc));
 	}
 
 	[Theory]

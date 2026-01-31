@@ -17,6 +17,7 @@ public class SplitAnalyzer : DiagnosticAnalyzer
 		DiagnosticDescriptors.UseSplitAsSegments,
 		DiagnosticDescriptors.UseFirstSplitInsteadOfSplitFirst,
 		DiagnosticDescriptors.UseSplitToEnumerable,
+		DiagnosticDescriptors.UseSplitAsSegmentsNoAlloc,
 	];
 
 	public override void Initialize(AnalysisContext context)
@@ -67,16 +68,29 @@ public class SplitAnalyzer : DiagnosticAnalyzer
 
 			// Check how the result is used
 			var isUsedInLoop = IsUsedInForeachLoop(invocation);
+			var hasZLinqUsing = HasZLinqUsing(context);
 			var argsString = GetArgumentsString(invocation.ArgumentList.Arguments);
 
 			if (isUsedInLoop)
 			{
-				// Suggest SplitToEnumerable for foreach loops
-				var diagnostic = Diagnostic.Create(
-					DiagnosticDescriptors.UseSplitToEnumerable,
-					invocation.GetLocation(),
-					argsString);
-				context.ReportDiagnostic(diagnostic);
+				if (hasZLinqUsing)
+				{
+					// If ZLinq is available, suggest zero-allocation NoAlloc variant
+					var diagnostic = Diagnostic.Create(
+						DiagnosticDescriptors.UseSplitAsSegmentsNoAlloc,
+						invocation.GetLocation(),
+						argsString);
+					context.ReportDiagnostic(diagnostic);
+				}
+				else
+				{
+					// Suggest SplitToEnumerable for foreach loops without ZLinq
+					var diagnostic = Diagnostic.Create(
+						DiagnosticDescriptors.UseSplitToEnumerable,
+						invocation.GetLocation(),
+						argsString);
+					context.ReportDiagnostic(diagnostic);
+				}
 			}
 			else
 			{
@@ -88,6 +102,16 @@ public class SplitAnalyzer : DiagnosticAnalyzer
 				context.ReportDiagnostic(diagnostic);
 			}
 		}
+	}
+
+	private static bool HasZLinqUsing(SyntaxNodeAnalysisContext context)
+	{
+		var root = context.Node.SyntaxTree.GetRoot(context.CancellationToken);
+		if (root is not CompilationUnitSyntax compilationUnit)
+			return false;
+
+		// Check for 'using ZLinq;' directive
+		return compilationUnit.Usings.Any(u => u.Name?.ToString() == "ZLinq");
 	}
 
 	private static void AnalyzeElementAccess(SyntaxNodeAnalysisContext context)

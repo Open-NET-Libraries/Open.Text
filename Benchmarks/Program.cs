@@ -18,4 +18,5 @@ if (args.Length > 0 && args.Contains("--quicktest"))
 //BenchmarkRunner.Run<EnumAttributeTests>();
 //BenchmarkRunner.Run<IsDefinedTests>();
 //BenchmarkRunner.Run<StringConcatTests>();
-BenchmarkRunner.Run<SplitAsSegmentsBaselineBenchmark>();
+//BenchmarkRunner.Run<SplitAsSegmentsBaselineBenchmark>();
+BenchmarkRunner.Run<SplitAllocationBenchmark>();

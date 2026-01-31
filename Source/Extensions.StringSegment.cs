@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using ZLinq;
 
 namespace Open.Text;
 
@@ -11,10 +10,12 @@ public static partial class TextExtensions
 	/// Creates a StringSegment representing the provided string.
 	/// </summary>
 	/// <param name="buffer">The string the segment belongs to.</param>
-	public static StringSegment AsSegment(this string? buffer) => buffer is null ? default : new(buffer);
+	public static StringSegment AsSegment(this string? buffer)
+		=> buffer is null ? default : new(buffer);
 
 	/// <inheritdoc cref="AsSegment(string, int, int)"/>
-	public static StringSegment AsSegment(this string buffer, int start) => AsSegment(buffer, start, (buffer?.Length ?? 0) - start);
+	public static StringSegment AsSegment(this string buffer, int start)
+		=> AsSegment(buffer, start, (buffer?.Length ?? 0) - start);
 
 	/// <summary>
 	/// Creates a StringSegment representing the provided string.
@@ -34,37 +35,151 @@ public static partial class TextExtensions
 	/// <summary>Shortcut for .AsSegment().Trim().</summary>
 	/// <inheritdoc cref="AsSegment(string)"/>
 	[ExcludeFromCodeCoverage] // Reason: would just test already tested code.
-	public static StringSegment TrimAsSegment(this string buffer) => buffer is null ? default : new StringSegment(buffer).Trim();
+	public static StringSegment TrimAsSegment(this string buffer)
+		=> buffer is null ? default : new StringSegment(buffer).Trim();
 
 	/// <summary>
 	/// Creates a <see cref="StringSegmentEnumerable"/> for enumerating over the characters in the <paramref name="segment"/>.
 	/// </summary>
-	public static StringSegmentEnumerable AsEnumerable(this StringSegment segment) => new(segment);
+	public static StringSegmentEnumerable AsEnumerable(this StringSegment segment)
+		=> new(segment);
 
 	/// <inheritdoc cref="SplitToEnumerable(string, char, StringSplitOptions)"/>
-	/// <summary>
-	/// Splits a string by character with zero allocations for direct foreach iteration.
-	/// Returns a ZLinq ValueEnumerable that avoids heap allocations and supports LINQ operations.
-	/// </summary>
-	/// <param name="source">The string to split.</param>
-	/// <param name="splitCharacter">The character to split by.</param>
-	/// <param name="options">String split options.</param>
-	/// <returns>A zero-allocation ValueEnumerable of StringSegment.</returns>
-	[CLSCompliant(false)]
-	public static ValueEnumerable<StringSegmentSplitEnumerator, StringSegment> SplitAsSegments(
+	public static IEnumerable<StringSegment> SplitAsSegments(
 		this string source,
 		char splitCharacter,
-		StringSplitOptions options = StringSplitOptions.None) => SplitAsSegments(source.AsSegment(), splitCharacter, options);
+		StringSplitOptions options = StringSplitOptions.None)
+		=> SplitAsSegments(source.AsSegment(), splitCharacter, options);
 
-	/// <inheritdoc cref="SplitAsSegments(string, char, StringSplitOptions)"/>
-	[CLSCompliant(false)]
-	public static ValueEnumerable<StringSegmentSplitEnumerator, StringSegment> SplitAsSegments(
+	/// <inheritdoc cref="SplitToEnumerable(string, char, StringSplitOptions)"/>
+	public static IEnumerable<StringSegment> SplitAsSegments(
 		this StringSegment source,
 		char splitCharacter,
-		StringSplitOptions options = StringSplitOptions.None) => source.HasValue
-				? new ValueEnumerable<StringSegmentSplitEnumerator, StringSegment>(
-				new StringSegmentSplitEnumerator(source, splitCharacter, options))
-				: throw new ArgumentNullException(nameof(source), MustBeSegmentWithValue);
+		StringSplitOptions options = StringSplitOptions.None)
+	{
+		if (!source.HasValue)
+			throw new ArgumentNullException(nameof(source), MustBeSegmentWithValue);
+
+		if (source.Length == 0)
+		{
+			return options.HasFlag(StringSplitOptions.RemoveEmptyEntries)
+				? Enumerable.Empty<StringSegment>()
+				: Enumerable.Repeat(StringSegment.Empty, 1);
+		}
+
+#if NET5_0_OR_GREATER
+		bool trimEach = options.HasFlag(StringSplitOptions.TrimEntries);
+		return options.HasFlag(StringSplitOptions.RemoveEmptyEntries)
+			? SplitAsSegmentsCoreOmitEmpty(trimEach, source, splitCharacter)
+			: SplitAsSegmentsCore(trimEach, source, splitCharacter);
+#else
+		return options.HasFlag(StringSplitOptions.RemoveEmptyEntries)
+			? SplitAsSegmentsCoreOmitEmpty(source, splitCharacter)
+			: SplitAsSegmentsCore(source, splitCharacter);
+#endif
+
+		static IEnumerable<StringSegment> SplitAsSegmentsCore(
+#if NET5_0_OR_GREATER
+			bool trimEach,
+#endif
+			StringSegment source,
+			char splitCharacter)
+		{
+			int startIndex = 0;
+			int len = source.Length;
+
+		loop:
+			int nextIndex = source.IndexOf(splitCharacter, startIndex);
+			if (nextIndex == -1)
+			{
+				StringSegment next = source.Subsegment(startIndex);
+#if NET5_0_OR_GREATER
+				if (trimEach) next = next.Trim();
+#endif
+				yield return next;
+				yield break;
+			}
+			else if (nextIndex == len)
+			{
+				StringSegment next = source.Subsegment(nextIndex, 0);
+#if NET5_0_OR_GREATER
+				if (trimEach) next = next.Trim();
+#endif
+				yield return next;
+				yield break;
+			}
+			else
+			{
+				StringSegment next = source.Subsegment(startIndex, nextIndex - startIndex);
+#if NET5_0_OR_GREATER
+				if (trimEach) next = next.Trim();
+#endif
+				yield return next;
+				++nextIndex;
+			}
+
+			startIndex = nextIndex;
+			goto loop;
+		}
+
+		static IEnumerable<StringSegment> SplitAsSegmentsCoreOmitEmpty(
+#if NET5_0_OR_GREATER
+			bool trimEach,
+#endif
+			StringSegment source,
+			char splitCharacter)
+		{
+			int startIndex = 0;
+			int len = source.Length;
+			Debug.Assert(startIndex != len);
+
+			do
+			{
+				int nextIndex = source.IndexOf(splitCharacter, startIndex);
+				Debug.Assert(nextIndex < len);
+
+				if (nextIndex == -1)
+				{
+					StringSegment next = source.Subsegment(startIndex);
+#if NET5_0_OR_GREATER
+					if (trimEach)
+					{
+						next = next.Trim();
+						if (next.Length == 0) yield break;
+					}
+#endif
+					yield return next;
+					yield break;
+				}
+				else
+				{
+					int length = nextIndex - startIndex;
+					if (length != 0)
+					{
+						StringSegment next = source.Subsegment(startIndex, length);
+#if NET5_0_OR_GREATER
+						if (trimEach)
+						{
+							next = next.Trim();
+							if (next.Length != 0) yield return next;
+						}
+						else
+						{
+							yield return next;
+						}
+#else
+						yield return next;
+#endif
+					}
+
+					++nextIndex;
+				}
+
+				startIndex = nextIndex;
+			}
+			while (startIndex != len);
+		}
+	}
 
 	/// <summary>
 	/// Determines whether the specified <see cref="StringSegment"/> is null or empty.
@@ -74,7 +189,8 @@ public static partial class TextExtensions
 	/// <param name="segment">The <see cref="StringSegment"/> to check.</param>
 	/// <returns><see langword="true"/> if the <paramref name="segment"/> is null or its length is zero; otherwise, <see
 	/// langword="false"/>.</returns>
-	public static bool IsNullOrEmpty(this StringSegment segment) => !segment.HasValue || segment.Length == 0;
+	public static bool IsNullOrEmpty(this StringSegment segment)
+		=> !segment.HasValue || segment.Length == 0;
 
 	/// <summary>
 	/// Determines whether the specified <see cref="StringSegment"/> is null, empty, or consists only of white-space
@@ -83,7 +199,8 @@ public static partial class TextExtensions
 	/// <param name="segment">The <see cref="StringSegment"/> to evaluate.</param>
 	/// <returns><see langword="true"/> if the <paramref name="segment"/> is null, empty, or contains only white-space characters;
 	/// otherwise, <see langword="false"/>.</returns>
-	public static bool IsNullOrWhiteSpace(this StringSegment segment) => !segment.HasValue || segment.AsSpan().Trim().Length == 0;
+	public static bool IsNullOrWhiteSpace(this StringSegment segment)
+		=> !segment.HasValue || segment.AsSpan().Trim().Length == 0;
 
 	/// <summary>
 	/// Enumerates a string by segments that are separated by the regular expression matches.
@@ -91,33 +208,92 @@ public static partial class TextExtensions
 	/// <param name="source">The source characters to look through.</param>
 	/// <param name="pattern">The pattern to split by.</param>
 	/// <param name="options">Can specify to omit empty entries.</param>
-	/// <returns>A ValueEnumerable of the segments (zero-allocation when used with foreach or ZLinq).</returns>
-	[CLSCompliant(false)]
-	public static ValueEnumerable<RegexSplitSegmentEnumerator, StringSegment> SplitAsSegments(
+	/// <returns>An enumerable of the segments.</returns>
+	public static IEnumerable<StringSegment> SplitAsSegments(
 		this string source,
 		Regex pattern,
 		StringSplitOptions options = StringSplitOptions.None)
 	{
-		if (source is null) throw new ArgumentNullException(nameof(source));
-		if (pattern is null) throw new ArgumentNullException(nameof(pattern));
-		Contract.EndContractBlock();
+		return source is null
+			? throw new ArgumentNullException(nameof(source))
+			: pattern is null
+			? throw new ArgumentNullException(nameof(pattern))
+			: source.Length == 0
+			? options.HasFlag(StringSplitOptions.RemoveEmptyEntries)
+				? Enumerable.Empty<StringSegment>()
+				: Enumerable.Repeat(StringSegment.Empty, 1)
+			: SplitCore(source, pattern, options);
 
-		return new ValueEnumerable<RegexSplitSegmentEnumerator, StringSegment>(
-			new RegexSplitSegmentEnumerator(source, pattern, options));
+		static IEnumerable<StringSegment> SplitCore(string source, Regex pattern, StringSplitOptions options)
+		{
+			int nextStart = 0;
+			Match match = pattern.Match(source);
+			bool removeEmpty = options.HasFlag(StringSplitOptions.RemoveEmptyEntries);
+#if NET5_0_OR_GREATER
+			bool trimEach = options.HasFlag(StringSplitOptions.TrimEntries);
+#endif
+			while (match.Success)
+			{
+				if (!removeEmpty || match.Index - nextStart != 0)
+				{
+					StringSegment next = new(source, nextStart, match.Index - nextStart);
+#if NET5_0_OR_GREATER
+					if (trimEach)
+					{
+						next = next.Trim();
+						if (!removeEmpty || next.Length != 0) yield return next;
+					}
+					else
+					{
+						yield return next;
+					}
+#else
+					yield return next;
+#endif
+				}
+
+				nextStart = match.Index + match.Length;
+				match = match.NextMatch();
+			}
+
+			int len;
+			if (removeEmpty)
+			{
+				len = source.Length - nextStart;
+				if (len == 0) yield break;
+			}
+			else
+			{
+				len = source.Length - nextStart;
+			}
+
+			{
+				StringSegment next = source.AsSegment(nextStart, len);
+#if NET5_0_OR_GREATER
+				if (trimEach)
+				{
+					next = next.Trim();
+					if (!removeEmpty || next.Length != 0) yield return next;
+					yield break;
+				}
+#endif
+
+				yield return next;
+			}
+		}
 	}
 
-	/// <returns>A ValueEnumerable of the segments (zero-allocation when used with foreach or ZLinq).</returns>
+	/// <returns>An IEnumerable&lt;StringSegment&gt; of the segments.</returns>
 	/// <inheritdoc cref="SplitToEnumerable(string, StringSegment, StringSplitOptions, StringComparison)"/>
-	[CLSCompliant(false)]
-	public static ValueEnumerable<StringSegmentSequenceSplitEnumerator, StringSegment> SplitAsSegments(
+	public static IEnumerable<StringSegment> SplitAsSegments(
 		this string source,
 		string splitSequence,
 		StringSplitOptions options = StringSplitOptions.None,
-		StringComparison comparisonType = StringComparison.Ordinal) => SplitAsSegments(source.AsSegment(), splitSequence.AsSegment(), options, comparisonType);
+		StringComparison comparisonType = StringComparison.Ordinal)
+		=> SplitAsSegments(source.AsSegment(), splitSequence.AsSegment(), options, comparisonType);
 
 	/// <inheritdoc cref="SplitAsSegments(string, string, StringSplitOptions, StringComparison)"/>
-	[CLSCompliant(false)]
-	public static ValueEnumerable<StringSegmentSequenceSplitEnumerator, StringSegment> SplitAsSegments(
+	public static IEnumerable<StringSegment> SplitAsSegments(
 		this StringSegment source,
 		StringSegment splitSequence,
 		StringSplitOptions options = StringSplitOptions.None,
@@ -131,8 +307,129 @@ public static partial class TextExtensions
 			throw new ArgumentException("Cannot split using empty sequence.", nameof(splitSequence));
 		Contract.EndContractBlock();
 
-		return new ValueEnumerable<StringSegmentSequenceSplitEnumerator, StringSegment>(
-			new StringSegmentSequenceSplitEnumerator(source, splitSequence, options, comparisonType));
+		if (source.Length == 0)
+		{
+			return options.HasFlag(StringSplitOptions.RemoveEmptyEntries)
+				? Enumerable.Empty<StringSegment>()
+				: Enumerable.Repeat(StringSegment.Empty, 1);
+		}
+
+#if NET5_0_OR_GREATER
+		bool trimEach = options.HasFlag(StringSplitOptions.TrimEntries);
+		return options.HasFlag(StringSplitOptions.RemoveEmptyEntries)
+			? SplitAsSegmentsCoreOmitEmpty(trimEach, source, splitSequence, comparisonType)
+			: SplitAsSegmentsCore(trimEach, source, splitSequence, comparisonType);
+#else
+		return options.HasFlag(StringSplitOptions.RemoveEmptyEntries)
+			? SplitAsSegmentsCoreOmitEmpty(source, splitSequence, comparisonType)
+			: SplitAsSegmentsCore(source, splitSequence, comparisonType);
+#endif
+
+		static IEnumerable<StringSegment> SplitAsSegmentsCore(
+#if NET5_0_OR_GREATER
+			bool trimEach,
+#endif
+			StringSegment source,
+			StringSegment splitSequence,
+			StringComparison comparisonType = StringComparison.Ordinal)
+		{
+			int startIndex = 0;
+			int len = source.Length;
+			int s = splitSequence.Length;
+
+		loop:
+			int nextIndex = source.IndexOf(splitSequence, startIndex, comparisonType);
+			if (nextIndex == -1)
+			{
+				StringSegment next = source.Subsegment(startIndex);
+#if NET5_0_OR_GREATER
+				if (trimEach) next = next.Trim();
+#endif
+				yield return next;
+				yield break;
+			}
+			else if (nextIndex == len)
+			{
+				StringSegment next = source.Subsegment(nextIndex, 0);
+#if NET5_0_OR_GREATER
+				if (trimEach) next = next.Trim();
+#endif
+				yield return next;
+				yield break;
+			}
+			else
+			{
+				StringSegment next = source.Subsegment(startIndex, nextIndex - startIndex);
+#if NET5_0_OR_GREATER
+				if (trimEach) next = next.Trim();
+#endif
+				yield return next;
+				nextIndex += s;
+			}
+
+			startIndex = nextIndex;
+			goto loop;
+		}
+
+		static IEnumerable<StringSegment> SplitAsSegmentsCoreOmitEmpty(
+#if NET5_0_OR_GREATER
+			bool trimEach,
+#endif
+			StringSegment source,
+			StringSegment splitSequence,
+			StringComparison comparisonType = StringComparison.Ordinal)
+		{
+			int startIndex = 0;
+			int len = source.Length;
+			Debug.Assert(startIndex != len);
+			int s = splitSequence.Length;
+
+			do
+			{
+				int nextIndex = source.IndexOf(splitSequence, startIndex, comparisonType);
+				Debug.Assert(nextIndex < len);
+
+				if (nextIndex == -1)
+				{
+					StringSegment next = source.Subsegment(startIndex);
+#if NET5_0_OR_GREATER
+					if (trimEach)
+					{
+						next = next.Trim();
+						if (next.Length == 0) yield break;
+					}
+#endif
+					yield return next;
+					yield break;
+				}
+				else
+				{
+					int length = nextIndex - startIndex;
+					if (length != 0)
+					{
+						StringSegment next = source.Subsegment(startIndex, length);
+#if NET5_0_OR_GREATER
+						if (trimEach)
+						{
+							next = next.Trim();
+							if (next.Length != 0) yield return next;
+						}
+						else
+						{
+							yield return next;
+						}
+#else
+						yield return next;
+#endif
+					}
+
+					nextIndex += s;
+				}
+
+				startIndex = nextIndex;
+			}
+			while (startIndex != len);
+		}
 	}
 
 	/// <summary>
@@ -140,35 +437,29 @@ public static partial class TextExtensions
 	/// </summary>
 	/// <param name="source">The segments to join.</param>
 	/// <param name="between">The segment to place between each segment.</param>
-	/// <returns>A ValueEnumerable of the joined segments (zero-allocation when used with foreach or ZLinq).</returns>
-	/// <exception cref="System.ArgumentNullException">The source is null.</exception>
-	[CLSCompliant(false)]
-	public static ValueEnumerable<StringSegmentJoinEnumerator, StringSegment> Join(this IEnumerable<StringSegment> source, StringSegment between) => source is null
+	/// <returns>An IEnumerable&lt;StringSegment&gt; of the segments.</returns>
+	/// <exception cref="ArgumentNullException">The source is null.</exception>
+	public static IEnumerable<StringSegment> Join(this IEnumerable<StringSegment> source, StringSegment between)
+	{
+		return source is null
 			? throw new ArgumentNullException(nameof(source))
-			: new ValueEnumerable<StringSegmentJoinEnumerator, StringSegment>(
-				new StringSegmentJoinEnumerator(source, between));
+			: JoinCore(source, between);
 
-	/// <summary>
-	/// Joins a regex split sequence of segments with a separator sequence (zero-allocation).
-	/// </summary>
-	/// <param name="source">The regex split segments to join.</param>
-	/// <param name="between">The segment to place between each segment.</param>
-	/// <returns>A ValueEnumerable of the joined segments (zero-allocation when used with foreach or ZLinq).</returns>
-	[CLSCompliant(false)]
-	public static ValueEnumerable<RegexSplitJoinEnumerator, StringSegment> Join(
-		this ValueEnumerable<RegexSplitSegmentEnumerator, StringSegment> source,
-		StringSegment between) => new(new RegexSplitJoinEnumerator(source.Enumerator, between));
-
-	/// <summary>
-	/// Joins a sequence split result with a separator sequence (zero-allocation).
-	/// </summary>
-	/// <param name="source">The sequence split segments to join.</param>
-	/// <param name="between">The segment to place between each segment.</param>
-	/// <returns>A ValueEnumerable of the joined segments (zero-allocation when used with foreach or ZLinq).</returns>
-	[CLSCompliant(false)]
-	public static ValueEnumerable<SequenceSplitJoinEnumerator, StringSegment> Join(
-		this ValueEnumerable<StringSegmentSequenceSplitEnumerator, StringSegment> source,
-		StringSegment between) => new(new SequenceSplitJoinEnumerator(source.Enumerator, between));
+		static IEnumerable<StringSegment> JoinCore(IEnumerable<StringSegment> source, StringSegment between)
+		{
+			using IEnumerator<StringSegment> e = source.GetEnumerator();
+			bool ok = e.MoveNext();
+			Debug.Assert(ok);
+			StringSegment c = e.Current;
+			if (c.Length != 0) yield return c;
+			while (e.MoveNext())
+			{
+				if (between.HasValue) yield return between;
+				c = e.Current;
+				if (c.Length != 0) yield return c;
+			}
+		}
+	}
 
 	/// <summary>
 	/// Joins a sequence of segments with an optional separator sequence.
@@ -185,19 +476,19 @@ public static partial class TextExtensions
 
 	/// <returns>A joined string of the segments.</returns>
 	/// <inheritdoc cref="JoinToStringBuilder(IEnumerable{StringSegment}, StringSegment)"/>
-	public static string JoinToString(this IEnumerable<StringSegment> source, StringSegment between = default) => JoinToStringBuilder(source, between).ToString();
+	public static string JoinToString(this IEnumerable<StringSegment> source, StringSegment between = default)
+		=> JoinToStringBuilder(source, between).ToString();
 
 	/// <summary>
 	/// Splits a sequence and replaces the removed sequences with the replacement sequence.
 	/// </summary>
-	/// <returns>A ValueEnumerable of the segments (zero-allocation when used with foreach or ZLinq).</returns>
 	/// <inheritdoc cref="SplitAsSegments(string, string, StringSplitOptions, StringComparison)"/>
-	[CLSCompliant(false)]
-	public static ValueEnumerable<SequenceSplitJoinEnumerator, StringSegment> Replace(
+	public static IEnumerable<StringSegment> Replace(
 		this StringSegment source,
 		StringSegment splitSequence,
 		StringSegment replacement,
-		StringComparison comparisonType = StringComparison.Ordinal) => Join(SplitAsSegments(source, splitSequence, comparisonType: comparisonType), replacement);
+		StringComparison comparisonType = StringComparison.Ordinal)
+		=> Join(SplitAsSegments(source, splitSequence, comparisonType: comparisonType), replacement);
 
 	/// <returns>The resultant string.</returns>
 	/// <inheritdoc cref="Replace(StringSegment, StringSegment, StringSegment, StringComparison)"/>
@@ -205,27 +496,22 @@ public static partial class TextExtensions
 		StringSegment splitSequence,
 		StringSegment replacement,
 		StringComparison comparisonType = StringComparison.Ordinal)
-	{
-		var sb = new StringBuilder();
-		foreach (var segment in Replace(source, splitSequence, replacement, comparisonType))
-			sb.Append(segment.AsSpan());
-		return sb.ToString();
-	}
+		=> JoinToString(SplitAsSegments(source, splitSequence, comparisonType: comparisonType), replacement);
 
 	/// <inheritdoc cref="Replace(StringSegment, StringSegment, StringSegment, StringComparison)"/>
-	[CLSCompliant(false)]
-	public static ValueEnumerable<RegexSplitJoinEnumerator, StringSegment> ReplaceAsSegments(
+	public static IEnumerable<StringSegment> ReplaceAsSegments(
 		this string source,
 		Regex splitSequence,
-		StringSegment replacement) => Join(SplitAsSegments(source, splitSequence), replacement);
+		StringSegment replacement)
+		=> Join(SplitAsSegments(source, splitSequence), replacement);
 
 	/// <inheritdoc cref="Replace(StringSegment, StringSegment, StringSegment, StringComparison)"/>
-	[CLSCompliant(false)]
-	public static ValueEnumerable<SequenceSplitJoinEnumerator, StringSegment> ReplaceAsSegments(
+	public static IEnumerable<StringSegment> ReplaceAsSegments(
 		this string source,
 		StringSegment splitSequence,
 		StringSegment replacement,
-		StringComparison comparisonType = StringComparison.Ordinal) => Replace(source, splitSequence, replacement, comparisonType);
+		StringComparison comparisonType = StringComparison.Ordinal)
+		=> Replace(source, splitSequence, replacement, comparisonType);
 
 	/// <summary>
 	/// Splits each sequence and replaces the removed sequences with the replacement sequence.
@@ -245,24 +531,25 @@ public static partial class TextExtensions
 		{
 			// Instead of source.SelectMany(s => s.Replace(splitSequence, replacement, comparisonType));
 			// we manually yield to reduce allocations.
-			// Note: We use ToArray() to materialize the ValueEnumerable because ref structs cannot be preserved across yield boundaries.
 			foreach (StringSegment s in source)
 			{
-				foreach (StringSegment e in Replace(s, splitSequence, replacement, comparisonType).ToArray())
+				foreach (StringSegment e in Replace(s, splitSequence, replacement, comparisonType))
 					yield return e;
 			}
 		}
 	}
 
 	/// <inheritdoc cref="Preceding(StringSegment, int, bool)"/>
-	public static StringSegment Preceding(this StringSegment source, bool includeSegment = false) => source.HasValue
-			? new(source.Buffer, 0, includeSegment ? source.Offset + source.Length : source.Offset)
-			: default;
+	public static StringSegment Preceding(this StringSegment source, bool includeSegment = false)
+		=> source.HasValue
+		? new(source.Buffer, 0, includeSegment ? source.Offset + source.Length : source.Offset)
+		: default;
 
 	/// <inheritdoc cref="Following(StringSegment, int, bool)"/>
-	public static StringSegment Following(this StringSegment source, bool includeSegment = false) => source.HasValue
-			? source.Buffer.AsSegment(includeSegment ? source.Offset : source.Offset + source.Length)
-			: default;
+	public static StringSegment Following(this StringSegment source, bool includeSegment = false)
+		=> source.HasValue
+		? source.Buffer.AsSegment(includeSegment ? source.Offset : source.Offset + source.Length)
+		: default;
 
 	/// <summary>
 	/// Gets the string segment that precedes this one.

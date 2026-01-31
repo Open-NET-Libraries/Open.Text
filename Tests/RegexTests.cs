@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using ZLinq;
 
 namespace Open.Text.Tests;
 
@@ -42,5 +43,27 @@ public static class RegexTests
 		Assert.Throws<ArgumentNullException>(() => validGroups.GetValue(null!));
 		Assert.Throws<ArgumentNullException>(() => default(GroupCollection)!.GetValueSpan("test"));
 		Assert.Throws<ArgumentNullException>(() => validGroups.GetValueSpan(null!));
+	}
+
+	[Theory]
+	[InlineData(@"\w+", "Hello, world! How are you?")]
+	[InlineData(@"\d+", "abc123def456ghi789")]
+	[InlineData(@"[aeiou]", "Hello World")]
+	public static void AsSegments(string patternStr, string input)
+	{
+		var pattern = new Regex(patternStr);
+		// Original AsSegments
+		var original = pattern.AsSegments(input).Select(s => s.ToString()).ToArray();
+		// NoAlloc variant should produce identical results
+		var noAlloc = pattern.AsSegmentsNoAlloc(input).Select(s => s.ToString()).ToArray();
+		Assert.Equal(original, noAlloc);
+	}
+
+	[Fact]
+	public static void AsSegmentsNoAlloc_ThrowsOnNull()
+	{
+		var pattern = new Regex(@"\w+");
+		Assert.Throws<ArgumentNullException>(() => default(Regex)!.AsSegmentsNoAlloc("test"));
+		Assert.Throws<ArgumentNullException>(() => pattern.AsSegmentsNoAlloc(default(string)!));
 	}
 }
