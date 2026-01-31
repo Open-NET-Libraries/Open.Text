@@ -28,7 +28,7 @@ public static partial class TextExtensions
 		StringSplitOptions options = StringSplitOptions.None)
 		=> source.HasValue
 			? new(new StringSegmentSplitEnumerator(source, splitCharacter, options))
-			: throw new ArgumentNullException(nameof(source), "Must be a StringSegment that has a value (is not null).");
+			: throw new ArgumentNullException(nameof(source), MustBeSegmentWithValue);
 
 	/// <summary>
 	/// Enumerates a string by segments that are separated by the regular expression matches.
