@@ -171,6 +171,21 @@ public static partial class TextExtensions
 	}
 
 	/// <summary>
+	/// Joins a sequence split result with a separator sequence (zero-allocation).
+	/// </summary>
+	/// <param name="source">The sequence split segments to join.</param>
+	/// <param name="between">The segment to place between each segment.</param>
+	/// <returns>A ValueEnumerable of the joined segments (zero-allocation when used with foreach or ZLinq).</returns>
+	[CLSCompliant(false)]
+	public static ValueEnumerable<SequenceSplitJoinEnumerator, StringSegment> Join(
+		this ValueEnumerable<StringSegmentSequenceSplitEnumerator, StringSegment> source,
+		StringSegment between)
+	{
+		return new ValueEnumerable<SequenceSplitJoinEnumerator, StringSegment>(
+			new SequenceSplitJoinEnumerator(source.Enumerator, between));
+	}
+
+	/// <summary>
 	/// Joins a sequence of segments with an optional separator sequence.
 	/// </summary>
 	/// <returns>A StringBuilder of the segments.</returns>
@@ -194,12 +209,12 @@ public static partial class TextExtensions
 	/// <returns>A ValueEnumerable of the segments (zero-allocation when used with foreach or ZLinq).</returns>
 	/// <inheritdoc cref="SplitAsSegments(string, string, StringSplitOptions, StringComparison)"/>
 	[CLSCompliant(false)]
-	public static ValueEnumerable<StringSegmentJoinEnumerator, StringSegment> Replace(
+	public static ValueEnumerable<SequenceSplitJoinEnumerator, StringSegment> Replace(
 		this StringSegment source,
 		StringSegment splitSequence,
 		StringSegment replacement,
 		StringComparison comparisonType = StringComparison.Ordinal)
-		=> Join(SplitAsSegments(source, splitSequence, comparisonType: comparisonType).ToArray(), replacement);
+		=> Join(SplitAsSegments(source, splitSequence, comparisonType: comparisonType), replacement);
 
 	/// <returns>The resultant string.</returns>
 	/// <inheritdoc cref="Replace(StringSegment, StringSegment, StringSegment, StringComparison)"/>
@@ -207,7 +222,12 @@ public static partial class TextExtensions
 		StringSegment splitSequence,
 		StringSegment replacement,
 		StringComparison comparisonType = StringComparison.Ordinal)
-		=> JoinToString(SplitAsSegments(source, splitSequence, comparisonType: comparisonType).ToArray(), replacement);
+	{
+		var sb = new StringBuilder();
+		foreach (var segment in Replace(source, splitSequence, replacement, comparisonType))
+			sb.Append(segment.AsSpan());
+		return sb.ToString();
+	}
 
 	/// <inheritdoc cref="Replace(StringSegment, StringSegment, StringSegment, StringComparison)"/>
 	[CLSCompliant(false)]
@@ -219,7 +239,7 @@ public static partial class TextExtensions
 
 	/// <inheritdoc cref="Replace(StringSegment, StringSegment, StringSegment, StringComparison)"/>
 	[CLSCompliant(false)]
-	public static ValueEnumerable<StringSegmentJoinEnumerator, StringSegment> ReplaceAsSegments(
+	public static ValueEnumerable<SequenceSplitJoinEnumerator, StringSegment> ReplaceAsSegments(
 		this string source,
 		StringSegment splitSequence,
 		StringSegment replacement,

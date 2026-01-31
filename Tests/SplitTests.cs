@@ -99,7 +99,7 @@ public static class SplitTests
 		Assert.Equal(segments, sequence.SplitAsMemory(",", options: options).Select(m => m.Span.ToString()).ToArray());
 		Assert.Equal(segments, sequence.SplitAsSegments(',', options).Select(m => m.ToString()).ToArray());
 		Assert.Equal(segments, sequence.SplitAsSegments(",", options: options).Select(m => m.ToString()).ToArray());
-		Assert.Equal(segments, sequence.SplitAsSegments(new Regex(","), options: options).Select(m => m.ToString()));
+		Assert.Equal(segments, sequence.SplitAsSegments(new Regex(","), options: options).Select(m => m.ToString()).ToArray());
 		var span = sequence.AsSpan();
 		Assert.Equal(segments, span.Split(',', options));
 		Assert.Equal(segments, span.Split(",", options));
@@ -112,11 +112,11 @@ public static class SplitTests
 			.ValidAlphaNumericOnlyPattern
 			.Matches(sequence)
 			.Cast<Match>()
-			.Select(m => m.Value),
+			.Select(m => m.Value).ToArray(),
 			RegexPatterns
 			.ValidAlphaNumericOnlyPattern
 			.AsSegments(sequence)
-			.Select(m => m.Value));
+			.Select(m => m.Value).ToArray());
 
 		var stringSegment = sequence.AsSegment();
 		var ss = stringSegment.SplitAsSegments(",", options).Select(s => s.Value).ToArray();
