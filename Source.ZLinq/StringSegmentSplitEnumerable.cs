@@ -283,7 +283,6 @@ public struct StringSegmentSequenceSplitEnumerator : IValueEnumerator<StringSegm
 				{
 					segment = segment.Trim();
 				}
-				else
 #endif
 				if (_removeEmpty && segment.Length == 0)
 				{
