@@ -151,29 +151,28 @@ public static partial class TextExtensions
 					yield return next;
 					yield break;
 				}
-				else
-				{
-					int length = nextIndex - startIndex;
-					if (length != 0)
-					{
-						StringSegment next = source.Subsegment(startIndex, length);
-#if NET5_0_OR_GREATER
-						if (trimEach)
-						{
-							next = next.Trim();
-							if (next.Length != 0) yield return next;
-						}
-						else
-						{
-							yield return next;
-						}
-#else
-						yield return next;
-#endif
-					}
 
-					++nextIndex;
+				int length = nextIndex - startIndex;
+				if (length == 0)
+					goto skip;
+
+				{
+					StringSegment next = source.Subsegment(startIndex, length);
+#if NET5_0_OR_GREATER
+					if (trimEach)
+					{
+						next = next.Trim();
+						if (next.Length == 0)
+						{
+							goto skip;
+						}
+					}
+#endif
+					yield return next;
 				}
+
+			skip:
+				++nextIndex;
 
 				startIndex = nextIndex;
 			}
@@ -234,37 +233,30 @@ public static partial class TextExtensions
 #endif
 			while (match.Success)
 			{
-				if (!removeEmpty || match.Index - nextStart != 0)
-				{
-					StringSegment next = new(source, nextStart, match.Index - nextStart);
-#if NET5_0_OR_GREATER
-					if (trimEach)
-					{
-						next = next.Trim();
-						if (!removeEmpty || next.Length != 0) yield return next;
-					}
-					else
-					{
-						yield return next;
-					}
-#else
-					yield return next;
-#endif
-				}
+				if (removeEmpty && match.Index == nextStart)
+					goto skip;
 
+				StringSegment next = new(source, nextStart, match.Index - nextStart);
+#if NET5_0_OR_GREATER
+				if (trimEach)
+				{
+					next = next.Trim();
+					if (removeEmpty && next.Length == 0)
+						goto skip;
+				}
+#endif
+
+				yield return next;
+
+			skip:
 				nextStart = match.Index + match.Length;
 				match = match.NextMatch();
 			}
 
-			int len;
-			if (removeEmpty)
+			int len = source.Length - nextStart;
+			if (removeEmpty && len == 0)
 			{
-				len = source.Length - nextStart;
-				if (len == 0) yield break;
-			}
-			else
-			{
-				len = source.Length - nextStart;
+				yield break;
 			}
 
 			{
@@ -273,11 +265,12 @@ public static partial class TextExtensions
 				if (trimEach)
 				{
 					next = next.Trim();
-					if (!removeEmpty || next.Length != 0) yield return next;
-					yield break;
+					if (removeEmpty && next.Length == 0)
+					{
+						yield break;
+					}
 				}
 #endif
-
 				yield return next;
 			}
 		}
@@ -348,7 +341,8 @@ public static partial class TextExtensions
 				yield return next;
 				yield break;
 			}
-			else if (nextIndex == len)
+
+			if (nextIndex == len)
 			{
 				StringSegment next = source.Subsegment(nextIndex, 0);
 #if NET5_0_OR_GREATER
@@ -357,7 +351,7 @@ public static partial class TextExtensions
 				yield return next;
 				yield break;
 			}
-			else
+
 			{
 				StringSegment next = source.Subsegment(startIndex, nextIndex - startIndex);
 #if NET5_0_OR_GREATER
@@ -402,31 +396,27 @@ public static partial class TextExtensions
 					yield return next;
 					yield break;
 				}
-				else
-				{
-					int length = nextIndex - startIndex;
-					if (length != 0)
-					{
-						StringSegment next = source.Subsegment(startIndex, length);
-#if NET5_0_OR_GREATER
-						if (trimEach)
-						{
-							next = next.Trim();
-							if (next.Length != 0) yield return next;
-						}
-						else
-						{
-							yield return next;
-						}
-#else
-						yield return next;
-#endif
-					}
 
-					nextIndex += s;
+
+				int length = nextIndex - startIndex;
+				if (length == 0)
+					goto skip;
+
+				{
+					StringSegment next = source.Subsegment(startIndex, length);
+#if NET5_0_OR_GREATER
+					if (trimEach)
+					{
+						next = next.Trim();
+						if (next.Length == 0)
+							goto skip;
+					}
+#endif
+					yield return next;
 				}
 
-				startIndex = nextIndex;
+			skip:
+				startIndex = nextIndex + s;
 			}
 			while (startIndex != len);
 		}

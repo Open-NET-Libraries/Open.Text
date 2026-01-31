@@ -1,6 +1,7 @@
 ﻿using BenchmarkDotNet.Attributes;
 using Microsoft.Extensions.Primitives;
 using System.Text;
+using ZLinq;
 
 namespace Open.Text.Benchmarks;
 

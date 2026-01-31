@@ -81,8 +81,10 @@ public class StringConcatenationAnalyzer : DiagnosticAnalyzer
 				case SyntaxKind.DoStatement:
 					return true;
 			}
+
 			parent = parent.Parent;
 		}
+
 		return false;
 	}
 

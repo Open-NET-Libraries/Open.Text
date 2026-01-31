@@ -50,6 +50,7 @@ public class SplitCodeFixProvider : CodeFixProvider
 								equivalenceKey: "UseSplitAsSegments"),
 							diagnostic);
 					}
+
 					break;
 				}
 
@@ -80,6 +81,7 @@ public class SplitCodeFixProvider : CodeFixProvider
 								equivalenceKey: "UseFirstSplit"),
 							diagnostic);
 					}
+
 					break;
 				}
 
@@ -96,6 +98,7 @@ public class SplitCodeFixProvider : CodeFixProvider
 								equivalenceKey: "UseSplitToEnumerable"),
 							diagnostic);
 					}
+
 					break;
 				}
 			}

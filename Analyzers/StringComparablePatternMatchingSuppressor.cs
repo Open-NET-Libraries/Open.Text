@@ -77,6 +77,7 @@ public class StringComparablePatternMatchingSuppressor : DiagnosticSuppressor
 						break;
 					}
 				}
+
 				currentNode = currentNode.Parent;
 			}
 
@@ -146,6 +147,7 @@ public class StringComparablePatternMatchingSuppressor : DiagnosticSuppressor
 				}
 			}
 		}
+
 		return false;
 	}
 }

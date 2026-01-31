@@ -1,7 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFrameworks>netstandard2.0;netstandard2.1;net6.0;net8.0;net10.0</TargetFrameworks>
+		<RootNamespace>Open.Text</RootNamespace>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
@@ -11,17 +12,19 @@
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Authors>electricessence</Authors>
 		<Description>
-			A set of useful extensions for working with strings, spans, enums, and value formatting.
+			Zero-allocation extensions for Open.Text using ZLinq.
+			Provides SplitAsSegmentsNoAlloc and other high-performance string operations
+			that avoid heap allocations via ZLinq's ValueEnumerable.
 
 			Part of the "Open" set of libraries.
 		</Description>
-		<Copyright>© electricessence (Oren F.) All rights reserved.</Copyright>
+		<Copyright>© electricessence (Oren F.) All rights reserved.</Copyright>
 		<PackageProjectUrl>https://github.com/Open-NET-Libraries/Open.Text</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/Open-NET-Libraries/Open.Text</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<PackageTags>string, span, enum, readonlyspan, text, format, split, trim, equals, trimmed equals, first, last, preceding, following, stringbuilder, extensions, stringcomparable, spancomparable, stringsegment, splitassegment</PackageTags>
+		<PackageTags>string, span, zlinq, zero-allocation, noalloc, stringsegment, split, high-performance, extensions</PackageTags>
 		<Version>10.0.1</Version>
-		<PackageReleaseNotes></PackageReleaseNotes>
+		<PackageReleaseNotes>Initial release - zero-allocation string splitting via ZLinq integration.</PackageReleaseNotes>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<IncludeSymbols>true</IncludeSymbols>
@@ -30,22 +33,24 @@
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<NoWarn>IDE0301;IDE0079;IDE0200;</NoWarn>
+		<CLSCompliant>false</CLSCompliant>
 	</PropertyGroup>
 	
 	<ItemGroup>
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.102" PrivateAssets="All" />
-		<PackageReference Include="Microsoft.Extensions.Primitives" Version="7.0.0" Condition="'$(TargetFramework)' != 'net10.0'" />
-		<PackageReference Include="Microsoft.Extensions.Primitives" Version="10.0.2" Condition="'$(TargetFramework)' == 'net10.0'" />
+		<PackageReference Include="ZLinq" Version="1.5.4" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Remove=".git" />
-		<None Remove=".gitignore" />
+		<ProjectReference Include="..\Source\Open.Text.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<None Include="..\README.md">
 		  <Pack>True</Pack>
 		  <PackagePath></PackagePath>
 		</None>
-		<None Include="logo.png">
+		<None Include="..\Source\logo.png">
 			<Pack>True</Pack>
 			<PackagePath></PackagePath>
 		</None>

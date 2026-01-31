@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using ZLinq;
 
 namespace Open.Text.Tests;
 
@@ -24,6 +25,8 @@ public static class SplitTests
 		Assert.Throws<ArgumentException>(() => DefaultTestString.SplitToEnumerable(string.Empty));
 		Assert.Throws<ArgumentException>(() => DefaultTestString.SplitAsMemory(string.Empty));
 		Assert.Throws<ArgumentException>(() => DefaultTestString.SplitAsSegments(string.Empty));
+		// NoAlloc variants
+		Assert.Throws<ArgumentException>(() => DefaultTestString.SplitAsSegmentsNoAlloc(string.Empty));
 	}
 
 	[Fact]
@@ -48,6 +51,14 @@ public static class SplitTests
 		Assert.Throws<ArgumentNullException>(() => default(string)!.SplitAsSegments(','));
 		Assert.Throws<ArgumentNullException>(() => default(string)!.SplitAsSegments(","));
 		Assert.Throws<ArgumentNullException>(() => DefaultTestString.SplitAsSegments(default(string)!));
+		// NoAlloc variants
+		Assert.Throws<ArgumentNullException>(() => default(string)!.SplitAsSegmentsNoAlloc(','));
+		Assert.Throws<ArgumentNullException>(() => default(string)!.SplitAsSegmentsNoAlloc(","));
+		Assert.Throws<ArgumentNullException>(() => DefaultTestString.SplitAsSegmentsNoAlloc(default(string)!));
+		Assert.Throws<ArgumentNullException>(() => default(StringSegment).SplitAsSegmentsNoAlloc(','));
+		Assert.Throws<ArgumentNullException>(() => default(StringSegment).SplitAsSegmentsNoAlloc(","));
+		Assert.Throws<ArgumentNullException>(() => default(string)!.SplitAsSegmentsNoAlloc(new Regex(",")));
+		Assert.Throws<ArgumentNullException>(() => DefaultTestString.SplitAsSegmentsNoAlloc(default(Regex)!));
 	}
 
 	[Theory]
@@ -88,17 +99,22 @@ public static class SplitTests
 	[InlineData(",Hello,there,I,am,Joe,", StringSplitOptions.RemoveEmptyEntries)]
 #pragma warning disable IDE0079 // Use SplitAsSegments to reduce string allocations
 	[SuppressMessage("Performance", "OPENTXT002:Use SplitAsSegments to reduce string allocations")]
+	[SuppressMessage("Style", "IDE0305:Simplify collection initialization", Justification = "<Pending>")]
 #pragma warning restore IDE0079 // Use SplitAsSegments to reduce string allocations
 	public static void Split(string sequence, StringSplitOptions options = StringSplitOptions.None)
 	{
 		var segments = sequence.Split(',', options);
-		Assert.Equal(segments, sequence.SplitToEnumerable(',', options));
-		Assert.Equal(segments, sequence.SplitToEnumerable(",", options: options));
-		Assert.Equal(segments, sequence.SplitAsMemory(',', options).Select(m => m.Span.ToString()));
-		Assert.Equal(segments, sequence.SplitAsMemory(",", options: options).Select(m => m.Span.ToString()));
-		Assert.Equal(segments, sequence.SplitAsSegments(',', options).Select(m => m.ToString()));
-		Assert.Equal(segments, sequence.SplitAsSegments(",", options: options).Select(m => m.ToString()));
-		Assert.Equal(segments, sequence.SplitAsSegments(new Regex(","), options: options).Select(m => m.ToString()));
+		Assert.Equal(segments, sequence.SplitToEnumerable(',', options).ToArray());
+		Assert.Equal(segments, sequence.SplitToEnumerable(",", options: options).ToArray());
+		Assert.Equal(segments, sequence.SplitAsMemory(',', options).Select(m => m.Span.ToString()).ToArray());
+		Assert.Equal(segments, sequence.SplitAsMemory(",", options: options).Select(m => m.Span.ToString()).ToArray());
+		Assert.Equal(segments, sequence.SplitAsSegments(',', options).Select(m => m.ToString()).ToArray());
+		Assert.Equal(segments, sequence.SplitAsSegments(",", options: options).Select(m => m.ToString()).ToArray());
+		Assert.Equal(segments, sequence.SplitAsSegments(new Regex(","), options: options).Select(m => m.ToString()).ToArray());
+		// NoAlloc variants - should produce identical results
+		Assert.Equal(segments, sequence.SplitAsSegmentsNoAlloc(',', options).Select(m => m.ToString()).ToArray());
+		Assert.Equal(segments, sequence.SplitAsSegmentsNoAlloc(",", options: options).Select(m => m.ToString()).ToArray());
+		Assert.Equal(segments, sequence.SplitAsSegmentsNoAlloc(new Regex(","), options: options).Select(m => m.ToString()).ToArray());
 		var span = sequence.AsSpan();
 		Assert.Equal(segments, span.Split(',', options));
 		Assert.Equal(segments, span.Split(",", options));
@@ -111,11 +127,11 @@ public static class SplitTests
 			.ValidAlphaNumericOnlyPattern
 			.Matches(sequence)
 			.Cast<Match>()
-			.Select(m => m.Value),
+			.Select(m => m.Value).ToArray(),
 			RegexPatterns
 			.ValidAlphaNumericOnlyPattern
 			.AsSegments(sequence)
-			.Select(m => m.Value));
+			.Select(m => m.Value).ToArray());
 
 		var stringSegment = sequence.AsSegment();
 		var ss = stringSegment.SplitAsSegments(",", options).Select(s => s.Value).ToArray();
@@ -142,6 +158,8 @@ public static class SplitTests
 		Assert.Equal(segments, sequence.SplitToEnumerable(split, options, StringComparison.OrdinalIgnoreCase));
 		Assert.Equal(segments, sequence.SplitAsMemory(split, options, StringComparison.OrdinalIgnoreCase).Select(m => m.Span.ToString()));
 		Assert.Equal(segments, sequence.SplitAsSegments(split, options, StringComparison.OrdinalIgnoreCase).Select(m => m.ToString()));
+		// NoAlloc variants
+		Assert.Equal(segments, sequence.SplitAsSegmentsNoAlloc(split, options, StringComparison.OrdinalIgnoreCase).Select(m => m.ToString()).ToArray());
 		var span = sequence.AsSpan();
 		Assert.Equal(segments, span.Split(split, options, StringComparison.OrdinalIgnoreCase));
 	}
