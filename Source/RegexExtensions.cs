@@ -3,7 +3,7 @@
 /// <summary>
 /// A set of regular expression extensions.
 /// </summary>
-public static partial class RegexExtensions
+public static class RegexExtensions
 {
 #if NET6_0_OR_GREATER
 #else

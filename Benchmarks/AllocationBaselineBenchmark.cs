@@ -41,6 +41,7 @@ public class SplitAsSegmentsBaselineBenchmark
 		{
 			count += segment.Length;
 		}
+
 		return count;
 	}
 
@@ -53,6 +54,7 @@ public class SplitAsSegmentsBaselineBenchmark
 			var str = segment.ToString();
 			totalLen += str.Length;
 		}
+
 		return totalLen;
 	}
 
@@ -76,6 +78,7 @@ public class SplitAsSegmentsBaselineBenchmark
 		{
 			count += segment.Length;
 		}
+
 		return count;
 	}
 
@@ -101,6 +104,7 @@ public class SplitAsSegmentsBaselineBenchmark
 		{
 			count++;
 		}
+
 		return count;
 	}
 

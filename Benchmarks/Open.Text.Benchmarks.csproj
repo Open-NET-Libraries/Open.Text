@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Source\Open.Text.csproj" />
+    <ProjectReference Include="..\Source.ZLinq\Open.Text.ZLinq.csproj" />
   </ItemGroup>
 
 </Project>

@@ -164,8 +164,10 @@ public class SplitAnalyzer : DiagnosticAnalyzer
 			{
 				return true;
 			}
+
 			parent = parent.Parent;
 		}
+
 		return false;
 	}
 

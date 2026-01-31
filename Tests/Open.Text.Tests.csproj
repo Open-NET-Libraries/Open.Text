@@ -34,6 +34,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Source\Open.Text.csproj" />
+		<ProjectReference Include="..\Source.ZLinq\Open.Text.ZLinq.csproj" />
 		<!-- Reference the analyzer to suppress false IDE0078 suggestions for StringComparable -->
 		<ProjectReference Include="..\Analyzers\Open.Text.Analyzers.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer" PrivateAssets="all" />
 	</ItemGroup>

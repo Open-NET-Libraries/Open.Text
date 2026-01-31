@@ -138,28 +138,32 @@ public static partial class TextExtensions
 		this StringSegment source,
 		ReadOnlySpan<char> search,
 		StringComparison comparisonType = StringComparison.Ordinal,
-		bool rightToLeft = false) => new(source, search, comparisonType, rightToLeft);
+		bool rightToLeft = false)
+		=> new(source, search, comparisonType, rightToLeft);
 
 	/// <inheritdoc cref="Find(StringSegment, ReadOnlySpan{char}, StringComparison, bool)"/>
 	public static StringSegmentSearch Find(
 		this string source,
 		ReadOnlySpan<char> search,
 		StringComparison comparisonType = StringComparison.Ordinal,
-		bool rightToLeft = false) => new(source, search, comparisonType, rightToLeft);
+		bool rightToLeft = false)
+		=> new(source, search, comparisonType, rightToLeft);
 
 	/// <inheritdoc cref="Find(StringSegment, ReadOnlySpan{char}, StringComparison, bool)"/>
 	public static StringSegmentSearch Find(
 		this string source,
 		StringSegment search,
 		StringComparison comparisonType = StringComparison.Ordinal,
-		bool rightToLeft = false) => new(source, search, comparisonType, rightToLeft);
+		bool rightToLeft = false)
+		=> new(source, search, comparisonType, rightToLeft);
 
 	/// <inheritdoc cref="Find(StringSegment, ReadOnlySpan{char}, StringComparison, bool)"/>
 	public static StringSegmentSearch Find(
 		this StringSegment source,
 		StringSegment search,
 		StringComparison comparisonType = StringComparison.Ordinal,
-		bool rightToLeft = false) => new(source, search, comparisonType, rightToLeft);
+		bool rightToLeft = false)
+		=> new(source, search, comparisonType, rightToLeft);
 
 	/// <summary>
 	/// Finds the next occurrence of the specified character sequence within the source segment.
@@ -205,7 +209,8 @@ public static partial class TextExtensions
 	/// Finds the next occurrence after the first occurrence of the specified character sequence within the source segment.
 	/// </summary>
 	public static StringSegmentCapture Next(
-		this StringSegmentSearch search) => search.First().Next();
+		this StringSegmentSearch search)
+		=> search.First().Next();
 
 	/// <summary>
 	/// Finds the last occurrence of the specified character sequence within the source segment.
@@ -228,13 +233,15 @@ public static partial class TextExtensions
 	/// <summary>
 	/// Returns <see langword="true"/> if the capture has a value; otherwise <see langword="false"/>.
 	/// </summary>
-	public static bool Exists(this StringSegmentCapture capture) => capture.Value.HasValue;
+	public static bool Exists(this StringSegmentCapture capture)
+		=> capture.Value.HasValue;
 
 	/// <summary>
 	/// Returns <see langword="true"/> if the search has a value; otherwise <see langword="false"/>.
 	/// </summary>
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static bool Exists(this StringSegmentSearch search) => search.First().Exists();
+	public static bool Exists(this StringSegmentSearch search)
+		=> search.First().Exists();
 
 	/// <summary>
 	/// Resolves the value of the capture, or returns the specified default value.
@@ -253,5 +260,6 @@ public static partial class TextExtensions
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static StringSubsegment Or(
 		this StringSegmentSearch capture,
-		StringSubsegment defaultValue) => capture.First().Or(defaultValue);
+		StringSubsegment defaultValue)
+		=> capture.First().Or(defaultValue);
 }

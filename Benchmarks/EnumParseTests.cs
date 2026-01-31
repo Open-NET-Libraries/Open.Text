@@ -83,6 +83,7 @@ public class EnumParseTests
 				if (!Lookup(s, out e))
 					throw new Exception("Invalid.");
 			}
+
 			return e;
 		}
 	}
@@ -97,6 +98,7 @@ public class EnumParseTests
 				if (!Enum.TryParse(s, out e))
 					throw new Exception("Invalid.");
 			}
+
 			return e;
 		}
 
@@ -108,6 +110,7 @@ public class EnumParseTests
 				if (!TryParseBySwitch(s, out e))
 					throw new Exception("Invalid.");
 			}
+
 			return e;
 		}
 
@@ -119,6 +122,7 @@ public class EnumParseTests
 				if (!TryParseByLengthSwitch(s, out e))
 					throw new Exception("Invalid.");
 			}
+
 			return e;
 		}
 
@@ -130,6 +134,7 @@ public class EnumParseTests
 				if (!EnumValue.TryParse(s, out e))
 					throw new Exception("Invalid.");
 			}
+
 			return e;
 		}
 
@@ -141,6 +146,7 @@ public class EnumParseTests
 				if (!FastEnum.TryParse(s, out e))
 					throw new Exception("Invalid.");
 			}
+
 			return e;
 		}
 	}
@@ -155,6 +161,7 @@ public class EnumParseTests
 				if (Enum.TryParse(s, out e))
 					throw new Exception("Valid.");
 			}
+
 			return e;
 		}
 
@@ -166,6 +173,7 @@ public class EnumParseTests
 				if (TryParseBySwitch(s, out e))
 					throw new Exception("Valid.");
 			}
+
 			return e;
 		}
 
@@ -177,6 +185,7 @@ public class EnumParseTests
 				if (TryParseByLengthSwitch(s, out e))
 					throw new Exception("Valid.");
 			}
+
 			return e;
 		}
 
@@ -188,6 +197,7 @@ public class EnumParseTests
 				if (EnumValue.TryParse(s, out e))
 					throw new Exception("Valid.");
 			}
+
 			return e;
 		}
 
@@ -199,6 +209,7 @@ public class EnumParseTests
 				if (FastEnum.TryParse(s, out e))
 					throw new Exception("Valid.");
 			}
+
 			return e;
 		}
 	}
@@ -213,6 +224,7 @@ public class EnumParseTests
 				if (!Enum.TryParse(s, true, out e))
 					throw new Exception("Invalid.");
 			}
+
 			return e;
 		}
 
@@ -224,6 +236,7 @@ public class EnumParseTests
 				if (!TryParseBySwitchIgnoreCase(s, out e))
 					throw new Exception("Invalid.");
 			}
+
 			return e;
 		}
 
@@ -235,6 +248,7 @@ public class EnumParseTests
 				if (!TryParseByLengthSwitchCaseIgnored(s, out e))
 					throw new Exception("Invalid.");
 			}
+
 			return e;
 		}
 
@@ -246,6 +260,7 @@ public class EnumParseTests
 				if (!EnumValue.TryParse(s, true, out e))
 					throw new Exception("Invalid.");
 			}
+
 			return e;
 		}
 
@@ -257,6 +272,7 @@ public class EnumParseTests
 				if (!FastEnum.TryParse(s, true, out e))
 					throw new Exception("Invalid.");
 			}
+
 			return e;
 		}
 
@@ -279,6 +295,7 @@ public class EnumParseTests
 				if (Enum.TryParse(s, true, out e))
 					throw new Exception("Valid.");
 			}
+
 			return e;
 		}
 
@@ -290,6 +307,7 @@ public class EnumParseTests
 				if (TryParseBySwitchIgnoreCase(s, out e))
 					throw new Exception("Valid.");
 			}
+
 			return e;
 		}
 
@@ -301,6 +319,7 @@ public class EnumParseTests
 				if (TryParseByLengthSwitchCaseIgnored(s, out e))
 					throw new Exception("Valid.");
 			}
+
 			return e;
 		}
 
@@ -312,6 +331,7 @@ public class EnumParseTests
 				if (EnumValue.TryParseIgnoreCase(s, out e))
 					throw new Exception("Valid.");
 			}
+
 			return e;
 		}
 
@@ -323,6 +343,7 @@ public class EnumParseTests
 				if (FastEnum.TryParse(s, true, out e))
 					throw new Exception("Valid.");
 			}
+
 			return e;
 		}
 

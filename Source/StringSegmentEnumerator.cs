@@ -35,10 +35,12 @@ public struct StringSegmentEnumerator(StringSegment segment) : IEnumerator<char>
 	}
 
 	/// <inheritdoc/>
-	public void Reset() => _position = -1;
+	public void Reset()
+		=> _position = -1;
 
 	/// <inheritdoc/>
-	public void Dispose() => _position = _segment.Length;
+	public void Dispose()
+		=> _position = _segment.Length;
 }
 
 /// <summary>

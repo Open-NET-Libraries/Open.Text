@@ -234,7 +234,8 @@ public readonly struct EnumValue<TEnum>
 	/// Indicates whether this instance matches the <typeparamref name="TEnum"/> value of <paramref name="other"/>.
 	/// </summary>
 	/// <returns>true if <paramref name="other"/>'s <typeparamref name="TEnum"/> value and this instance's <typeparamref name="TEnum"/> value are the same; otherwise false.</returns>
-	public bool Equals(EnumValue<TEnum> other) => Value.Equals(other.Value);
+	public bool Equals(EnumValue<TEnum> other)
+		=> Value.Equals(other.Value);
 
 	/// <summary>
 	/// Compares an <see cref="EnumValue{TEnum}"/> and <see cref="EnumValueCaseIgnored{TEnum}"/> for <typeparamref name="TEnum"/> equality.
@@ -249,7 +250,8 @@ public readonly struct EnumValue<TEnum>
 		=> !left.Value.Equals(right.Value);
 
 	/// <inheritdoc cref="Equals(EnumValue{TEnum})"/>
-	public bool Equals(EnumValueCaseIgnored<TEnum> other) => Value.Equals(other.Value);
+	public bool Equals(EnumValueCaseIgnored<TEnum> other)
+		=> Value.Equals(other.Value);
 
 	/// <summary>
 	/// Compares two <see cref="EnumValue{TEnum}"/> for <typeparamref name="TEnum"/> equality.
@@ -267,7 +269,8 @@ public readonly struct EnumValue<TEnum>
 	/// Indicates whether this instance matches the provided enum <paramref name="other"/>.
 	/// </summary>
 	/// <returns>true if <paramref name="other"/> and this instance's enum value are the same; otherwise false.</returns>
-	public bool Equals(TEnum? other) => Value.Equals(other);
+	public bool Equals(TEnum? other)
+		=> Value.Equals(other);
 
 	/// <summary>
 	/// Compares an <see cref="EnumValue{TEnum}"/> and a <typeparamref name="TEnum"/> value forequality.
@@ -282,9 +285,10 @@ public readonly struct EnumValue<TEnum>
 		=> !left.Value.Equals(right);
 
 	/// <inheritdoc />
-	public override bool Equals(object? obj) => obj is TEnum e && Value.Equals(e)
-			|| obj is EnumValue<TEnum> v1 && Value.Equals(v1.Value)
-			|| obj is EnumValueCaseIgnored<TEnum> v2 && Value.Equals(v2.Value);
+	public override bool Equals(object? obj)
+		=> obj is TEnum e && Value.Equals(e)
+		|| obj is EnumValue<TEnum> v1 && Value.Equals(v1.Value)
+		|| obj is EnumValueCaseIgnored<TEnum> v2 && Value.Equals(v2.Value);
 
 	/// <inheritdoc />
 	public override int GetHashCode() => Value.GetHashCode();
@@ -338,13 +342,15 @@ public readonly struct EnumValue<TEnum>
 	/// </summary>
 	[SuppressMessage("Roslynator", "RCS1158:Static member in generic type should use a type parameter.")]
 	public static bool IsDefined<T>(T value)
-		where T : notnull => Underlying<T>.Map.ContainsKey(value);
+		where T : notnull
+		=> Underlying<T>.Map.ContainsKey(value);
 
 	/// <summary>
 	/// Returns the <typeparamref name="TEnum"/> from the <paramref name="value"/> provided if it maps directly to the underlying value.
 	/// </summary>
 	public static bool TryGetValue<T>(T value, out TEnum e)
-		where T : notnull => Underlying<T>.Map.TryGetValue(value, out e!);
+		where T : notnull
+		=> Underlying<T>.Map.TryGetValue(value, out e!);
 
 	private string GetDebuggerDisplay()
 	{
@@ -394,7 +400,8 @@ public readonly struct EnumValueCaseIgnored<TEnum>
 		=> !left.Value.Equals(right.Value);
 
 	/// <inheritdoc cref="EnumValue{TEnum}.Equals(EnumValue{TEnum})"/>
-	public bool Equals(EnumValueCaseIgnored<TEnum> other) => Value.Equals(other.Value);
+	public bool Equals(EnumValueCaseIgnored<TEnum> other)
+		=> Value.Equals(other.Value);
 
 	/// <summary>
 	/// Compares two <see cref="EnumValueCaseIgnored{TEnum}"/> for <typeparamref name="TEnum"/> equality.
@@ -409,7 +416,8 @@ public readonly struct EnumValueCaseIgnored<TEnum>
 		=> !left.Value.Equals(right.Value);
 
 	/// <inheritdoc cref="EnumValue{TEnum}.Equals(TEnum)"/>
-	public bool Equals(TEnum? other) => Value.Equals(other);
+	public bool Equals(TEnum? other)
+		=> Value.Equals(other);
 
 	/// <summary>
 	/// Compares an <see cref="EnumValueCaseIgnored{TEnum}"/> and a <typeparamref name="TEnum"/> value for equality.
@@ -424,12 +432,14 @@ public readonly struct EnumValueCaseIgnored<TEnum>
 		=> !left.Value.Equals(right);
 
 	/// <inheritdoc />
-	public override bool Equals(object? obj) => obj is TEnum e && Value.Equals(e)
-			|| obj is EnumValueCaseIgnored<TEnum> v1 && Value.Equals(v1.Value)
-			|| obj is EnumValue<TEnum> v2 && Value.Equals(v2.Value);
+	public override bool Equals(object? obj)
+		=> obj is TEnum e && Value.Equals(e)
+		|| obj is EnumValueCaseIgnored<TEnum> v1 && Value.Equals(v1.Value)
+		|| obj is EnumValue<TEnum> v2 && Value.Equals(v2.Value);
 
 	/// <inheritdoc />
-	public override int GetHashCode() => Value.GetHashCode();
+	public override int GetHashCode()
+		=> Value.GetHashCode();
 
 	/// <summary>
 	/// Implicitly converts an <see cref="EnumValue{TEnum}"/> to an <see cref="EnumValueCaseIgnored{TEnum}"/>.
@@ -505,16 +515,18 @@ public static class EnumValue
 	/// <inheritdoc cref="TryParse{TEnum}(StringSegment, bool, out TEnum)"/>
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static TEnum Parse<TEnum>(StringSegment value)
-		where TEnum : notnull, Enum => TryParse<TEnum>(value, false, out TEnum? e) ? e
-			: throw new ArgumentException(string.Format(NotFoundMessage, value), nameof(value));
+		where TEnum : notnull, Enum
+		=> TryParse<TEnum>(value, false, out TEnum? e) ? e
+		: throw new ArgumentException(string.Format(NotFoundMessage, value), nameof(value));
 
 	/// <inheritdoc cref="TryParse{TEnum}(StringSegment, bool, out TEnum)"/>
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static TEnum Parse<TEnum>(string value, bool ignoreCase)
-		where TEnum : notnull, Enum => ignoreCase
-				? EnumValue<TEnum>.IgnoreCaseLookup.TryGetValue(value, out TEnum? e) ? e
-					: throw new ArgumentException(string.Format(NotFoundMessage, value), nameof(value))
-				: Parse<TEnum>(value);
+		where TEnum : notnull, Enum
+		=> ignoreCase
+			? EnumValue<TEnum>.IgnoreCaseLookup.TryGetValue(value, out TEnum? e) ? e
+				: throw new ArgumentException(string.Format(NotFoundMessage, value), nameof(value))
+			: Parse<TEnum>(value);
 
 	/// <inheritdoc cref="TryParse{TEnum}(StringSegment, bool, out TEnum)"/>
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -531,20 +543,23 @@ public static class EnumValue
 	/// <inheritdoc cref="TryParse{TEnum}(StringSegment, bool, out TEnum)"/>
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static bool TryParse<TEnum>(StringSegment value, out TEnum e)
-		where TEnum : notnull, Enum => TryParse(value, false, out e);
+		where TEnum : notnull, Enum
+		=> TryParse(value, false, out e);
 
 	/// <inheritdoc cref="TryParse{TEnum}(StringSegment, bool, out TEnum)"/>
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static bool TryParse<TEnum>(string name, bool ignoreCase, out TEnum e)
-		where TEnum : notnull, Enum => ignoreCase
-			? EnumValue<TEnum>.IgnoreCaseLookup.TryGetValue(name, out e!)
-			: TryParse(name, out e);
+		where TEnum : notnull, Enum
+		=> ignoreCase
+		? EnumValue<TEnum>.IgnoreCaseLookup.TryGetValue(name, out e!)
+		: TryParse(name, out e);
 
 	/// <inheritdoc cref="TryParse{TEnum}(StringSegment, bool, out TEnum)"/>
 	/// <remarks>Can be slightly faster than other ignore-case methods.</remarks>
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static bool TryParseIgnoreCase<TEnum>(string name, out TEnum e)
-	where TEnum : notnull, Enum => EnumValue<TEnum>.IgnoreCaseLookup.TryGetValue(name, out e!);
+	where TEnum : notnull, Enum
+		=> EnumValue<TEnum>.IgnoreCaseLookup.TryGetValue(name, out e!);
 
 	/// <summary>
 	/// Converts the string representation of the name of one or more enumerated constants to an equivalent enumerated object.
@@ -594,7 +609,8 @@ public static class EnumValue
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static bool TryGetValue<TEnum, T>(T value, out TEnum e)
 		where TEnum : notnull, Enum
-		where T : notnull => EnumValue<TEnum>.TryGetValue(value, out e);
+		where T : notnull
+		=> EnumValue<TEnum>.TryGetValue(value, out e);
 
 	/// <summary>
 	/// Uses an expression tree to do an fast lookup the name of the enum value.
@@ -605,7 +621,8 @@ public static class EnumValue
 	/// <returns>The name of the enum.</returns>
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static string GetName<TEnum>(this TEnum value)
-		where TEnum : notnull, Enum => EnumValue<TEnum>.NameLookup(value);
+		where TEnum : notnull, Enum
+		=> EnumValue<TEnum>.NameLookup(value);
 
 	/// <summary>
 	/// Retrieves the attributes for a given enum value.

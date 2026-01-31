@@ -9,7 +9,7 @@ A set of useful extensions for working with strings, string-segments, spans, enu
 * Avoids allocation wherever possible.
 * v3.x is a major overhaul with much improved methods and expanded tests and coverage.
 * v4.x favored use of `Microsoft.Extensions.Primitives.StringSegments` for string manipulation.
-* **NEW:** Zero-allocation `*NoAlloc` methods via [ZLinq](https://github.com/Cysharp/ZLinq) integration!
+* **NEW:** Zero-allocation `*NoAlloc` methods available in the separate [`Open.Text.ZLinq`](#opentextzlinq---zero-allocation-extension-package) package!
 * **NEW:** Roslyn analyzers to detect inefficient string patterns and suggest modern alternatives!
 
 ---
@@ -38,7 +38,41 @@ Comparing `string.Split()` (BCL) vs `SplitAsSegments` (IEnumerable) vs `SplitAsS
 
 > **Key Takeaway:** The `SplitAsSegmentsNoAlloc` methods achieve **zero heap allocations** when iterating `StringSegment` values—ideal for high-throughput scenarios where GC pressure matters.
 >
-> **Note:** Regex-based split methods have unavoidable `Match` object allocations. Methods returning `string` (like `SplitToEnumerableNoAlloc`) allocate per segment.
+> **Note:** Regex-based split methods have unavoidable `Match` object allocations.
+
+---
+
+## Open.Text.ZLinq - Zero-Allocation Extension Package
+
+For scenarios requiring **true zero-allocation** string operations, install the companion package:
+
+```bash
+dotnet add package Open.Text.ZLinq
+```
+
+This package provides `*NoAlloc` extension methods that return ZLinq `ValueEnumerable<TEnumerator, T>` structs instead of heap-allocated enumerables. These methods integrate seamlessly with [ZLinq](https://github.com/Cysharp/ZLinq) for zero-allocation LINQ operations.
+
+### Available Methods
+
+- `SplitAsSegmentsNoAlloc(char)` - Split by character
+- `SplitAsSegmentsNoAlloc(string)` - Split by string sequence
+- `SplitAsSegmentsNoAlloc(Regex)` - Split by regex pattern
+- `JoinNoAlloc(...)` - Join segments with separator
+- `ReplaceNoAlloc(...)` / `ReplaceAsSegmentsNoAlloc(...)` - Replace sequences
+- `AsSegmentsNoAlloc(Regex)` - Get regex matches as segments
+
+### Example
+
+```cs
+using Open.Text;
+using ZLinq;
+
+// Zero-allocation split and filter
+var count = "a,b,c,d,e"
+    .SplitAsSegmentsNoAlloc(',')
+    .Where(s => s.Length > 0)
+    .Count(); // No heap allocations!
+```
 
 ---
 

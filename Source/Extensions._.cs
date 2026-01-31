@@ -51,9 +51,10 @@ public static partial class TextExtensions
 	/// <param name="values">The set of values to validate.</param>
 	/// <returns>True if any of the provided values is null, empty or white-space only. Otherwise false.</returns>
 	[ExcludeFromCodeCoverage]
-	public static bool IsAnyNullOrWhiteSpace(params string[] values) => values != null
-			&& values.Length != 0
-			&& values.Any(v => string.IsNullOrWhiteSpace(v));
+	public static bool IsAnyNullOrWhiteSpace(params string[] values)
+		=> values != null
+		&& values.Length != 0
+		&& values.Any(v => string.IsNullOrWhiteSpace(v));
 
 	/// <summary>
 	/// Throws if null, empty or white-space only.
@@ -77,7 +78,8 @@ public static partial class TextExtensions
 	/// Shortcut for String.IsNullOrWhiteSpace(source).
 	/// </summary>
 	[ExcludeFromCodeCoverage]
-	public static bool IsNullOrWhiteSpace(this string? source) => string.IsNullOrWhiteSpace(source);
+	public static bool IsNullOrWhiteSpace(this string? source)
+		=> string.IsNullOrWhiteSpace(source);
 
 	/// <summary>
 	/// Shortcut for returning a null if the source string is null, white space or empty.
@@ -85,8 +87,9 @@ public static partial class TextExtensions
 	/// <param name="value">The value to be trimmed.</param>
 	/// <param name="trim">True will trim whitespace from valid response.</param>
 	[ExcludeFromCodeCoverage]
-	public static string? ToNullIfWhiteSpace(this string? value, bool trim = false) => string.IsNullOrWhiteSpace(value) ? null
-				: (trim ? value!.Trim() : value);
+	public static string? ToNullIfWhiteSpace(this string? value, bool trim = false)
+		=> string.IsNullOrWhiteSpace(value) ? null
+			: (trim ? value!.Trim() : value);
 
 	/// <summary>
 	/// Shortcut for returning a formatted string if non-null, non-whitespace action exists.
@@ -94,8 +97,9 @@ public static partial class TextExtensions
 	/// <param name="value">The value to be formatted.</param>
 	/// <param name="format">The format string.</param>
 	[ExcludeFromCodeCoverage]
-	public static string ToFormat(this string value, string? format = null) => string.IsNullOrWhiteSpace(value) ? string.Empty
-				: (format is null ? value : string.Format(CultureInfo.InvariantCulture, format, value));
+	public static string ToFormat(this string value, string? format = null)
+		=> string.IsNullOrWhiteSpace(value) ? string.Empty
+			: (format is null ? value : string.Format(CultureInfo.InvariantCulture, format, value));
 
 	/// <summary>
 	/// Shortcut for returning a formatted a value if non-null.
@@ -106,9 +110,10 @@ public static partial class TextExtensions
 	/// <returns>The formatted string, or empty string if the value is null.</returns>
 	[ExcludeFromCodeCoverage]
 	public static string ToFormat<T>(this T? value, string? format = null, CultureInfo? cultureInfo = default)
-		where T : struct => value.HasValue
-			? string.Format(cultureInfo ?? CultureInfo.InvariantCulture, format ?? "{0}", value.Value)
-			: string.Empty;
+		where T : struct
+		=> value.HasValue
+		? string.Format(cultureInfo ?? CultureInfo.InvariantCulture, format ?? "{0}", value.Value)
+		: string.Empty;
 
 	/// <summary>
 	/// Returns true if only contains alphanumeric characters. Regex: (^\w+$).
@@ -116,8 +121,9 @@ public static partial class TextExtensions
 	/// <param name="source">The value to be formatted.</param>
 	/// <param name="trim">Will be trimmed if true.</param>
 	[ExcludeFromCodeCoverage]
-	public static bool IsAlphaNumeric(this string source, bool trim = false) => !string.IsNullOrWhiteSpace(source)
-			&& (trim ? RegexPatterns.ValidAlphaNumericOnlyUntrimmedPattern : RegexPatterns.ValidAlphaNumericOnlyPattern).IsMatch(source);
+	public static bool IsAlphaNumeric(this string source, bool trim = false)
+		=> !string.IsNullOrWhiteSpace(source)
+		&& (trim ? RegexPatterns.ValidAlphaNumericOnlyUntrimmedPattern : RegexPatterns.ValidAlphaNumericOnlyPattern).IsMatch(source);
 
 	#region Numeric string formatting.
 	/// <summary>
@@ -137,18 +143,21 @@ public static partial class TextExtensions
 	/// Shortcut for formating Nullable&lt;double&gt;.
 	/// </summary>
 	[ExcludeFromCodeCoverage]
-	public static string ToString(this double? value, string format, double defaultValue = double.NaN, CultureInfo? cultureInfo = default) => ToString<double>(value, format, defaultValue, cultureInfo);
+	public static string ToString(this double? value, string format, double defaultValue = double.NaN, CultureInfo? cultureInfo = default)
+		=> ToString<double>(value, format, defaultValue, cultureInfo);
 
 	/// <summary>
 	/// Shortcut for formating Nullable&lt;float&gt;.
 	/// </summary>
 	[ExcludeFromCodeCoverage]
-	public static string ToString(this float? value, string format, float defaultValue = float.NaN, CultureInfo? cultureInfo = default) => ToString<float>(value, format, defaultValue, cultureInfo);
+	public static string ToString(this float? value, string format, float defaultValue = float.NaN, CultureInfo? cultureInfo = default)
+		=> ToString<float>(value, format, defaultValue, cultureInfo);
 
 	/// <summary>
 	/// Shortcut for formating to a percent.
 	/// </summary>
-	public static string ToPercentString(this int value, int range, int decimals = 0, CultureInfo? cultureInfo = default) => ((double)value / range).ToString($"p{decimals}", cultureInfo);
+	public static string ToPercentString(this int value, int range, int decimals = 0, CultureInfo? cultureInfo = default)
+		=> ((double)value / range).ToString($"p{decimals}", cultureInfo);
 
 	/// <summary>
 	/// Returns an abbreviated metric representation of a quantity of bytes.
@@ -176,13 +185,15 @@ public static partial class TextExtensions
 	/// Returns an abbreviated metric representation of a quantity of bytes.
 	/// </summary>
 	[ExcludeFromCodeCoverage]
-	public static string ToByteString(this int bytes, string decimalFormat = "N1", CultureInfo? cultureInfo = default) => ToByteString((double)bytes, decimalFormat, cultureInfo);
+	public static string ToByteString(this int bytes, string decimalFormat = "N1", CultureInfo? cultureInfo = default)
+		=> ToByteString((double)bytes, decimalFormat, cultureInfo);
 
 	/// <summary>
 	/// Returns an abbreviated metric representation of a quantity of bytes.
 	/// </summary>
 	[ExcludeFromCodeCoverage]
-	public static string ToByteString(this long bytes, string decimalFormat = "N1", CultureInfo? cultureInfo = default) => ToByteString((double)bytes, decimalFormat, cultureInfo);
+	public static string ToByteString(this long bytes, string decimalFormat = "N1", CultureInfo? cultureInfo = default)
+		=> ToByteString((double)bytes, decimalFormat, cultureInfo);
 
 	/// <summary>
 	/// Returns an abbreviated metric representation of a number.
@@ -207,13 +218,15 @@ public static partial class TextExtensions
 	/// Returns an abbreviated metric representation of a number.
 	/// </summary>
 	[ExcludeFromCodeCoverage]
-	public static string ToMetricString(this long number, string decimalFormat = "N1", CultureInfo? cultureInfo = default) => ToMetricString((double)number, decimalFormat, cultureInfo);
+	public static string ToMetricString(this long number, string decimalFormat = "N1", CultureInfo? cultureInfo = default)
+		=> ToMetricString((double)number, decimalFormat, cultureInfo);
 
 	/// <summary>
 	/// Returns an abbreviated metric representation of a number.
 	/// </summary>
 	[ExcludeFromCodeCoverage]
-	public static string ToMetricString(this int number, string decimalFormat = "N1", CultureInfo? cultureInfo = default) => ToMetricString((double)number, decimalFormat, cultureInfo);
+	public static string ToMetricString(this int number, string decimalFormat = "N1", CultureInfo? cultureInfo = default)
+		=> ToMetricString((double)number, decimalFormat, cultureInfo);
 	#endregion
 
 	/// <summary>
@@ -261,12 +274,13 @@ public static partial class TextExtensions
 	/// <param name="cultureInfo">The optional culture info.  Default is invariant.</param>
 	/// <returns>The resultant string.</returns>
 	[ExcludeFromCodeCoverage]
-	public static string Supplant<T>(this string format, T[]? values, CultureInfo? cultureInfo = default) => values is null ? format : values.Length switch
-	{
-		0 => format,
-		1 => string.Format(cultureInfo ?? CultureInfo.InvariantCulture, format, values[0]),
-		_ => string.Format(cultureInfo ?? CultureInfo.InvariantCulture, format, values as object[] ?? [.. values.Cast<object>()]),
-	};
+	public static string Supplant<T>(this string format, T[]? values, CultureInfo? cultureInfo = default)
+		=> values is null ? format : values.Length switch
+		{
+			0 => format,
+			1 => string.Format(cultureInfo ?? CultureInfo.InvariantCulture, format, values[0]),
+			_ => string.Format(cultureInfo ?? CultureInfo.InvariantCulture, format, values as object[] ?? [.. values.Cast<object>()]),
+		};
 
 	/// <summary>
 	/// A hashing algorithm for a span of characters.
@@ -326,10 +340,12 @@ public static partial class TextExtensions
 	}
 
 	/// <inheritdoc cref="GetHashCodeFromChars(ReadOnlySpan{char}, StringComparison, int)"/>
-	public static int GetHashCodeFromChars(this StringSegment chars, StringComparison comparisonType = StringComparison.Ordinal, int maxChars = int.MaxValue) => chars.HasValue
-			? chars.AsSpan().GetHashCodeFromChars(comparisonType, maxChars)
-			: throw new ArgumentNullException(nameof(chars), "The buffer must not be null.");
+	public static int GetHashCodeFromChars(this StringSegment chars, StringComparison comparisonType = StringComparison.Ordinal, int maxChars = int.MaxValue)
+		=> chars.HasValue
+		? chars.AsSpan().GetHashCodeFromChars(comparisonType, maxChars)
+		: throw new ArgumentNullException(nameof(chars), "The buffer must not be null.");
 
 	/// <inheritdoc cref="GetHashCodeFromChars(ReadOnlySpan{char}, StringComparison, int)"/>
-	public static int GetHashCodeFromChars(this string chars, StringComparison comparisonType = StringComparison.Ordinal, int maxChars = int.MaxValue) => chars.AsSpan().GetHashCodeFromChars(comparisonType, maxChars);
+	public static int GetHashCodeFromChars(this string chars, StringComparison comparisonType = StringComparison.Ordinal, int maxChars = int.MaxValue)
+		=> chars.AsSpan().GetHashCodeFromChars(comparisonType, maxChars);
 }

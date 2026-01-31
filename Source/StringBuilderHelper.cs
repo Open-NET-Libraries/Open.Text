@@ -14,7 +14,8 @@ public readonly record struct StringBuilderHelper
 	public StringBuilder Builder { get; }
 
 	/// <inheritdoc cref="StringBuilder.ToString()"/>
-	public override string ToString() => Builder.ToString();
+	public override string ToString()
+		=> Builder.ToString();
 
 	/// <summary>
 	/// Constructs a new <see cref="StringBuilderHelper"/> with the specified <see cref="StringBuilder"/>.
@@ -116,7 +117,8 @@ public readonly record struct StringBuilderHelper
 	/// <summary>
 	/// Creates a new <see cref="StringBuilderHelper"/> instance beginning with the specified <paramref name="sequence"/>.
 	/// </summary>
-	internal static StringBuilderHelper NewFrom<T>(T sequence) => throw new NotImplementedException();
+	internal static StringBuilderHelper NewFrom<T>(T sequence)
+		=> throw new NotImplementedException();
 
 	/// <inheritdoc cref="NewFrom{T}(T)"/>
 	[ExcludeFromCodeCoverage]

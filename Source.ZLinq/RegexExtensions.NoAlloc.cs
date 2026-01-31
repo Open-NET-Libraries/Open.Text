@@ -3,7 +3,7 @@ using ZLinq;
 namespace Open.Text;
 
 /// <summary>
-/// A set of regular expression extensions.
+/// Zero-allocation regular expression extensions using ZLinq ValueEnumerable patterns.
 /// </summary>
 public static partial class RegexExtensions
 {
@@ -14,7 +14,6 @@ public static partial class RegexExtensions
 	/// <param name="input">The string to search.</param>
 	/// <returns>A ValueEnumerable of the found segments (zero-allocation when used with foreach or ZLinq).</returns>
 	/// <exception cref="System.ArgumentNullException">If the pattern or input is null.</exception>
-	[CLSCompliant(false)]
 	public static ValueEnumerable<RegexMatchSegmentEnumerator, StringSegment> AsSegmentsNoAlloc(
 		this Regex pattern, string input)
 	{

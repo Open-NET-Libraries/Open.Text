@@ -2,8 +2,13 @@ using ZLinq;
 
 namespace Open.Text;
 
+/// <summary>
+/// Zero-allocation text extension methods using ZLinq ValueEnumerable patterns.
+/// </summary>
 public static partial class TextExtensions
 {
+	private const string MustBeSegmentWithValue = "Must be a StringSegment that has a value (is not null).";
+
 	/// <summary>
 	/// Splits a string by character with zero allocations for direct foreach iteration.
 	/// Returns a ZLinq ValueEnumerable that avoids heap allocations and supports LINQ operations.
@@ -12,7 +17,6 @@ public static partial class TextExtensions
 	/// <param name="splitCharacter">The character to split by.</param>
 	/// <param name="options">String split options.</param>
 	/// <returns>A zero-allocation ValueEnumerable of StringSegment.</returns>
-	[CLSCompliant(false)]
 	public static ValueEnumerable<StringSegmentSplitEnumerator, StringSegment> SplitAsSegmentsNoAlloc(
 		this string source,
 		char splitCharacter,
@@ -20,7 +24,6 @@ public static partial class TextExtensions
 		=> SplitAsSegmentsNoAlloc(source.AsSegment(), splitCharacter, options);
 
 	/// <inheritdoc cref="SplitAsSegmentsNoAlloc(string, char, StringSplitOptions)"/>
-	[CLSCompliant(false)]
 	public static ValueEnumerable<StringSegmentSplitEnumerator, StringSegment> SplitAsSegmentsNoAlloc(
 		this StringSegment source,
 		char splitCharacter,
@@ -40,7 +43,6 @@ public static partial class TextExtensions
 	/// <param name="pattern">The pattern to split by.</param>
 	/// <param name="options">Can specify to omit empty entries.</param>
 	/// <returns>A ValueEnumerable of the segments.</returns>
-	[CLSCompliant(false)]
 	public static ValueEnumerable<RegexSplitSegmentEnumerator, StringSegment> SplitAsSegmentsNoAlloc(
 		this string source,
 		Regex pattern,
@@ -57,7 +59,6 @@ public static partial class TextExtensions
 	/// Enumerates a string by segments that are separated by the specified sequence (zero-allocation).
 	/// </summary>
 	/// <returns>A ValueEnumerable of the segments (zero-allocation when used with foreach or ZLinq).</returns>
-	[CLSCompliant(false)]
 	public static ValueEnumerable<StringSegmentSequenceSplitEnumerator, StringSegment> SplitAsSegmentsNoAlloc(
 		this string source,
 		string splitSequence,
@@ -65,7 +66,6 @@ public static partial class TextExtensions
 		StringComparison comparisonType = StringComparison.Ordinal) => SplitAsSegmentsNoAlloc(source.AsSegment(), splitSequence.AsSegment(), options, comparisonType);
 
 	/// <inheritdoc cref="SplitAsSegmentsNoAlloc(string, string, StringSplitOptions, StringComparison)"/>
-	[CLSCompliant(false)]
 	public static ValueEnumerable<StringSegmentSequenceSplitEnumerator, StringSegment> SplitAsSegmentsNoAlloc(
 		this StringSegment source,
 		StringSegment splitSequence,
@@ -95,7 +95,6 @@ public static partial class TextExtensions
 	/// <param name="between">The segment to place between each segment.</param>
 	/// <returns>A ValueEnumerable of the joined segments.</returns>
 	/// <exception cref="System.ArgumentNullException">The source is null.</exception>
-	[CLSCompliant(false)]
 	public static ValueEnumerable<StringSegmentJoinEnumerator, StringSegment> JoinNoAlloc(
 		this IEnumerable<StringSegment> source, StringSegment between)
 		=> source is null
@@ -108,7 +107,6 @@ public static partial class TextExtensions
 	/// <param name="source">The regex split segments to join.</param>
 	/// <param name="between">The segment to place between each segment.</param>
 	/// <returns>A ValueEnumerable of the joined segments (zero-allocation when used with foreach or ZLinq).</returns>
-	[CLSCompliant(false)]
 	public static ValueEnumerable<RegexSplitJoinEnumerator, StringSegment> JoinNoAlloc(
 		this ValueEnumerable<RegexSplitSegmentEnumerator, StringSegment> source,
 		StringSegment between)
@@ -120,7 +118,6 @@ public static partial class TextExtensions
 	/// <param name="source">The sequence split segments to join.</param>
 	/// <param name="between">The segment to place between each segment.</param>
 	/// <returns>A ValueEnumerable of the joined segments (zero-allocation when used with foreach or ZLinq).</returns>
-	[CLSCompliant(false)]
 	public static ValueEnumerable<SequenceSplitJoinEnumerator, StringSegment> JoinNoAlloc(
 		this ValueEnumerable<StringSegmentSequenceSplitEnumerator, StringSegment> source,
 		StringSegment between)
@@ -130,7 +127,6 @@ public static partial class TextExtensions
 	/// Splits a sequence and replaces the removed sequences with the replacement sequence (zero-allocation).
 	/// </summary>
 	/// <returns>A ValueEnumerable of the segments (zero-allocation when used with foreach or ZLinq).</returns>
-	[CLSCompliant(false)]
 	public static ValueEnumerable<SequenceSplitJoinEnumerator, StringSegment> ReplaceNoAlloc(
 		this StringSegment source,
 		StringSegment splitSequence,
@@ -142,7 +138,6 @@ public static partial class TextExtensions
 	/// Replaces all occurrences of a pattern with a replacement sequence (zero-allocation).
 	/// </summary>
 	/// <returns>A ValueEnumerable of the segments (zero-allocation when used with foreach or ZLinq).</returns>
-	[CLSCompliant(false)]
 	public static ValueEnumerable<RegexSplitJoinEnumerator, StringSegment> ReplaceAsSegmentsNoAlloc(
 		this string source,
 		Regex splitSequence,
@@ -153,7 +148,6 @@ public static partial class TextExtensions
 	/// Replaces all occurrences of a sequence with a replacement sequence (zero-allocation).
 	/// </summary>
 	/// <returns>A ValueEnumerable of the segments (zero-allocation when used with foreach or ZLinq).</returns>
-	[CLSCompliant(false)]
 	public static ValueEnumerable<SequenceSplitJoinEnumerator, StringSegment> ReplaceAsSegmentsNoAlloc(
 		this string source,
 		StringSegment splitSequence,

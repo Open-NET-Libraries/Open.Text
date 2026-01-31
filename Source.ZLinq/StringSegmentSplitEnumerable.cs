@@ -1,5 +1,3 @@
-using ZLinq;
-
 namespace Open.Text;
 
 /// <summary>
@@ -52,6 +50,7 @@ public struct StringSegmentSplitEnumerator : IValueEnumerator<StringSegment>
 				current = default;
 				return false;
 			}
+
 			current = StringSegment.Empty;
 			return true;
 		}
@@ -236,6 +235,7 @@ public struct StringSegmentSequenceSplitEnumerator : IValueEnumerator<StringSegm
 				current = default;
 				return false;
 			}
+
 			current = StringSegment.Empty;
 			return true;
 		}
@@ -478,6 +478,7 @@ public struct RegexSplitSegmentEnumerator : IValueEnumerator<StringSegment>
 				current = default;
 				return false;
 			}
+
 			current = StringSegment.Empty;
 			return true;
 		}

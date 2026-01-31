@@ -104,7 +104,8 @@ public static partial class TextExtensions
 	}
 
 	/// <inheritdoc cref="Last(StringSegment, StringSegment, StringComparison)" />
-	public static StringSegment Last(this string source, StringSegment search, StringComparison comparisonType = StringComparison.Ordinal) => Last(source.AsSegment(), search, comparisonType);
+	public static StringSegment Last(this string source, StringSegment search, StringComparison comparisonType = StringComparison.Ordinal)
+		=> Last(source.AsSegment(), search, comparisonType);
 
 	/// <summary>
 	/// Finds the last instance of a pattern and returns a StringSegment for subsequent use.

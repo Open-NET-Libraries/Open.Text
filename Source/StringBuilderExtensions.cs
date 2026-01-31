@@ -15,34 +15,36 @@ public static class StringBuilderExtensions
 	/// <param name="value">The generic value to append.</param>
 	/// <exception cref="ArgumentNullException">If the provided StringBuilder is null.</exception>
 	[ExcludeFromCodeCoverage] // Reason: no need to cover underlying .NET code.
-	public static StringBuilder Append<T>(this StringBuilder sb, T value) => sb is null
-			? throw new ArgumentNullException(nameof(sb))
-			: value switch
-			{
-				char c => sb.Append(c),
-				byte b => sb.Append(b),
-				sbyte b => sb.Append(b),
-				bool b => sb.Append(b),
-				ulong ul => sb.Append(ul),
-				uint l => sb.Append(l),
-				ushort u => sb.Append(u),
-				long l => sb.Append(l),
-				int i => sb.Append(i),
-				short s => sb.Append(s),
-				float f => sb.Append(f),
-				double d => sb.Append(d),
-				decimal d => sb.Append(d),
-				string s => sb.Append(s),
-				char[] c => sb.Append(c),
-				StringSegment s => Append(sb, s),
-				ReadOnlyMemory<char> s => sb.Append(s.Span),
-				_ => sb.Append(value)
-			};
+	public static StringBuilder Append<T>(this StringBuilder sb, T value)
+		=> sb is null
+		? throw new ArgumentNullException(nameof(sb))
+		: value switch
+		{
+			char c => sb.Append(c),
+			byte b => sb.Append(b),
+			sbyte b => sb.Append(b),
+			bool b => sb.Append(b),
+			ulong ul => sb.Append(ul),
+			uint l => sb.Append(l),
+			ushort u => sb.Append(u),
+			long l => sb.Append(l),
+			int i => sb.Append(i),
+			short s => sb.Append(s),
+			float f => sb.Append(f),
+			double d => sb.Append(d),
+			decimal d => sb.Append(d),
+			string s => sb.Append(s),
+			char[] c => sb.Append(c),
+			StringSegment s => Append(sb, s),
+			ReadOnlyMemory<char> s => sb.Append(s.Span),
+			_ => sb.Append(value)
+		};
 
 	/// <summary>
 	/// Creates a <see cref="StringBuilderEnumerable"/> for enumerating over the characters in the <paramref name="builder"/>.
 	/// </summary>
-	public static StringBuilderEnumerable AsEnumerable(this StringBuilder builder) => new(builder);
+	public static StringBuilderEnumerable AsEnumerable(this StringBuilder builder)
+		=> new(builder);
 
 	/// <summary>
 	/// Adds every entry to a StringBuilder.
@@ -529,11 +531,13 @@ public static class StringBuilderExtensions
 	/// Trims whitespace from the beginning and end of the <see cref="StringBuilder"/>.
 	/// </summary>
 	/// <exception cref="ArgumentNullException">If <paramref name="sb"/> is null.</exception>
-	public static StringBuilder Trim(this StringBuilder sb) => TrimEnd(sb).TrimStart();
+	public static StringBuilder Trim(this StringBuilder sb)
+		=> TrimEnd(sb).TrimStart();
 
 	/// <summary>
 	/// Trims the specified characters from the beginning and end of the <see cref="StringBuilder"/>.
 	/// </summary>
 	/// <exception cref="ArgumentNullException">If <paramref name="sb"/> is null.</exception>
-	public static StringBuilder Trim(this StringBuilder sb, ReadOnlySpan<char> characters) => TrimEnd(sb, characters).TrimStart(characters);
+	public static StringBuilder Trim(this StringBuilder sb, ReadOnlySpan<char> characters)
+		=> TrimEnd(sb, characters).TrimStart(characters);
 }

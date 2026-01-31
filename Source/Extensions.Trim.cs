@@ -156,24 +156,27 @@ public static partial class TextExtensions
 	public static StringSegment TrimStartPattern(this StringSegment source,
 		StringSegment pattern,
 		StringComparison comparisonType = StringComparison.Ordinal,
-		int max = -1) => TrimStartPattern(source, pattern.AsSpan(), comparisonType, max);
+		int max = -1)
+		=> TrimStartPattern(source, pattern.AsSpan(), comparisonType, max);
 
 	/// <inheritdoc cref="TrimStartPattern(ReadOnlySpan{char}, ReadOnlySpan{char}, StringComparison, int)"/>
 	public static StringSegment TrimStartPattern(this string source,
 		StringSegment pattern,
 		StringComparison comparisonType = StringComparison.Ordinal,
-		int max = -1) => source is null
-			? throw new ArgumentNullException(nameof(source))
-			: TrimStartPattern(source.AsSegment(), pattern, comparisonType, max);
+		int max = -1)
+		=> source is null
+		? throw new ArgumentNullException(nameof(source))
+		: TrimStartPattern(source.AsSegment(), pattern, comparisonType, max);
 
 	/// <inheritdoc cref="TrimStartPattern(ReadOnlySpan{char}, ReadOnlySpan{char}, StringComparison, int)"/>
 	[ExcludeFromCodeCoverage] // simple overload	
 	public static StringSegment TrimStartPattern(this string source,
 		ReadOnlySpan<char> pattern,
 		StringComparison comparisonType = StringComparison.Ordinal,
-		int max = -1) => source is null
-			? throw new ArgumentNullException(nameof(source))
-			: TrimStartPattern(source.AsSegment(), pattern, comparisonType, max);
+		int max = -1)
+		=> source is null
+		? throw new ArgumentNullException(nameof(source))
+		: TrimStartPattern(source.AsSegment(), pattern, comparisonType, max);
 
 	/// <summary>
 	/// Trims (omits) a matching pattern from the start of a sequence of characters.
@@ -304,24 +307,27 @@ public static partial class TextExtensions
 	public static StringSegment TrimEndPattern(this StringSegment source,
 		StringSegment pattern,
 		StringComparison comparisonType = StringComparison.Ordinal,
-		int max = -1) => TrimEndPattern(source, pattern.AsSpan(), comparisonType, max);
+		int max = -1)
+		=> TrimEndPattern(source, pattern.AsSpan(), comparisonType, max);
 
 	/// <inheritdoc cref="TrimEndPattern(ReadOnlySpan{char}, ReadOnlySpan{char}, StringComparison, int)"/>
 	public static StringSegment TrimEndPattern(this string source,
 		StringSegment pattern,
 		StringComparison comparisonType = StringComparison.Ordinal,
-		int max = -1) => source is null
-			? throw new ArgumentNullException(nameof(source))
-			: TrimEndPattern(source.AsSegment(), pattern.AsSpan(), comparisonType, max);
+		int max = -1)
+		=> source is null
+		? throw new ArgumentNullException(nameof(source))
+		: TrimEndPattern(source.AsSegment(), pattern.AsSpan(), comparisonType, max);
 
 	/// <inheritdoc cref="TrimEndPattern(ReadOnlySpan{char}, ReadOnlySpan{char}, StringComparison, int)"/>
 	[ExcludeFromCodeCoverage]
 	public static StringSegment TrimEndPattern(this string source,
 		ReadOnlySpan<char> pattern,
 		StringComparison comparisonType = StringComparison.Ordinal,
-		int max = -1) => source is null
-			? throw new ArgumentNullException(nameof(source))
-			: TrimEndPattern(source.AsSegment(), pattern, comparisonType, max);
+		int max = -1)
+		=> source is null
+		? throw new ArgumentNullException(nameof(source))
+		: TrimEndPattern(source.AsSegment(), pattern, comparisonType, max);
 
 	/// <summary>
 	/// Trims (omits) a matching pattern from the end of a sequence of characters.

@@ -114,6 +114,7 @@ public class TrimEqualsAnalyzer : DiagnosticAnalyzer
 				return true;
 			}
 		}
+
 		return false;
 	}
 }

@@ -103,6 +103,7 @@ public class IndexOfSubstringAnalyzer : DiagnosticAnalyzer
 					|| containingType?.ToString() == "Microsoft.Extensions.Primitives.StringSegment";
 			}
 		}
+
 		return false;
 	}
 

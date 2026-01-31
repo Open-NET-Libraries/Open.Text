@@ -59,21 +59,26 @@ public readonly struct StringComparable
 	/// Compares <paramref name="other"/> if its characters matches this instance.
 	/// </summary>
 	/// <returns>true if the value of <paramref name="other"/> matches; otherwise false. </returns>
-	public bool Equals(string? other) => Segment.Equals(other, Type);
+	public bool Equals(string? other)
+		=> Segment.Equals(other, Type);
 
 	/// <inheritdoc cref="Equals(string?)"/>
-	public bool Equals(ReadOnlySpan<char> other) => Segment.Equals(other, Type);
+	public bool Equals(ReadOnlySpan<char> other)
+		=> Segment.Equals(other, Type);
 
 	/// <inheritdoc cref="Equals(string?)"/>
-	public bool Equals(StringComparable other) => Segment.Equals(other.Segment, Type)
-			|| Type != other.Type && other.Equals(Segment);
+	public bool Equals(StringComparable other)
+		=> Segment.Equals(other.Segment, Type)
+		|| Type != other.Type && other.Equals(Segment);
 
 	/// <inheritdoc cref="Equals(string?)"/>
-	public bool Equals(SpanComparable other) => Segment.Equals(other.Source, Type)
-			|| Type != other.Type && other.Equals(Segment);
+	public bool Equals(SpanComparable other)
+		=> Segment.Equals(other.Source, Type)
+		|| Type != other.Type && other.Equals(Segment);
 
 	/// <inheritdoc cref="Equals(string?)"/>
-	public bool Equals(StringSegment other) => Equals(other.AsSpan());
+	public bool Equals(StringSegment other)
+		=> Equals(other.AsSpan());
 
 	/// <summary>
 	/// Compares <paramref name="obj"/> if it is a <see cref="string"/> or a <see cref="StringComparable"/> and if the value matches this instance.
@@ -93,25 +98,31 @@ public readonly struct StringComparable
 	/// of the specified <paramref name="value"/>
 	/// starting from the <paramref name="startIndex"/>.
 	/// </summary>
-	public int IndexOf(StringSegment value, int startIndex = 0) => Segment.IndexOf(value, startIndex, Type);
+	public int IndexOf(StringSegment value, int startIndex = 0)
+		=> Segment.IndexOf(value, startIndex, Type);
 
 	/// <inheritdoc cref="IndexOf(StringSegment, int)"/>
-	public int IndexOf(char value, int startIndex = 0) => Segment.IndexOf(value, startIndex, Type);
+	public int IndexOf(char value, int startIndex = 0)
+		=> Segment.IndexOf(value, startIndex, Type);
 
 	/// <inheritdoc cref="IndexOf(StringSegment, int)"/>
-	public int IndexOf(ReadOnlySpan<char> value, int startIndex = 0) => Segment.IndexOf(value, startIndex, Type);
+	public int IndexOf(ReadOnlySpan<char> value, int startIndex = 0)
+		=> Segment.IndexOf(value, startIndex, Type);
 
 	/// <summary>
 	/// Checks if <paramref name="value"/> value is contained in the sequence using the comparison type.
 	/// </summary>
 	/// <returns>true if the value of <paramref name="value"/> is contained (using the comparison type); otherwise false. </returns>
-	public bool Contains(StringSegment value) => Segment.Contains(value, Type);
+	public bool Contains(StringSegment value)
+		=> Segment.Contains(value, Type);
 
 	/// <inheritdoc cref="Contains(StringSegment)"/>
-	public bool Contains(char value) => Segment.Contains(value, Type);
+	public bool Contains(char value)
+		=> Segment.Contains(value, Type);
 
 	/// <inheritdoc cref="Contains(StringSegment)"/>
-	public bool Contains(ReadOnlySpan<char> value) => Segment.Contains(value, Type);
+	public bool Contains(ReadOnlySpan<char> value)
+		=> Segment.Contains(value, Type);
 
 	/// <inheritdoc />
 	[ExcludeFromCodeCoverage]
@@ -217,69 +228,81 @@ public static class StringComparableExtensions
 	/// Prepares a <see cref="string"/> for a specific StringComparison operation.
 	/// </summary>
 	/// <inheritdoc cref="AsCaseInsensitive(string)"/>
-	public static StringComparable AsComparable(this string? source, StringComparison type) => new(source, type);
+	public static StringComparable AsComparable(this string? source, StringComparison type)
+		=> new(source, type);
 
 	/// <summary>
 	/// Prepares a <see cref="string"/> to be case insensitive when comparing equality.
 	/// </summary>
 	/// <returns>A <see cref="StringComparable"/> that can be compared (== or !=) against other StringComparables, SpanComparables, strings, and ReadOnlySpan&lt;char&gt;.</returns>
-	public static StringComparable AsCaseInsensitive(this string? source) => new(source, StringComparison.OrdinalIgnoreCase);
+	public static StringComparable AsCaseInsensitive(this string? source)
+		=> new(source, StringComparison.OrdinalIgnoreCase);
 
 	/// <summary>
 	/// Prepares a <see cref="string"/> to be invariant culture and case insensitive when comparing equality.
 	/// </summary>
 	/// <inheritdoc cref="AsCaseInsensitive(string)"/>
-	public static StringComparable AsCaseInsensitiveInvariantCulture(this string? source) => new(source, StringComparison.InvariantCultureIgnoreCase);
+	public static StringComparable AsCaseInsensitiveInvariantCulture(this string? source)
+		=> new(source, StringComparison.InvariantCultureIgnoreCase);
 
 	/// <summary>
 	/// Prepares a <see cref="string"/> to be invariant culture and case insensitive when comparing equality.
 	/// </summary>
 	/// <inheritdoc cref="AsCaseInsensitive(string)"/>
-	public static StringComparable AsCaseInsensitiveCurrentCulture(this string? source) => new(source, StringComparison.CurrentCultureIgnoreCase);
+	public static StringComparable AsCaseInsensitiveCurrentCulture(this string? source)
+		=> new(source, StringComparison.CurrentCultureIgnoreCase);
 
 	/// <summary>
 	/// Prepares a <see cref="string"/> to be current culture and case sensitive when comparing equality.
 	/// </summary>
 	/// <inheritdoc cref="AsCaseInsensitive(string)"/>
-	public static StringComparable AsCurrentCulture(this string? source) => new(source, StringComparison.CurrentCulture);
+	public static StringComparable AsCurrentCulture(this string? source)
+		=> new(source, StringComparison.CurrentCulture);
 
 	/// <summary>
 	/// Prepares a <see cref="string"/> to be invariant culture and case sensitive when comparing equality.
 	/// </summary>
-	public static StringComparable AsInvariantCulture(this string? source) => new(source, StringComparison.InvariantCulture);
+	public static StringComparable AsInvariantCulture(this string? source)
+		=> new(source, StringComparison.InvariantCulture);
 
 	/// <summary>
 	/// Prepares a <see cref="StringSegment"/> for a specific <see cref="StringComparison"/> operation.
 	/// </summary>
 	/// <inheritdoc cref="AsCaseInsensitive(string)"/>
-	public static StringComparable AsComparable(this StringSegment source, StringComparison type) => new(source, type);
+	public static StringComparable AsComparable(this StringSegment source, StringComparison type)
+		=> new(source, type);
 
 	/// <summary>
 	/// Prepares a <see cref="StringSegment"/> to be case insensitive when comparing equality.
 	/// </summary>
 	/// <inheritdoc cref="AsCaseInsensitive(string)"/>
-	public static StringComparable AsCaseInsensitive(this StringSegment source) => new(source, StringComparison.OrdinalIgnoreCase);
+	public static StringComparable AsCaseInsensitive(this StringSegment source)
+		=> new(source, StringComparison.OrdinalIgnoreCase);
 
 	/// <summary>
 	/// Prepares a <see cref="StringSegment"/> to be invariant culture and case insensitive when comparing equality.
 	/// </summary>
 	/// <inheritdoc cref="AsCaseInsensitive(string)"/>
-	public static StringComparable AsCaseInsensitiveInvariantCulture(this StringSegment source) => new(source, StringComparison.InvariantCultureIgnoreCase);
+	public static StringComparable AsCaseInsensitiveInvariantCulture(this StringSegment source)
+		=> new(source, StringComparison.InvariantCultureIgnoreCase);
 
 	/// <summary>
 	/// Prepares a <see cref="StringSegment"/> to be invariant culture and case insensitive when comparing equality.
 	/// </summary>
 	/// <inheritdoc cref="AsCaseInsensitive(string)"/>
-	public static StringComparable AsCaseInsensitiveCurrentCulture(this StringSegment source) => new(source, StringComparison.CurrentCultureIgnoreCase);
+	public static StringComparable AsCaseInsensitiveCurrentCulture(this StringSegment source)
+		=> new(source, StringComparison.CurrentCultureIgnoreCase);
 
 	/// <summary>
 	/// Prepares a <see cref="StringSegment"/> to be current culture and case sensitive when comparing equality.
 	/// </summary>
 	/// <inheritdoc cref="AsCaseInsensitive(string)"/>
-	public static StringComparable AsCurrentCulture(this StringSegment source) => new(source, StringComparison.CurrentCulture);
+	public static StringComparable AsCurrentCulture(this StringSegment source)
+		=> new(source, StringComparison.CurrentCulture);
 
 	/// <summary>
 	/// Prepares a <see cref="StringSegment"/> to be invariant culture and case sensitive when comparing equality.
 	/// </summary>
-	public static StringComparable AsInvariantCulture(this StringSegment source) => new(source, StringComparison.InvariantCulture);
+	public static StringComparable AsInvariantCulture(this StringSegment source)
+		=> new(source, StringComparison.InvariantCulture);
 }
