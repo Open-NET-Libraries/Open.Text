@@ -149,7 +149,7 @@ public struct StringSegmentSplitEnumerator : IValueEnumerator<StringSegment>
 	/// <summary>
 	/// Returns false as we cannot determine count without enumerating.
 	/// </summary>
-	public bool TryGetNonEnumeratedCount(out int count)
+	public readonly bool TryGetNonEnumeratedCount(out int count)
 	{
 		count = 0;
 		return false;
@@ -158,7 +158,7 @@ public struct StringSegmentSplitEnumerator : IValueEnumerator<StringSegment>
 	/// <summary>
 	/// Returns false as split segments are not contiguous in memory.
 	/// </summary>
-	public bool TryGetSpan(out ReadOnlySpan<StringSegment> span)
+	public readonly bool TryGetSpan(out ReadOnlySpan<StringSegment> span)
 	{
 		span = default;
 		return false;
@@ -167,15 +167,12 @@ public struct StringSegmentSplitEnumerator : IValueEnumerator<StringSegment>
 	/// <summary>
 	/// Returns false as we don't support indexed access efficiently.
 	/// </summary>
-	public bool TryCopyTo(scoped Span<StringSegment> destination, Index offset)
-	{
-		return false;
-	}
+	public readonly bool TryCopyTo(scoped Span<StringSegment> destination, Index offset) => false;
 
 	/// <summary>
 	/// No resources to dispose.
 	/// </summary>
-	public void Dispose()
+	public readonly void Dispose()
 	{
 		// Nothing to dispose
 	}
@@ -336,7 +333,7 @@ public struct StringSegmentSequenceSplitEnumerator : IValueEnumerator<StringSegm
 	/// <summary>
 	/// Returns false as we cannot determine count without enumerating.
 	/// </summary>
-	public bool TryGetNonEnumeratedCount(out int count)
+	public readonly bool TryGetNonEnumeratedCount(out int count)
 	{
 		count = 0;
 		return false;
@@ -345,7 +342,7 @@ public struct StringSegmentSequenceSplitEnumerator : IValueEnumerator<StringSegm
 	/// <summary>
 	/// Returns false as split segments are not contiguous in memory.
 	/// </summary>
-	public bool TryGetSpan(out ReadOnlySpan<StringSegment> span)
+	public readonly bool TryGetSpan(out ReadOnlySpan<StringSegment> span)
 	{
 		span = default;
 		return false;
@@ -354,15 +351,12 @@ public struct StringSegmentSequenceSplitEnumerator : IValueEnumerator<StringSegm
 	/// <summary>
 	/// Returns false as we don't support indexed access efficiently.
 	/// </summary>
-	public bool TryCopyTo(scoped Span<StringSegment> destination, Index offset)
-	{
-		return false;
-	}
+	public readonly bool TryCopyTo(scoped Span<StringSegment> destination, Index offset) => false;
 
 	/// <summary>
 	/// No resources to dispose.
 	/// </summary>
-	public void Dispose()
+	public readonly void Dispose()
 	{
 		// Nothing to dispose
 	}
@@ -389,7 +383,7 @@ public struct RegexMatchSegmentEnumerator : IValueEnumerator<StringSegment>
 	/// </summary>
 	public bool TryGetNext(out StringSegment current)
 	{
-		if (_currentMatch is null || !_currentMatch.Success)
+		if (_currentMatch?.Success != true)
 		{
 			current = default;
 			return false;
@@ -403,7 +397,7 @@ public struct RegexMatchSegmentEnumerator : IValueEnumerator<StringSegment>
 	/// <summary>
 	/// Returns false as we cannot determine count without enumerating.
 	/// </summary>
-	public bool TryGetNonEnumeratedCount(out int count)
+	public readonly bool TryGetNonEnumeratedCount(out int count)
 	{
 		count = 0;
 		return false;
@@ -412,7 +406,7 @@ public struct RegexMatchSegmentEnumerator : IValueEnumerator<StringSegment>
 	/// <summary>
 	/// Returns false as match segments are not contiguous in memory.
 	/// </summary>
-	public bool TryGetSpan(out ReadOnlySpan<StringSegment> span)
+	public readonly bool TryGetSpan(out ReadOnlySpan<StringSegment> span)
 	{
 		span = default;
 		return false;
@@ -421,15 +415,12 @@ public struct RegexMatchSegmentEnumerator : IValueEnumerator<StringSegment>
 	/// <summary>
 	/// Returns false as we don't support indexed access efficiently.
 	/// </summary>
-	public bool TryCopyTo(scoped Span<StringSegment> destination, Index offset)
-	{
-		return false;
-	}
+	public readonly bool TryCopyTo(scoped Span<StringSegment> destination, Index offset) => false;
 
 	/// <summary>
 	/// No resources to dispose.
 	/// </summary>
-	public void Dispose()
+	public readonly void Dispose()
 	{
 		// Nothing to dispose
 	}
@@ -522,7 +513,7 @@ public struct RegexSplitSegmentEnumerator : IValueEnumerator<StringSegment>
 			}
 
 			// Check for more matches
-			if (_currentMatch is null || !_currentMatch.Success)
+			if (_currentMatch?.Success != true)
 			{
 				// No more matches - yield final segment
 				_finalSegmentPending = true;
@@ -562,7 +553,7 @@ public struct RegexSplitSegmentEnumerator : IValueEnumerator<StringSegment>
 	/// <summary>
 	/// Returns false as we cannot determine count without enumerating.
 	/// </summary>
-	public bool TryGetNonEnumeratedCount(out int count)
+	public readonly bool TryGetNonEnumeratedCount(out int count)
 	{
 		count = 0;
 		return false;
@@ -571,7 +562,7 @@ public struct RegexSplitSegmentEnumerator : IValueEnumerator<StringSegment>
 	/// <summary>
 	/// Returns false as split segments are not contiguous in memory.
 	/// </summary>
-	public bool TryGetSpan(out ReadOnlySpan<StringSegment> span)
+	public readonly bool TryGetSpan(out ReadOnlySpan<StringSegment> span)
 	{
 		span = default;
 		return false;
@@ -580,15 +571,12 @@ public struct RegexSplitSegmentEnumerator : IValueEnumerator<StringSegment>
 	/// <summary>
 	/// Returns false as we don't support indexed access efficiently.
 	/// </summary>
-	public bool TryCopyTo(scoped Span<StringSegment> destination, Index offset)
-	{
-		return false;
-	}
+	public readonly bool TryCopyTo(scoped Span<StringSegment> destination, Index offset) => false;
 
 	/// <summary>
 	/// No resources to dispose.
 	/// </summary>
-	public void Dispose()
+	public readonly void Dispose()
 	{
 		// Nothing to dispose
 	}
@@ -675,7 +663,7 @@ public struct StringSegmentJoinEnumerator : IValueEnumerator<StringSegment>
 	/// <summary>
 	/// Returns false as we cannot determine count without enumerating.
 	/// </summary>
-	public bool TryGetNonEnumeratedCount(out int count)
+	public readonly bool TryGetNonEnumeratedCount(out int count)
 	{
 		count = 0;
 		return false;
@@ -684,7 +672,7 @@ public struct StringSegmentJoinEnumerator : IValueEnumerator<StringSegment>
 	/// <summary>
 	/// Returns false as joined segments are not contiguous in memory.
 	/// </summary>
-	public bool TryGetSpan(out ReadOnlySpan<StringSegment> span)
+	public readonly bool TryGetSpan(out ReadOnlySpan<StringSegment> span)
 	{
 		span = default;
 		return false;
@@ -693,18 +681,12 @@ public struct StringSegmentJoinEnumerator : IValueEnumerator<StringSegment>
 	/// <summary>
 	/// Returns false as we don't support indexed access efficiently.
 	/// </summary>
-	public bool TryCopyTo(scoped Span<StringSegment> destination, Index offset)
-	{
-		return false;
-	}
+	public readonly bool TryCopyTo(scoped Span<StringSegment> destination, Index offset) => false;
 
 	/// <summary>
 	/// Disposes the underlying enumerator.
 	/// </summary>
-	public void Dispose()
-	{
-		_source.Dispose();
-	}
+	public readonly void Dispose() => _source.Dispose();
 }
 
 /// <summary>
@@ -786,7 +768,7 @@ public struct RegexSplitJoinEnumerator : IValueEnumerator<StringSegment>
 	/// <summary>
 	/// Returns false as we cannot determine count without enumerating.
 	/// </summary>
-	public bool TryGetNonEnumeratedCount(out int count)
+	public readonly bool TryGetNonEnumeratedCount(out int count)
 	{
 		count = 0;
 		return false;
@@ -795,7 +777,7 @@ public struct RegexSplitJoinEnumerator : IValueEnumerator<StringSegment>
 	/// <summary>
 	/// Returns false as joined segments are not contiguous in memory.
 	/// </summary>
-	public bool TryGetSpan(out ReadOnlySpan<StringSegment> span)
+	public readonly bool TryGetSpan(out ReadOnlySpan<StringSegment> span)
 	{
 		span = default;
 		return false;
@@ -804,18 +786,12 @@ public struct RegexSplitJoinEnumerator : IValueEnumerator<StringSegment>
 	/// <summary>
 	/// Returns false as we don't support indexed access efficiently.
 	/// </summary>
-	public bool TryCopyTo(scoped Span<StringSegment> destination, Index offset)
-	{
-		return false;
-	}
+	public readonly bool TryCopyTo(scoped Span<StringSegment> destination, Index offset) => false;
 
 	/// <summary>
 	/// No resources to dispose.
 	/// </summary>
-	public void Dispose()
-	{
-		_source.Dispose();
-	}
+	public readonly void Dispose() => _source.Dispose();
 }
 
 /// <summary>
@@ -897,7 +873,7 @@ public struct SequenceSplitJoinEnumerator : IValueEnumerator<StringSegment>
 	/// <summary>
 	/// Returns false as we cannot determine count without enumerating.
 	/// </summary>
-	public bool TryGetNonEnumeratedCount(out int count)
+	public readonly bool TryGetNonEnumeratedCount(out int count)
 	{
 		count = 0;
 		return false;
@@ -906,7 +882,7 @@ public struct SequenceSplitJoinEnumerator : IValueEnumerator<StringSegment>
 	/// <summary>
 	/// Returns false as joined segments are not contiguous in memory.
 	/// </summary>
-	public bool TryGetSpan(out ReadOnlySpan<StringSegment> span)
+	public readonly bool TryGetSpan(out ReadOnlySpan<StringSegment> span)
 	{
 		span = default;
 		return false;
@@ -915,16 +891,10 @@ public struct SequenceSplitJoinEnumerator : IValueEnumerator<StringSegment>
 	/// <summary>
 	/// Returns false as we don't support indexed access efficiently.
 	/// </summary>
-	public bool TryCopyTo(scoped Span<StringSegment> destination, Index offset)
-	{
-		return false;
-	}
+	public readonly bool TryCopyTo(scoped Span<StringSegment> destination, Index offset) => false;
 
 	/// <summary>
 	/// No resources to dispose.
 	/// </summary>
-	public void Dispose()
-	{
-		_source.Dispose();
-	}
+	public readonly void Dispose() => _source.Dispose();
 }

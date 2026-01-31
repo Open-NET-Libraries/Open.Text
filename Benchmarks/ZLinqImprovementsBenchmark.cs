@@ -4,8 +4,6 @@ using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Diagnosers;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Order;
-using Microsoft.Extensions.Primitives;
-using Open.Text;
 using System.Text.RegularExpressions;
 using ZLinq;
 
@@ -38,7 +36,7 @@ public class ZLinqImprovementsBenchmark
 	private const string SmallCsv = "apple,banana,cherry,date,elderberry";
 	private const string MediumCsv = "apple,banana,cherry,date,elderberry,fig,grape,honeydew,kiwi,lemon,mango,nectarine,orange,papaya,quince";
 	private static readonly string LargeCsv = string.Join(",", Enumerable.Range(1, 1000).Select(i => $"item{i}"));
-	
+
 	private static readonly Regex CommaRegex = new(",", RegexOptions.Compiled);
 	private static readonly Regex WordRegex = new(@"\w+", RegexOptions.Compiled);
 
@@ -70,15 +68,15 @@ public class ZLinqImprovementsBenchmark
 
 	[BenchmarkCategory("CharSplit-Count"), Benchmark(Baseline = true, Description = "BCL Split + LINQ Count")]
 	public int CharSplit_Count_BCL()
-	{
-		return SmallCsv.Split(',').Count();
-	}
+#pragma warning disable CA1829 // Use Length/Count property instead of Count() when available
+#pragma warning disable RCS1077 // Optimize LINQ method call
+		=> SmallCsv.Split(',').Count();
+#pragma warning restore RCS1077 // Optimize LINQ method call
+#pragma warning restore CA1829 // Use Length/Count property instead of Count() when available
 
 	[BenchmarkCategory("CharSplit-Count"), Benchmark(Description = "SplitAsSegments + ZLinq Count")]
 	public int CharSplit_Count_ZLinq()
-	{
-		return SmallCsv.SplitAsSegments(',').Count();
-	}
+		=> SmallCsv.SplitAsSegments(',').Count();
 
 	// =====================================================================
 	// CATEGORY: Char Split - Large String Foreach
@@ -173,16 +171,10 @@ public class ZLinqImprovementsBenchmark
 	// =====================================================================
 
 	[BenchmarkCategory("Replace"), Benchmark(Baseline = true, Description = "BCL String.Replace")]
-	public string Replace_BCL()
-	{
-		return MediumCsv.Replace(",", " | ");
-	}
+	public string Replace_BCL() => MediumCsv.Replace(",", " | ");
 
 	[BenchmarkCategory("Replace"), Benchmark(Description = "ReplaceToString (ZLinq)")]
-	public string Replace_ZLinq()
-	{
-		return MediumCsv.AsSegment().ReplaceToString(",", " | ");
-	}
+	public string Replace_ZLinq() => MediumCsv.AsSegment().ReplaceToString(",", " | ");
 
 	// =====================================================================
 	// CATEGORY: LINQ Chain - Where + Select + Count
@@ -190,21 +182,16 @@ public class ZLinqImprovementsBenchmark
 
 	[BenchmarkCategory("LinqChain"), Benchmark(Baseline = true, Description = "BCL + LINQ Chain")]
 	public int LinqChain_BCL()
-	{
-		return SmallCsv.Split(',')
+		=> SmallCsv.Split(',')
 			.Where(s => s.Length > 4)
-			.Select(s => s.Length)
-			.Sum();
-	}
+			.Sum(s => s.Length);
 
 	[BenchmarkCategory("LinqChain"), Benchmark(Description = "ZLinq Chain")]
 	public int LinqChain_ZLinq()
-	{
-		return SmallCsv.SplitAsSegments(',')
+		=> SmallCsv.SplitAsSegments(',')
 			.Where(s => s.Length > 4)
 			.Select(s => s.Length)
 			.Sum();
-	}
 
 	// =====================================================================
 	// CATEGORY: ToArray Materialization
@@ -212,13 +199,9 @@ public class ZLinqImprovementsBenchmark
 
 	[BenchmarkCategory("ToArray"), Benchmark(Baseline = true, Description = "BCL Split (already array)")]
 	public int ToArray_BCL()
-	{
-		return SmallCsv.Split(',').Length;
-	}
+		=> SmallCsv.Split(',').Length;
 
 	[BenchmarkCategory("ToArray"), Benchmark(Description = "SplitAsSegments.ToArray()")]
 	public int ToArray_ZLinq()
-	{
-		return SmallCsv.SplitAsSegments(',').ToArray().Length;
-	}
+		=> SmallCsv.SplitAsSegments(',').ToArray().Length;
 }

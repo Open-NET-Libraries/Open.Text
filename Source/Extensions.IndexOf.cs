@@ -88,29 +88,23 @@ public static partial class TextExtensions
 	}
 
 	/// <inheritdoc cref="string.LastIndexOf(char)"/>
-	public static int LastIndexOf(this string source, char value, StringComparison comparisonType)
-		=> source.AsSpan().LastIndexOf(value, comparisonType);
+	public static int LastIndexOf(this string source, char value, StringComparison comparisonType) => source.AsSpan().LastIndexOf(value, comparisonType);
 
 	/// <inheritdoc cref="string.LastIndexOf(char)"/>
-	public static int LastIndexOf(this StringSegment source, char value, StringComparison comparisonType)
-		=> source.AsSpan().LastIndexOf(value, comparisonType);
+	public static int LastIndexOf(this StringSegment source, char value, StringComparison comparisonType) => source.AsSpan().LastIndexOf(value, comparisonType);
 
 	/// <inheritdoc cref="StringSegment.IndexOf(char)"/>
-	public static int IndexOf(this StringSegment source, char value, StringComparison comparisonType)
-		=> source.HasValue ? source.AsSpan().IndexOf(value, comparisonType) : -1;
+	public static int IndexOf(this StringSegment source, char value, StringComparison comparisonType) => source.HasValue ? source.AsSpan().IndexOf(value, comparisonType) : -1;
 
 	/// <inheritdoc cref="StringSegment.IndexOf(char)"/>
-	public static int IndexOf(this StringSegment source, char value, int startIndex, StringComparison comparisonType)
-		=> source.HasValue ? source.AsSpan().IndexOf(value, startIndex, comparisonType) : -1;
+	public static int IndexOf(this StringSegment source, char value, int startIndex, StringComparison comparisonType) => source.HasValue ? source.AsSpan().IndexOf(value, startIndex, comparisonType) : -1;
 
 #if NETSTANDARD2_0
 	/// <inheritdoc cref="StringSegment.IndexOf(char)"/>
-	public static int IndexOf(this string source, char value, StringComparison comparisonType)
-		=> source.AsSpan().IndexOf(value, comparisonType);
+	public static int IndexOf(this string source, char value, StringComparison comparisonType) => source.AsSpan().IndexOf(value, comparisonType);
 
 	/// <inheritdoc cref="StringSegment.IndexOf(char)"/>
-	public static int LastIndexOf(this string source, char value)
-		=> source.AsSpan().LastIndexOf(value);
+	public static int LastIndexOf(this string source, char value) => source.AsSpan().LastIndexOf(value);
 #endif
 
 	/// <summary>
@@ -249,25 +243,20 @@ public static partial class TextExtensions
 #else
 	/// <inheritdoc cref="LastIndexOf(ReadOnlySpan{char}, ReadOnlySpan{char}, StringComparison)"/>
 #endif
-	public static int LastIndexOf(this StringSegment source, ReadOnlySpan<char> sequence, StringComparison comparisonType)
-		=> source.AsSpan().LastIndexOf(sequence, comparisonType);
+	public static int LastIndexOf(this StringSegment source, ReadOnlySpan<char> sequence, StringComparison comparisonType) => source.AsSpan().LastIndexOf(sequence, comparisonType);
 #pragma warning restore CS1587 // XML comment is not placed on a valid language element
 
 	/// <inheritdoc cref="LastIndexOf(StringSegment, ReadOnlySpan{char}, StringComparison)"/>
-	public static int LastIndexOf(this string source, StringSegment sequence, StringComparison comparisonType)
-		=> sequence.HasValue ? source.AsSpan().LastIndexOf(sequence.AsSpan(), comparisonType) : -1;
+	public static int LastIndexOf(this string source, StringSegment sequence, StringComparison comparisonType) => sequence.HasValue ? source.AsSpan().LastIndexOf(sequence.AsSpan(), comparisonType) : -1;
 
 	/// <inheritdoc cref="LastIndexOf(StringSegment, ReadOnlySpan{char}, StringComparison)"/>
-	public static int LastIndexOf(this string source, ReadOnlySpan<char> sequence, StringComparison comparisonType)
-		=> source.AsSpan().LastIndexOf(sequence, comparisonType);
+	public static int LastIndexOf(this string source, ReadOnlySpan<char> sequence, StringComparison comparisonType) => source.AsSpan().LastIndexOf(sequence, comparisonType);
 
 	/// <inheritdoc cref="LastIndexOf(StringSegment, ReadOnlySpan{char}, StringComparison)"/>
-	public static int LastIndexOf(this ReadOnlySpan<char> source, StringSegment sequence, StringComparison comparisonType)
-		=> sequence.HasValue ? source.LastIndexOf(sequence.AsSpan(), comparisonType) : -1;
+	public static int LastIndexOf(this ReadOnlySpan<char> source, StringSegment sequence, StringComparison comparisonType) => sequence.HasValue ? source.LastIndexOf(sequence.AsSpan(), comparisonType) : -1;
 
 	/// <inheritdoc cref="LastIndexOf(StringSegment, ReadOnlySpan{char}, StringComparison)"/>
-	public static int LastIndexOf(this StringSegment source, StringSegment sequence, StringComparison comparisonType)
-		=> sequence.HasValue ? source.AsSpan().LastIndexOf(sequence.AsSpan(), comparisonType) : -1;
+	public static int LastIndexOf(this StringSegment source, StringSegment sequence, StringComparison comparisonType) => sequence.HasValue ? source.AsSpan().LastIndexOf(sequence.AsSpan(), comparisonType) : -1;
 
 	/// <summary>
 	/// Reports the zero-based index of the first occurrence
@@ -304,40 +293,35 @@ public static partial class TextExtensions
 		this ReadOnlySpan<char> source,
 		StringSegment sequence,
 		int startIndex = 0,
-		StringComparison comparisonType = StringComparison.Ordinal)
-		=> sequence.HasValue ? source.IndexOf(sequence.AsSpan(), startIndex, comparisonType) : -1;
+		StringComparison comparisonType = StringComparison.Ordinal) => sequence.HasValue ? source.IndexOf(sequence.AsSpan(), startIndex, comparisonType) : -1;
 
 	/// <inheritdoc cref="IndexOf(ReadOnlySpan{char}, ReadOnlySpan{char}, int, StringComparison)"/>
 	public static int IndexOf(
 		this StringSegment source,
 		StringSegment sequence,
 		int startIndex = 0,
-		StringComparison comparisonType = StringComparison.Ordinal)
-		=> source.AsSpan().IndexOf(sequence, startIndex, comparisonType);
+		StringComparison comparisonType = StringComparison.Ordinal) => source.AsSpan().IndexOf(sequence, startIndex, comparisonType);
 
 	/// <inheritdoc cref="IndexOf(ReadOnlySpan{char}, ReadOnlySpan{char}, int, StringComparison)"/>
 	public static int IndexOf(
 		this string source,
 		ReadOnlySpan<char> sequence,
 		int startIndex = 0,
-		StringComparison comparisonType = StringComparison.Ordinal)
-		=> source.AsSpan().IndexOf(sequence, startIndex, comparisonType);
+		StringComparison comparisonType = StringComparison.Ordinal) => source.AsSpan().IndexOf(sequence, startIndex, comparisonType);
 
 	/// <inheritdoc cref="IndexOf(ReadOnlySpan{char}, ReadOnlySpan{char}, int, StringComparison)"/>
 	public static int IndexOf(
 		this string source,
 		StringSegment sequence,
 		int startIndex = 0,
-		StringComparison comparisonType = StringComparison.Ordinal)
-		=> source.AsSpan().IndexOf(sequence, startIndex, comparisonType);
+		StringComparison comparisonType = StringComparison.Ordinal) => source.AsSpan().IndexOf(sequence, startIndex, comparisonType);
 
 	/// <inheritdoc cref="IndexOf(ReadOnlySpan{char}, ReadOnlySpan{char}, int, StringComparison)"/>
 	public static int IndexOf(
 		this StringSegment source,
 		ReadOnlySpan<char> sequence,
 		int startIndex = 0,
-		StringComparison comparisonType = StringComparison.Ordinal)
-		=> source.AsSpan().IndexOf(sequence, startIndex, comparisonType);
+		StringComparison comparisonType = StringComparison.Ordinal) => source.AsSpan().IndexOf(sequence, startIndex, comparisonType);
 
 	/// <summary>
 	/// Reports the zero-based index of the first occurrence
@@ -347,36 +331,31 @@ public static partial class TextExtensions
 	public static int IndexOf(
 		this StringSegment source,
 		StringSegment sequence,
-		StringComparison comparisonType)
-		=> sequence.HasValue ? IndexOf(source.AsSpan(), sequence.AsSpan(), comparisonType) : -1;
+		StringComparison comparisonType) => sequence.HasValue ? IndexOf(source.AsSpan(), sequence.AsSpan(), comparisonType) : -1;
 
 	/// <inheritdoc cref="IndexOf(StringSegment, StringSegment, StringComparison)"/>
 	public static int IndexOf(
 		this string source,
 		ReadOnlySpan<char> sequence,
-		StringComparison comparisonType)
-		=> IndexOf(source.AsSpan(), sequence, comparisonType);
+		StringComparison comparisonType) => IndexOf(source.AsSpan(), sequence, comparisonType);
 
 	/// <inheritdoc cref="IndexOf(StringSegment, StringSegment, StringComparison)"/>
 	public static int IndexOf(
 		this StringSegment source,
 		ReadOnlySpan<char> sequence,
-		StringComparison comparisonType)
-		=> IndexOf(source.AsSpan(), sequence, comparisonType);
+		StringComparison comparisonType) => IndexOf(source.AsSpan(), sequence, comparisonType);
 
 	/// <inheritdoc cref="IndexOf(StringSegment, StringSegment, StringComparison)"/>
 	public static int IndexOf(
 		this ReadOnlySpan<char> source,
 		StringSegment sequence,
-		StringComparison comparisonType)
-		=> sequence.HasValue ? IndexOf(source, sequence.AsSpan(), comparisonType) : -1;
+		StringComparison comparisonType) => sequence.HasValue ? IndexOf(source, sequence.AsSpan(), comparisonType) : -1;
 
 	/// <inheritdoc cref="IndexOf(StringSegment, StringSegment, StringComparison)"/>
 	public static int IndexOf(
 		this string source,
 		StringSegment sequence,
-		StringComparison comparisonType = StringComparison.Ordinal)
-		=> sequence.HasValue ? IndexOf(source.AsSpan(), sequence.AsSpan(), comparisonType) : -1;
+		StringComparison comparisonType = StringComparison.Ordinal) => sequence.HasValue ? IndexOf(source.AsSpan(), sequence.AsSpan(), comparisonType) : -1;
 
 	/// <summary>
 	/// Checks if the <paramref name="value"/> is contained
@@ -388,19 +367,16 @@ public static partial class TextExtensions
 	/// </returns>
 	public static bool Contains(
 		this ReadOnlySpan<char> source,
-		char value, StringComparison comparisonType = StringComparison.Ordinal)
-		=> IndexOf(source, value, comparisonType) != -1;
+		char value, StringComparison comparisonType = StringComparison.Ordinal) => IndexOf(source, value, comparisonType) != -1;
 
 	/// <inheritdoc cref="Contains(ReadOnlySpan{char}, char, StringComparison)"/>
 	public static bool Contains(
 		this StringSegment source,
-		char value, StringComparison comparisonType = StringComparison.Ordinal)
-		=> IndexOf(source, value, comparisonType) != -1;
+		char value, StringComparison comparisonType = StringComparison.Ordinal) => IndexOf(source, value, comparisonType) != -1;
 
 #if NETSTANDARD2_0
 	/// <inheritdoc cref="Contains(ReadOnlySpan{char}, char, StringComparison)"/>
-	public static bool Contains(this string source, char value, StringComparison comparisonType)
-		=> source.IndexOf(value, comparisonType) != -1;
+	public static bool Contains(this string source, char value, StringComparison comparisonType) => source.IndexOf(value, comparisonType) != -1;
 #endif
 
 	/// <summary>
@@ -413,30 +389,25 @@ public static partial class TextExtensions
 	/// </returns>
 	public static bool Contains(
 		this StringSegment source,
-		StringSegment sequence, StringComparison comparisonType = StringComparison.Ordinal)
-		=> IndexOf(source, sequence, comparisonType) != -1;
+		StringSegment sequence, StringComparison comparisonType = StringComparison.Ordinal) => IndexOf(source, sequence, comparisonType) != -1;
 
 	/// <inheritdoc cref="Contains(StringSegment, StringSegment, StringComparison)"/>
 	public static bool Contains(
 	this StringSegment source,
-		ReadOnlySpan<char> sequence, StringComparison comparisonType = StringComparison.Ordinal)
-		=> IndexOf(source, sequence, comparisonType) != -1;
+		ReadOnlySpan<char> sequence, StringComparison comparisonType = StringComparison.Ordinal) => IndexOf(source, sequence, comparisonType) != -1;
 
 	/// <inheritdoc cref="Contains(StringSegment, StringSegment, StringComparison)"/>
 	public static bool Contains(
 		this ReadOnlySpan<char> source,
-		StringSegment sequence, StringComparison comparisonType = StringComparison.Ordinal)
-		=> IndexOf(source, sequence, comparisonType) != -1;
+		StringSegment sequence, StringComparison comparisonType = StringComparison.Ordinal) => IndexOf(source, sequence, comparisonType) != -1;
 
 	/// <inheritdoc cref="Contains(StringSegment, StringSegment, StringComparison)"/>
 	public static bool Contains(
 		this string source,
-		StringSegment sequence, StringComparison comparisonType = StringComparison.Ordinal)
-		=> IndexOf(source, sequence, comparisonType) != -1;
+		StringSegment sequence, StringComparison comparisonType = StringComparison.Ordinal) => IndexOf(source, sequence, comparisonType) != -1;
 
 	/// <inheritdoc cref="Contains(StringSegment, StringSegment, StringComparison)"/>
 	public static bool Contains(
 		this string source,
-		ReadOnlySpan<char> sequence, StringComparison comparisonType = StringComparison.Ordinal)
-		=> IndexOf(source, sequence, comparisonType) != -1;
+		ReadOnlySpan<char> sequence, StringComparison comparisonType = StringComparison.Ordinal) => IndexOf(source, sequence, comparisonType) != -1;
 }

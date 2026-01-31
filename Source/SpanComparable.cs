@@ -33,53 +33,43 @@ public readonly ref struct SpanComparable(ReadOnlySpan<char> source, StringCompa
 	/// Compares <paramref name="other"/> if its characters matches this instance.
 	/// </summary>
 	/// <returns>true if the value of <paramref name="other"/> matches; otherwise false. </returns>
-	public bool Equals(string? other)
-		=> Source.Equals(other, Type);
+	public bool Equals(string? other) => Source.Equals(other, Type);
 
 	/// <inheritdoc cref="Equals(string?)"/>
-	public bool Equals(ReadOnlySpan<char> other)
-		=> Source.Equals(other, Type);
+	public bool Equals(ReadOnlySpan<char> other) => Source.Equals(other, Type);
 
 	/// <inheritdoc cref="Equals(string?)"/>
-	public bool Equals(StringComparable other)
-		=> Source.Equals(other.Segment, Type)
-		|| Type != other.Type && other.Equals(Source);
+	public bool Equals(StringComparable other) => Source.Equals(other.Segment, Type)
+			|| Type != other.Type && other.Equals(Source);
 
 	/// <inheritdoc cref="Equals(string?)"/>
-	public bool Equals(SpanComparable other)
-		=> Source.Equals(other.Source, Type)
-		|| Type != other.Type && other.Equals(Source);
+	public bool Equals(SpanComparable other) => Source.Equals(other.Source, Type)
+			|| Type != other.Type && other.Equals(Source);
 
 	/// <summary>
 	/// Reports the zero-based index of the first occurrence
 	/// of the specified <paramref name="value"/>
 	/// starting from the <paramref name="startIndex"/>.
 	/// </summary>
-	public int IndexOf(StringSegment value, int startIndex = 0)
-		=> Source.IndexOf(value, startIndex, Type);
+	public int IndexOf(StringSegment value, int startIndex = 0) => Source.IndexOf(value, startIndex, Type);
 
 	/// <inheritdoc cref="IndexOf(StringSegment, int)"/>
-	public int IndexOf(char value, int startIndex = 0)
-		=> Source.IndexOf(value, startIndex, Type);
+	public int IndexOf(char value, int startIndex = 0) => Source.IndexOf(value, startIndex, Type);
 
 	/// <inheritdoc cref="IndexOf(StringSegment, int)"/>
-	public int IndexOf(ReadOnlySpan<char> value, int startIndex = 0)
-		=> Source.IndexOf(value, startIndex, Type);
+	public int IndexOf(ReadOnlySpan<char> value, int startIndex = 0) => Source.IndexOf(value, startIndex, Type);
 
 	/// <summary>
 	/// Checks if <paramref name="value"/> value is contained in the sequence using the comparison type.
 	/// </summary>
 	/// <returns>true if the value of <paramref name="value"/> is contained (using the comparison type); otherwise false. </returns>
-	public bool Contains(StringSegment value)
-		=> Source.Contains(value, Type);
+	public bool Contains(StringSegment value) => Source.Contains(value, Type);
 
 	/// <inheritdoc cref="Contains(StringSegment)"/>
-	public bool Contains(char value)
-		=> Source.Contains(value, Type);
+	public bool Contains(char value) => Source.Contains(value, Type);
 
 	/// <inheritdoc cref="Contains(StringSegment)"/>
-	public bool Contains(ReadOnlySpan<char> value)
-		=> Source.Contains(value, Type);
+	public bool Contains(ReadOnlySpan<char> value) => Source.Contains(value, Type);
 
 	/// <inheritdoc cref="ReadOnlySpan{T}.Equals(object)" />
 	[Obsolete("Equals() on StringCompariable will always throw an exception. Use == instead.")]
@@ -194,41 +184,35 @@ public static class SpanComparableExtensions
 	/// Prepares a span for a specific <see cref="StringComparison"/> operation.
 	/// </summary>
 	/// <inheritdoc cref="AsCaseInsensitive(ReadOnlySpan{char})"/>
-	public static SpanComparable AsComparable(this ReadOnlySpan<char> source, StringComparison type)
-		=> new(source, type);
+	public static SpanComparable AsComparable(this ReadOnlySpan<char> source, StringComparison type) => new(source, type);
 
 	/// <summary>
 	/// Prepares a span to be case insensitive when comparing equality.
 	/// </summary>
 	/// <inheritdoc cref="StringComparableExtensions.AsCaseInsensitive(string)"/>
-	public static SpanComparable AsCaseInsensitive(this ReadOnlySpan<char> source)
-		=> new(source, StringComparison.OrdinalIgnoreCase);
+	public static SpanComparable AsCaseInsensitive(this ReadOnlySpan<char> source) => new(source, StringComparison.OrdinalIgnoreCase);
 
 	/// <summary>
 	/// Prepares a span to be invariant culture and case insensitive when comparing equality.
 	/// </summary>
 	/// <inheritdoc cref="AsCaseInsensitive(ReadOnlySpan{char})"/>
-	public static SpanComparable AsCaseInsensitiveInvariantCulture(this ReadOnlySpan<char> source)
-		=> new(source, StringComparison.InvariantCultureIgnoreCase);
+	public static SpanComparable AsCaseInsensitiveInvariantCulture(this ReadOnlySpan<char> source) => new(source, StringComparison.InvariantCultureIgnoreCase);
 
 	/// <summary>
 	/// Prepares a span to be invariant culture and case insensitive when comparing equality.
 	/// </summary>
 	/// <inheritdoc cref="AsCaseInsensitive(ReadOnlySpan{char})"/>
-	public static SpanComparable AsCaseInsensitiveCurrentCulture(this ReadOnlySpan<char> source)
-		=> new(source, StringComparison.CurrentCultureIgnoreCase);
+	public static SpanComparable AsCaseInsensitiveCurrentCulture(this ReadOnlySpan<char> source) => new(source, StringComparison.CurrentCultureIgnoreCase);
 
 	/// <summary>
 	/// Prepares a span to be current culture and case sensitive when comparing equality.
 	/// </summary>
 	/// <inheritdoc cref="AsCaseInsensitive(ReadOnlySpan{char})"/>
-	public static SpanComparable AsCurrentCulture(this ReadOnlySpan<char> source)
-		=> new(source, StringComparison.CurrentCulture);
+	public static SpanComparable AsCurrentCulture(this ReadOnlySpan<char> source) => new(source, StringComparison.CurrentCulture);
 
 	/// <summary>
 	/// Prepares a span to be invariant culture and case sensitive when comparing equality.
 	/// </summary>
 	/// <inheritdoc cref="AsCaseInsensitive(ReadOnlySpan{char})"/>
-	public static SpanComparable AsInvariantCulture(this ReadOnlySpan<char> source)
-		=> new(source, StringComparison.InvariantCulture);
+	public static SpanComparable AsInvariantCulture(this ReadOnlySpan<char> source) => new(source, StringComparison.InvariantCulture);
 }

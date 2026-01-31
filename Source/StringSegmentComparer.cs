@@ -60,16 +60,13 @@ public class StringSegmentComparer(StringComparison comparisonType = StringCompa
 
 	/// <inheritdoc />
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public int Compare(StringSegment x, StringSegment y)
-		=> StringSegment.Compare(x, y, ComparisonType);
+	public int Compare(StringSegment x, StringSegment y) => StringSegment.Compare(x, y, ComparisonType);
 
 	/// <inheritdoc />
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public bool Equals(StringSegment x, StringSegment y)
-		=> StringSegment.Equals(x, y, ComparisonType);
+	public bool Equals(StringSegment x, StringSegment y) => StringSegment.Equals(x, y, ComparisonType);
 
 	/// <inheritdoc />
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public int GetHashCode(StringSegment obj)
-		=> obj.GetHashCodeFromChars(ComparisonType, MaxHashChars);
+	public int GetHashCode(StringSegment obj) => obj.GetHashCodeFromChars(ComparisonType, MaxHashChars);
 }

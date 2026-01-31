@@ -44,13 +44,12 @@ public static class RegexExtensions
 	/// </summary>
 	/// <param name="capture">The capture to get the span from.</param>
 #endif
-	public static ReadOnlySpan<char> AsSpan(this Capture capture)
-		=> capture is null
-		? throw new ArgumentNullException(nameof(capture))
+	public static ReadOnlySpan<char> AsSpan(this Capture capture) => capture is null
+			? throw new ArgumentNullException(nameof(capture))
 #if NET6_0_OR_GREATER
 		: capture.ValueSpan;
 #else
-		: _textDelegate(capture).AsSpan(capture.Index, capture.Length);
+			: _textDelegate(capture).AsSpan(capture.Index, capture.Length);
 #endif
 
 	/// <summary>
@@ -59,7 +58,7 @@ public static class RegexExtensions
 	/// <param name="groups">The group collection to get the group from.</param>
 	/// <param name="groupName">The declared name of the group.</param>
 	/// <returns>The value of the requested group or null if not found.</returns>
-	/// <exception cref="ArgumentNullException">Groups or groupName is null.</exception>
+	/// <exception cref="System.ArgumentNullException">Groups or groupName is null.</exception>
 	public static string? GetValue(this GroupCollection groups, string groupName)
 	{
 		if (groups is null)
@@ -96,12 +95,13 @@ public static class RegexExtensions
 	/// <param name="pattern">The pattern to search with.</param>
 	/// <param name="input">The string to search.</param>
 	/// <returns>A ValueEnumerable of the found segments (zero-allocation when used with foreach or ZLinq).</returns>
-	/// <exception cref="ArgumentNullException">If the pattern or input is null.</exception>
+	/// <exception cref="System.ArgumentNullException">If the pattern or input is null.</exception>
 	[CLSCompliant(false)]
 	public static ValueEnumerable<RegexMatchSegmentEnumerator, StringSegment> AsSegments(this Regex pattern, string input)
 	{
 		if (pattern is null) throw new ArgumentNullException(nameof(pattern));
 		if (input is null) throw new ArgumentNullException(nameof(input));
+		Contract.EndContractBlock();
 
 		return new ValueEnumerable<RegexMatchSegmentEnumerator, StringSegment>(
 			new RegexMatchSegmentEnumerator(pattern, input));

@@ -49,14 +49,12 @@ public readonly struct StringSubsegment : IEquatable<StringSubsegment>
 	/// Gets a <see cref="ReadOnlySpan{T}"/> representing the defined subsegment.
 	/// </summary>
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public ReadOnlySpan<char> AsSpan()
-		=> Source.AsSpan(Offset, Length);
+	public ReadOnlySpan<char> AsSpan() => Source.AsSpan(Offset, Length);
 
 	/// <summary>
 	/// Returns a new <see cref="StringSegment"/> representing the defined subsegment.
 	/// </summary>
-	public StringSegment AsSegment()
-		=> Offset == 0 && Source.Length == Length ? Source : Source.Subsegment(Offset, Length);
+	public StringSegment AsSegment() => Offset == 0 && Source.Length == Length ? Source : Source.Subsegment(Offset, Length);
 
 	/// <summary>
 	/// Returns a new <see cref="StringSegment"/> representing the defined subsegment.
@@ -68,31 +66,25 @@ public readonly struct StringSubsegment : IEquatable<StringSubsegment>
 	/// <summary>
 	/// Compares a read-only span of characters to this <see cref="StringSubsegment"/> for equality.
 	/// </summary>
-	public bool Equals(ReadOnlySpan<char> other, StringComparison comparisonType = StringComparison.Ordinal)
-		=> Source.HasValue && other.Length == Length && AsSpan().Equals(other, comparisonType);
+	public bool Equals(ReadOnlySpan<char> other, StringComparison comparisonType = StringComparison.Ordinal) => Source.HasValue && other.Length == Length && AsSpan().Equals(other, comparisonType);
 
 	/// <summary>
 	/// Compares two <see cref="StringSubsegment"/> instances for equality.
 	/// </summary>
-	public bool Equals(StringSubsegment other, StringComparison comparisonType = StringComparison.Ordinal)
-		=> Source.HasValue
-		? other.Source.HasValue && other.Length == Length && Equals(other.AsSpan(), comparisonType)
-		: !other.Source.HasValue;
+	public bool Equals(StringSubsegment other, StringComparison comparisonType = StringComparison.Ordinal) => Source.HasValue
+			? other.Source.HasValue && other.Length == Length && Equals(other.AsSpan(), comparisonType)
+			: !other.Source.HasValue;
 
 	/// <inheritdoc />
-	public override bool Equals(object? obj)
-		=> obj is StringSubsegment other && Equals(other);
+	public override bool Equals(object? obj) => obj is StringSubsegment other && Equals(other);
 
 	/// <inheritdoc />
-	public override int GetHashCode()
-		=> AsSegment().GetHashCode();
+	public override int GetHashCode() => AsSegment().GetHashCode();
 
 	/// <inheritdoc />
-	public override string ToString()
-		=> AsSpan().ToString();
+	public override string ToString() => AsSpan().ToString();
 
-	bool IEquatable<StringSubsegment>.Equals(StringSubsegment other)
-		=> Equals(other);
+	bool IEquatable<StringSubsegment>.Equals(StringSubsegment other) => Equals(other);
 
 	/// <summary>
 	/// Compares two <see cref="StringSubsegment"/> instances for equality.

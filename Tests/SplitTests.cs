@@ -89,6 +89,7 @@ public static class SplitTests
 	[InlineData(",Hello,there,I,am,Joe,", StringSplitOptions.RemoveEmptyEntries)]
 #pragma warning disable IDE0079 // Use SplitAsSegments to reduce string allocations
 	[SuppressMessage("Performance", "OPENTXT002:Use SplitAsSegments to reduce string allocations")]
+	[SuppressMessage("Style", "IDE0305:Simplify collection initialization", Justification = "<Pending>")]
 #pragma warning restore IDE0079 // Use SplitAsSegments to reduce string allocations
 	public static void Split(string sequence, StringSplitOptions options = StringSplitOptions.None)
 	{

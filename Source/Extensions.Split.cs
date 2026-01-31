@@ -72,18 +72,17 @@ public static partial class TextExtensions
 	public static ReadOnlySpan<char> FirstSplit(this StringSegment source,
 		char splitCharacter,
 		out int nextIndex,
-		int startIndex = 0)
-		=> source.HasValue
-		? FirstSplit(source.AsSpan(), splitCharacter, out nextIndex, startIndex)
-		: throw new ArgumentException("Cannot split a null string or sequence that has no value.", nameof(source));
+		int startIndex = 0) => source.HasValue
+			? FirstSplit(source.AsSpan(), splitCharacter, out nextIndex, startIndex)
+			: throw new ArgumentException("Cannot split a null string or sequence that has no value.", nameof(source));
 
 	/// <inheritdoc cref="FirstSplit(StringSegment, char, out int, int)"/>
 	public static ReadOnlySpan<char> FirstSplit(this string source,
 		char splitCharacter,
 		out int nextIndex,
-		int startIndex = 0)
+		int startIndex = 0) =>
 		// AsSegment will throw if source is null
-		=> FirstSplit(source.AsSegment(), splitCharacter, out nextIndex, startIndex);
+		FirstSplit(source.AsSegment(), splitCharacter, out nextIndex, startIndex);
 
 	/// <summary>
 	/// Finds the first instance of a character sequence and returns the set of characters up to that sequence.
@@ -124,18 +123,16 @@ public static partial class TextExtensions
 		ReadOnlySpan<char> splitSequence,
 		out int nextIndex,
 		int startIndex,
-		StringComparison comparisonType = StringComparison.Ordinal)
-		=> source.HasValue
-		? FirstSplit(source.AsSpan(), splitSequence, out nextIndex, startIndex, comparisonType)
-		: throw new ArgumentException("Cannot split a null string or sequence that has no value.", nameof(source));
+		StringComparison comparisonType = StringComparison.Ordinal) => source.HasValue
+			? FirstSplit(source.AsSpan(), splitSequence, out nextIndex, startIndex, comparisonType)
+			: throw new ArgumentException("Cannot split a null string or sequence that has no value.", nameof(source));
 
 	/// <inheritdoc cref="FirstSplit(ReadOnlySpan{char}, ReadOnlySpan{char}, out int, int, StringComparison)"/>
 	public static ReadOnlySpan<char> FirstSplit(this string source,
 		ReadOnlySpan<char> splitSequence,
 		out int nextIndex,
 		int startIndex,
-		StringComparison comparisonType = StringComparison.Ordinal)
-		=> source.AsSegment().FirstSplit(splitSequence, out nextIndex, startIndex, comparisonType);
+		StringComparison comparisonType = StringComparison.Ordinal) => source.AsSegment().FirstSplit(splitSequence, out nextIndex, startIndex, comparisonType);
 
 	/// <inheritdoc cref="FirstSplit(ReadOnlySpan{char}, ReadOnlySpan{char}, out int, int, StringComparison)"/>
 	public static ReadOnlySpan<char> FirstSplit(this ReadOnlySpan<char> source,
@@ -161,17 +158,15 @@ public static partial class TextExtensions
 	public static ReadOnlySpan<char> FirstSplit(this StringSegment source,
 		ReadOnlySpan<char> splitSequence,
 		out int nextIndex,
-		StringComparison comparisonType = StringComparison.Ordinal)
-		=> source.HasValue
-		? FirstSplit(source.AsSpan(), splitSequence, out nextIndex, comparisonType)
-		: throw new ArgumentException("Cannot split a null string or sequence that has no value.", nameof(source));
+		StringComparison comparisonType = StringComparison.Ordinal) => source.HasValue
+			? FirstSplit(source.AsSpan(), splitSequence, out nextIndex, comparisonType)
+			: throw new ArgumentException("Cannot split a null string or sequence that has no value.", nameof(source));
 
 	/// <inheritdoc cref="FirstSplit(ReadOnlySpan{char}, ReadOnlySpan{char}, out int, int, StringComparison)"/>
 	public static ReadOnlySpan<char> FirstSplit(this string source,
 		ReadOnlySpan<char> splitSequence,
 		out int nextIndex,
-		StringComparison comparisonType = StringComparison.Ordinal)
-		=> source.AsSegment().FirstSplit(splitSequence, out nextIndex, comparisonType);
+		StringComparison comparisonType = StringComparison.Ordinal) => source.AsSegment().FirstSplit(splitSequence, out nextIndex, comparisonType);
 
 #if NETSTANDARD2_0
 	// NET Standard 2.0 String does not implicitly convert to ReadOnlySpan<char>.
@@ -182,45 +177,39 @@ public static partial class TextExtensions
 		string splitSequence,
 		out int nextIndex,
 		int startIndex,
-		StringComparison comparisonType = StringComparison.Ordinal)
-		=> source.AsSegment().FirstSplit(splitSequence.AsSpan(), out nextIndex, startIndex, comparisonType);
+		StringComparison comparisonType = StringComparison.Ordinal) => source.AsSegment().FirstSplit(splitSequence.AsSpan(), out nextIndex, startIndex, comparisonType);
 
 	/// <inheritdoc cref="FirstSplit(StringSegment, ReadOnlySpan{char}, out int, int, StringComparison)"/>
 	public static ReadOnlySpan<char> FirstSplit(this StringSegment source,
 		string splitSequence,
 		out int nextIndex,
 		int startIndex,
-		StringComparison comparisonType = StringComparison.Ordinal)
-		=> source.FirstSplit(splitSequence.AsSpan(), out nextIndex, startIndex, comparisonType);
+		StringComparison comparisonType = StringComparison.Ordinal) => source.FirstSplit(splitSequence.AsSpan(), out nextIndex, startIndex, comparisonType);
 
 	/// <inheritdoc cref="FirstSplit(StringSegment, ReadOnlySpan{char}, out int, int, StringComparison)"/>
 	public static ReadOnlySpan<char> FirstSplit(this ReadOnlySpan<char> source,
 		string splitSequence,
 		out int nextIndex,
 		int startIndex,
-		StringComparison comparisonType = StringComparison.Ordinal)
-		=> source.FirstSplit(splitSequence.AsSpan(), out nextIndex, startIndex, comparisonType);
+		StringComparison comparisonType = StringComparison.Ordinal) => source.FirstSplit(splitSequence.AsSpan(), out nextIndex, startIndex, comparisonType);
 
 	/// <inheritdoc cref="FirstSplit(StringSegment, ReadOnlySpan{char}, out int, int, StringComparison)"/>
 	public static ReadOnlySpan<char> FirstSplit(this string source,
 		string splitSequence,
 		out int nextIndex,
-		StringComparison comparisonType = StringComparison.Ordinal)
-		=> source.AsSegment().FirstSplit(splitSequence.AsSpan(), out nextIndex, comparisonType);
+		StringComparison comparisonType = StringComparison.Ordinal) => source.AsSegment().FirstSplit(splitSequence.AsSpan(), out nextIndex, comparisonType);
 
 	/// <inheritdoc cref="FirstSplit(StringSegment, ReadOnlySpan{char}, out int, int, StringComparison)"/>
 	public static ReadOnlySpan<char> FirstSplit(this StringSegment source,
 		string splitSequence,
 		out int nextIndex,
-		StringComparison comparisonType = StringComparison.Ordinal)
-		=> source.FirstSplit(splitSequence.AsSpan(), out nextIndex, comparisonType);
+		StringComparison comparisonType = StringComparison.Ordinal) => source.FirstSplit(splitSequence.AsSpan(), out nextIndex, comparisonType);
 
 	/// <inheritdoc cref="FirstSplit(StringSegment, ReadOnlySpan{char}, out int, int, StringComparison)"/>
 	public static ReadOnlySpan<char> FirstSplit(this ReadOnlySpan<char> source,
 		string splitSequence,
 		out int nextIndex,
-		StringComparison comparisonType = StringComparison.Ordinal)
-		=> source.FirstSplit(splitSequence.AsSpan(), out nextIndex, comparisonType);
+		StringComparison comparisonType = StringComparison.Ordinal) => source.FirstSplit(splitSequence.AsSpan(), out nextIndex, comparisonType);
 
 #endif
 	#endregion
@@ -232,6 +221,7 @@ public static partial class TextExtensions
 	/// <param name="splitCharacter">The character to find.</param>
 	/// <param name="options">Can specify to omit empty entries.</param>
 	/// <returns>A zero-allocation enumerable of the string segments.</returns>
+	[CLSCompliant(false)]
 	public static ValueEnumerable<ZLinq.Linq.Select<StringSegmentSplitEnumerator, StringSegment, string>, string> SplitToEnumerable(
 		this string source,
 		char splitCharacter,
@@ -253,6 +243,7 @@ public static partial class TextExtensions
 	/// <param name="options">Can specify to omit empty entries.</param>
 	/// <param name="comparisonType">The string comparison type to use.</param>
 	/// <returns>A zero-allocation enumerable of the string segments.</returns>
+	[CLSCompliant(false)]
 	public static ValueEnumerable<ZLinq.Linq.Select<StringSegmentSequenceSplitEnumerator, StringSegment, string>, string> SplitToEnumerable(
 		this string source,
 		StringSegment splitSequence,
@@ -269,6 +260,7 @@ public static partial class TextExtensions
 
 	/// <returns>A zero-allocation enumerable of ReadOnlyMemory&lt;char&gt; segments.</returns>
 	/// <inheritdoc cref="SplitToEnumerable(string, char, StringSplitOptions)" />
+	[CLSCompliant(false)]
 	public static ValueEnumerable<ZLinq.Linq.Select<StringSegmentSplitEnumerator, StringSegment, ReadOnlyMemory<char>>, ReadOnlyMemory<char>> SplitAsMemory(
 		this string source,
 		char splitCharacter,
@@ -283,6 +275,7 @@ public static partial class TextExtensions
 
 	/// <returns>A zero-allocation enumerable of ReadOnlyMemory&lt;char&gt; segments.</returns>
 	/// <inheritdoc cref="SplitToEnumerable(string, StringSegment, StringSplitOptions, StringComparison)"/>
+	[CLSCompliant(false)]
 	public static ValueEnumerable<ZLinq.Linq.Select<StringSegmentSequenceSplitEnumerator, StringSegment, ReadOnlyMemory<char>>, ReadOnlyMemory<char>> SplitAsMemory(
 		this string source,
 		string splitSequence,
@@ -400,6 +393,5 @@ public static partial class TextExtensions
 	public static IReadOnlyList<string> Split(this ReadOnlySpan<char> source,
 		StringSegment splitSequence,
 		StringSplitOptions options = StringSplitOptions.None,
-		StringComparison comparisonType = StringComparison.Ordinal)
-		=> source.Split(splitSequence.AsSpan(), options, comparisonType);
+		StringComparison comparisonType = StringComparison.Ordinal) => source.Split(splitSequence.AsSpan(), options, comparisonType);
 }

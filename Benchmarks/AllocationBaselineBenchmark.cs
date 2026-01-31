@@ -4,7 +4,6 @@ using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Diagnosers;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Order;
-using Open.Text;
 using ZLinq;
 
 namespace Open.Text.Benchmarks;
@@ -65,10 +64,7 @@ public class SplitAsSegmentsBaselineBenchmark
 	}
 
 	[Benchmark(Description = "Small - Count()")]
-	public int Small_Count()
-	{
-		return SmallString.AsSegment().SplitAsSegments(',').Count();
-	}
+	public int Small_Count() => SmallString.AsSegment().SplitAsSegments(',').Count();
 
 	// ========== Medium String Tests ==========
 
@@ -85,21 +81,17 @@ public class SplitAsSegmentsBaselineBenchmark
 
 	[Benchmark(Description = "Medium - LINQ Where")]
 	public int Medium_LinqWhere()
-	{
-		return MediumString.AsSegment()
+		=> MediumString.AsSegment()
 			.SplitAsSegments(',')
 			.Where(s => s.Length > 5)
 			.Count();
-	}
 
 	[Benchmark(Description = "Medium - LINQ Select")]
 	public int Medium_LinqSelect()
-	{
-		return MediumString.AsSegment()
+		=> MediumString.AsSegment()
 			.SplitAsSegments(',')
 			.Select(s => s.Length)
 			.Sum();
-	}
 
 	// ========== Large String Tests ==========
 

@@ -1,5 +1,3 @@
-using System.Diagnostics;
-using Open.Text;
 using ZLinq;
 
 namespace Open.Text.Benchmarks;
@@ -20,7 +18,7 @@ public static class SplitAsSegmentsQuickTest
 		Console.WriteLine("Test 1: Simple foreach (only counting)");
 		long gen0Before = GC.CollectionCount(0);
 		long memBefore = GC.GetTotalMemory(forceFullCollection: true);
-		
+
 		int count = 0;
 		for (int i = 0; i < 10000; i++)
 		{
@@ -29,10 +27,10 @@ public static class SplitAsSegmentsQuickTest
 				count += segment.Length;
 			}
 		}
-		
+
 		long memAfter = GC.GetTotalMemory(forceFullCollection: false);
 		long gen0After = GC.CollectionCount(0);
-		
+
 		Console.WriteLine($"  Result: {count}");
 		Console.WriteLine($"  Memory allocated: ~{(memAfter - memBefore) / 1024}KB");
 		Console.WriteLine($"  Gen0 collections: {gen0After - gen0Before}");
@@ -42,16 +40,16 @@ public static class SplitAsSegmentsQuickTest
 		Console.WriteLine("Test 2: With LINQ Count()");
 		gen0Before = GC.CollectionCount(0);
 		memBefore = GC.GetTotalMemory(forceFullCollection: true);
-		
+
 		int totalCount = 0;
 		for (int i = 0; i < 10000; i++)
 		{
 			totalCount += testString.AsSegment().SplitAsSegments(',').Count();
 		}
-		
+
 		memAfter = GC.GetTotalMemory(forceFullCollection: false);
 		gen0After = GC.CollectionCount(0);
-		
+
 		Console.WriteLine($"  Result: {totalCount}");
 		Console.WriteLine($"  Memory allocated: ~{(memAfter - memBefore) / 1024}KB");
 		Console.WriteLine($"  Gen0 collections: {gen0After - gen0Before}");
@@ -61,17 +59,17 @@ public static class SplitAsSegmentsQuickTest
 		Console.WriteLine("Test 3: With ToArray()");
 		gen0Before = GC.CollectionCount(0);
 		memBefore = GC.GetTotalMemory(forceFullCollection: true);
-		
+
 		int arrayCount = 0;
 		for (int i = 0; i < 10000; i++)
 		{
 			var arr = testString.AsSegment().SplitAsSegments(',').ToArray();
 			arrayCount += arr.Length;
 		}
-		
+
 		memAfter = GC.GetTotalMemory(forceFullCollection: false);
 		gen0After = GC.CollectionCount(0);
-		
+
 		Console.WriteLine($"  Result: {arrayCount}");
 		Console.WriteLine($"  Memory allocated: ~{(memAfter - memBefore) / 1024}KB");
 		Console.WriteLine($"  Gen0 collections: {gen0After - gen0Before}");

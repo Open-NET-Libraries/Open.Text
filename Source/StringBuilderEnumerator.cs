@@ -36,12 +36,10 @@ public struct StringBuilderEnumerator(StringBuilder builder) : IEnumerator<char>
 	}
 
 	/// <inheritdoc/>
-	public void Reset()
-		=> _position = -1;
+	public void Reset() => _position = -1;
 
 	/// <inheritdoc/>
-	public void Dispose()
-		=> _position = _builder.Length;
+	public void Dispose() => _position = _builder.Length;
 }
 
 /// <summary>

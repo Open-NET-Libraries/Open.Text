@@ -11,12 +11,10 @@ public static partial class TextExtensions
 	/// Creates a StringSegment representing the provided string.
 	/// </summary>
 	/// <param name="buffer">The string the segment belongs to.</param>
-	public static StringSegment AsSegment(this string? buffer)
-		=> buffer is null ? default : new(buffer);
+	public static StringSegment AsSegment(this string? buffer) => buffer is null ? default : new(buffer);
 
 	/// <inheritdoc cref="AsSegment(string, int, int)"/>
-	public static StringSegment AsSegment(this string buffer, int start)
-		=> AsSegment(buffer, start, (buffer?.Length ?? 0) - start);
+	public static StringSegment AsSegment(this string buffer, int start) => AsSegment(buffer, start, (buffer?.Length ?? 0) - start);
 
 	/// <summary>
 	/// Creates a StringSegment representing the provided string.
@@ -36,14 +34,12 @@ public static partial class TextExtensions
 	/// <summary>Shortcut for .AsSegment().Trim().</summary>
 	/// <inheritdoc cref="AsSegment(string)"/>
 	[ExcludeFromCodeCoverage] // Reason: would just test already tested code.
-	public static StringSegment TrimAsSegment(this string buffer)
-		=> buffer is null ? default : new StringSegment(buffer).Trim();
+	public static StringSegment TrimAsSegment(this string buffer) => buffer is null ? default : new StringSegment(buffer).Trim();
 
 	/// <summary>
 	/// Creates a <see cref="StringSegmentEnumerable"/> for enumerating over the characters in the <paramref name="segment"/>.
 	/// </summary>
-	public static StringSegmentEnumerable AsEnumerable(this StringSegment segment)
-		=> new(segment);
+	public static StringSegmentEnumerable AsEnumerable(this StringSegment segment) => new(segment);
 
 	/// <inheritdoc cref="SplitToEnumerable(string, char, StringSplitOptions)"/>
 	/// <summary>
@@ -54,21 +50,21 @@ public static partial class TextExtensions
 	/// <param name="splitCharacter">The character to split by.</param>
 	/// <param name="options">String split options.</param>
 	/// <returns>A zero-allocation ValueEnumerable of StringSegment.</returns>
+	[CLSCompliant(false)]
 	public static ValueEnumerable<StringSegmentSplitEnumerator, StringSegment> SplitAsSegments(
 		this string source,
 		char splitCharacter,
-		StringSplitOptions options = StringSplitOptions.None)
-		=> SplitAsSegments(source.AsSegment(), splitCharacter, options);
+		StringSplitOptions options = StringSplitOptions.None) => SplitAsSegments(source.AsSegment(), splitCharacter, options);
 
 	/// <inheritdoc cref="SplitAsSegments(string, char, StringSplitOptions)"/>
+	[CLSCompliant(false)]
 	public static ValueEnumerable<StringSegmentSplitEnumerator, StringSegment> SplitAsSegments(
 		this StringSegment source,
 		char splitCharacter,
-		StringSplitOptions options = StringSplitOptions.None)
-		=> source.HasValue
-			? new ValueEnumerable<StringSegmentSplitEnumerator, StringSegment>(
-			new StringSegmentSplitEnumerator(source, splitCharacter, options))
-			: throw new ArgumentNullException(nameof(source), MustBeSegmentWithValue);
+		StringSplitOptions options = StringSplitOptions.None) => source.HasValue
+				? new ValueEnumerable<StringSegmentSplitEnumerator, StringSegment>(
+				new StringSegmentSplitEnumerator(source, splitCharacter, options))
+				: throw new ArgumentNullException(nameof(source), MustBeSegmentWithValue);
 
 	/// <summary>
 	/// Determines whether the specified <see cref="StringSegment"/> is null or empty.
@@ -78,8 +74,7 @@ public static partial class TextExtensions
 	/// <param name="segment">The <see cref="StringSegment"/> to check.</param>
 	/// <returns><see langword="true"/> if the <paramref name="segment"/> is null or its length is zero; otherwise, <see
 	/// langword="false"/>.</returns>
-	public static bool IsNullOrEmpty(this StringSegment segment)
-		=> !segment.HasValue || segment.Length == 0;
+	public static bool IsNullOrEmpty(this StringSegment segment) => !segment.HasValue || segment.Length == 0;
 
 	/// <summary>
 	/// Determines whether the specified <see cref="StringSegment"/> is null, empty, or consists only of white-space
@@ -88,8 +83,7 @@ public static partial class TextExtensions
 	/// <param name="segment">The <see cref="StringSegment"/> to evaluate.</param>
 	/// <returns><see langword="true"/> if the <paramref name="segment"/> is null, empty, or contains only white-space characters;
 	/// otherwise, <see langword="false"/>.</returns>
-	public static bool IsNullOrWhiteSpace(this StringSegment segment)
-		=> !segment.HasValue || segment.AsSpan().Trim().Length == 0;
+	public static bool IsNullOrWhiteSpace(this StringSegment segment) => !segment.HasValue || segment.AsSpan().Trim().Length == 0;
 
 	/// <summary>
 	/// Enumerates a string by segments that are separated by the regular expression matches.
@@ -106,6 +100,7 @@ public static partial class TextExtensions
 	{
 		if (source is null) throw new ArgumentNullException(nameof(source));
 		if (pattern is null) throw new ArgumentNullException(nameof(pattern));
+		Contract.EndContractBlock();
 
 		return new ValueEnumerable<RegexSplitSegmentEnumerator, StringSegment>(
 			new RegexSplitSegmentEnumerator(source, pattern, options));
@@ -113,14 +108,15 @@ public static partial class TextExtensions
 
 	/// <returns>A ValueEnumerable of the segments (zero-allocation when used with foreach or ZLinq).</returns>
 	/// <inheritdoc cref="SplitToEnumerable(string, StringSegment, StringSplitOptions, StringComparison)"/>
+	[CLSCompliant(false)]
 	public static ValueEnumerable<StringSegmentSequenceSplitEnumerator, StringSegment> SplitAsSegments(
 		this string source,
 		string splitSequence,
 		StringSplitOptions options = StringSplitOptions.None,
-		StringComparison comparisonType = StringComparison.Ordinal)
-		=> SplitAsSegments(source.AsSegment(), splitSequence.AsSegment(), options, comparisonType);
+		StringComparison comparisonType = StringComparison.Ordinal) => SplitAsSegments(source.AsSegment(), splitSequence.AsSegment(), options, comparisonType);
 
 	/// <inheritdoc cref="SplitAsSegments(string, string, StringSplitOptions, StringComparison)"/>
+	[CLSCompliant(false)]
 	public static ValueEnumerable<StringSegmentSequenceSplitEnumerator, StringSegment> SplitAsSegments(
 		this StringSegment source,
 		StringSegment splitSequence,
@@ -147,13 +143,10 @@ public static partial class TextExtensions
 	/// <returns>A ValueEnumerable of the joined segments (zero-allocation when used with foreach or ZLinq).</returns>
 	/// <exception cref="System.ArgumentNullException">The source is null.</exception>
 	[CLSCompliant(false)]
-	public static ValueEnumerable<StringSegmentJoinEnumerator, StringSegment> Join(this IEnumerable<StringSegment> source, StringSegment between)
-	{
-		return source is null
+	public static ValueEnumerable<StringSegmentJoinEnumerator, StringSegment> Join(this IEnumerable<StringSegment> source, StringSegment between) => source is null
 			? throw new ArgumentNullException(nameof(source))
 			: new ValueEnumerable<StringSegmentJoinEnumerator, StringSegment>(
 				new StringSegmentJoinEnumerator(source, between));
-	}
 
 	/// <summary>
 	/// Joins a regex split sequence of segments with a separator sequence (zero-allocation).
@@ -164,11 +157,7 @@ public static partial class TextExtensions
 	[CLSCompliant(false)]
 	public static ValueEnumerable<RegexSplitJoinEnumerator, StringSegment> Join(
 		this ValueEnumerable<RegexSplitSegmentEnumerator, StringSegment> source,
-		StringSegment between)
-	{
-		return new ValueEnumerable<RegexSplitJoinEnumerator, StringSegment>(
-			new RegexSplitJoinEnumerator(source.Enumerator, between));
-	}
+		StringSegment between) => new(new RegexSplitJoinEnumerator(source.Enumerator, between));
 
 	/// <summary>
 	/// Joins a sequence split result with a separator sequence (zero-allocation).
@@ -179,11 +168,7 @@ public static partial class TextExtensions
 	[CLSCompliant(false)]
 	public static ValueEnumerable<SequenceSplitJoinEnumerator, StringSegment> Join(
 		this ValueEnumerable<StringSegmentSequenceSplitEnumerator, StringSegment> source,
-		StringSegment between)
-	{
-		return new ValueEnumerable<SequenceSplitJoinEnumerator, StringSegment>(
-			new SequenceSplitJoinEnumerator(source.Enumerator, between));
-	}
+		StringSegment between) => new(new SequenceSplitJoinEnumerator(source.Enumerator, between));
 
 	/// <summary>
 	/// Joins a sequence of segments with an optional separator sequence.
@@ -200,8 +185,7 @@ public static partial class TextExtensions
 
 	/// <returns>A joined string of the segments.</returns>
 	/// <inheritdoc cref="JoinToStringBuilder(IEnumerable{StringSegment}, StringSegment)"/>
-	public static string JoinToString(this IEnumerable<StringSegment> source, StringSegment between = default)
-		=> JoinToStringBuilder(source, between).ToString();
+	public static string JoinToString(this IEnumerable<StringSegment> source, StringSegment between = default) => JoinToStringBuilder(source, between).ToString();
 
 	/// <summary>
 	/// Splits a sequence and replaces the removed sequences with the replacement sequence.
@@ -213,8 +197,7 @@ public static partial class TextExtensions
 		this StringSegment source,
 		StringSegment splitSequence,
 		StringSegment replacement,
-		StringComparison comparisonType = StringComparison.Ordinal)
-		=> Join(SplitAsSegments(source, splitSequence, comparisonType: comparisonType), replacement);
+		StringComparison comparisonType = StringComparison.Ordinal) => Join(SplitAsSegments(source, splitSequence, comparisonType: comparisonType), replacement);
 
 	/// <returns>The resultant string.</returns>
 	/// <inheritdoc cref="Replace(StringSegment, StringSegment, StringSegment, StringComparison)"/>
@@ -234,8 +217,7 @@ public static partial class TextExtensions
 	public static ValueEnumerable<RegexSplitJoinEnumerator, StringSegment> ReplaceAsSegments(
 		this string source,
 		Regex splitSequence,
-		StringSegment replacement)
-		=> Join(SplitAsSegments(source, splitSequence), replacement);
+		StringSegment replacement) => Join(SplitAsSegments(source, splitSequence), replacement);
 
 	/// <inheritdoc cref="Replace(StringSegment, StringSegment, StringSegment, StringComparison)"/>
 	[CLSCompliant(false)]
@@ -243,8 +225,7 @@ public static partial class TextExtensions
 		this string source,
 		StringSegment splitSequence,
 		StringSegment replacement,
-		StringComparison comparisonType = StringComparison.Ordinal)
-		=> Replace(source, splitSequence, replacement, comparisonType);
+		StringComparison comparisonType = StringComparison.Ordinal) => Replace(source, splitSequence, replacement, comparisonType);
 
 	/// <summary>
 	/// Splits each sequence and replaces the removed sequences with the replacement sequence.
@@ -274,16 +255,14 @@ public static partial class TextExtensions
 	}
 
 	/// <inheritdoc cref="Preceding(StringSegment, int, bool)"/>
-	public static StringSegment Preceding(this StringSegment source, bool includeSegment = false)
-		=> source.HasValue
-		? new(source.Buffer, 0, includeSegment ? source.Offset + source.Length : source.Offset)
-		: default;
+	public static StringSegment Preceding(this StringSegment source, bool includeSegment = false) => source.HasValue
+			? new(source.Buffer, 0, includeSegment ? source.Offset + source.Length : source.Offset)
+			: default;
 
 	/// <inheritdoc cref="Following(StringSegment, int, bool)"/>
-	public static StringSegment Following(this StringSegment source, bool includeSegment = false)
-		=> source.HasValue
-		? source.Buffer.AsSegment(includeSegment ? source.Offset : source.Offset + source.Length)
-		: default;
+	public static StringSegment Following(this StringSegment source, bool includeSegment = false) => source.HasValue
+			? source.Buffer.AsSegment(includeSegment ? source.Offset : source.Offset + source.Length)
+			: default;
 
 	/// <summary>
 	/// Gets the string segment that precedes this one.
