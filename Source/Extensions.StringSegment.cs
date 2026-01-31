@@ -205,28 +205,15 @@ public static partial class TextExtensions
 	/// </summary>
 	/// <param name="source">The segments to join.</param>
 	/// <param name="between">The segment to place between each segment.</param>
-	/// <returns>An IEnumerable&lt;StringSegment&gt; of the segments.</returns>
+	/// <returns>A ValueEnumerable of the joined segments (zero-allocation when used with foreach or ZLinq).</returns>
 	/// <exception cref="System.ArgumentNullException">The source is null.</exception>
-	public static IEnumerable<StringSegment> Join(this IEnumerable<StringSegment> source, StringSegment between)
+	[CLSCompliant(false)]
+	public static ValueEnumerable<StringSegmentJoinEnumerator, StringSegment> Join(this IEnumerable<StringSegment> source, StringSegment between)
 	{
 		return source is null
 			? throw new ArgumentNullException(nameof(source))
-			: JoinCore(source, between);
-
-		static IEnumerable<StringSegment> JoinCore(IEnumerable<StringSegment> source, StringSegment between)
-		{
-			using IEnumerator<StringSegment> e = source.GetEnumerator();
-			bool ok = e.MoveNext();
-			Debug.Assert(ok);
-			StringSegment c = e.Current;
-			if (c.Length != 0) yield return c;
-			while (e.MoveNext())
-			{
-				if (between.HasValue) yield return between;
-				c = e.Current;
-				if (c.Length != 0) yield return c;
-			}
-		}
+			: new ValueEnumerable<StringSegmentJoinEnumerator, StringSegment>(
+				new StringSegmentJoinEnumerator(source, between));
 	}
 
 	/// <summary>
@@ -250,8 +237,10 @@ public static partial class TextExtensions
 	/// <summary>
 	/// Splits a sequence and replaces the removed sequences with the replacement sequence.
 	/// </summary>
+	/// <returns>A ValueEnumerable of the segments (zero-allocation when used with foreach or ZLinq).</returns>
 	/// <inheritdoc cref="SplitAsSegments(string, string, StringSplitOptions, StringComparison)"/>
-	public static IEnumerable<StringSegment> Replace(
+	[CLSCompliant(false)]
+	public static ValueEnumerable<StringSegmentJoinEnumerator, StringSegment> Replace(
 		this StringSegment source,
 		StringSegment splitSequence,
 		StringSegment replacement,
@@ -267,14 +256,16 @@ public static partial class TextExtensions
 		=> JoinToString(SplitAsSegments(source, splitSequence, comparisonType: comparisonType).ToArray(), replacement);
 
 	/// <inheritdoc cref="Replace(StringSegment, StringSegment, StringSegment, StringComparison)"/>
-	public static IEnumerable<StringSegment> ReplaceAsSegments(
+	[CLSCompliant(false)]
+	public static ValueEnumerable<StringSegmentJoinEnumerator, StringSegment> ReplaceAsSegments(
 		this string source,
 		Regex splitSequence,
 		StringSegment replacement)
 		=> Join(SplitAsSegments(source, splitSequence), replacement);
 
 	/// <inheritdoc cref="Replace(StringSegment, StringSegment, StringSegment, StringComparison)"/>
-	public static IEnumerable<StringSegment> ReplaceAsSegments(
+	[CLSCompliant(false)]
+	public static ValueEnumerable<StringSegmentJoinEnumerator, StringSegment> ReplaceAsSegments(
 		this string source,
 		StringSegment splitSequence,
 		StringSegment replacement,
@@ -299,9 +290,10 @@ public static partial class TextExtensions
 		{
 			// Instead of source.SelectMany(s => s.Replace(splitSequence, replacement, comparisonType));
 			// we manually yield to reduce allocations.
+			// Note: We use ToArray() to materialize the ValueEnumerable because ref structs cannot be preserved across yield boundaries.
 			foreach (StringSegment s in source)
 			{
-				foreach (StringSegment e in Replace(s, splitSequence, replacement, comparisonType))
+				foreach (StringSegment e in Replace(s, splitSequence, replacement, comparisonType).ToArray())
 					yield return e;
 			}
 		}

@@ -367,3 +367,116 @@ public struct StringSegmentSequenceSplitEnumerator : IValueEnumerator<StringSegm
 		// Nothing to dispose
 	}
 }
+
+/// <summary>
+/// Zero-allocation enumerator for joining string segments with a separator.
+/// Implements ZLinq's IValueEnumerator for full LINQ compatibility with zero allocations.
+/// </summary>
+[SuppressMessage("Design", "CA1815:Override equals and operator equals on value types", Justification = "Enumerators with mutable state should not be compared for equality")]
+public struct StringSegmentJoinEnumerator : IValueEnumerator<StringSegment>
+{
+	private readonly StringSegment _separator;
+	private readonly IEnumerator<StringSegment> _source;
+	private bool _isFirst;
+	private StringSegment _pendingElement;
+	private bool _completed;
+
+	internal StringSegmentJoinEnumerator(IEnumerable<StringSegment> source, StringSegment separator)
+	{
+		_separator = separator;
+		_source = source.GetEnumerator();
+		_isFirst = true;
+		_pendingElement = default;
+		_completed = false;
+	}
+
+	/// <summary>
+	/// Advances to the next segment.
+	/// </summary>
+	public bool TryGetNext(out StringSegment current)
+	{
+		if (_completed)
+		{
+			current = default;
+			return false;
+		}
+
+		// If we have a pending element to yield (after yielding separator)
+		if (_pendingElement.HasValue)
+		{
+			current = _pendingElement;
+			_pendingElement = default;
+			return true;
+		}
+
+		// Try to get next element from source
+		while (_source.MoveNext())
+		{
+			var element = _source.Current;
+
+			if (_isFirst)
+			{
+				_isFirst = false;
+				// Skip empty first element (don't yield it)
+				if (element.Length == 0)
+					continue;
+				current = element;
+				return true;
+			}
+
+			// For subsequent elements, yield separator first (if has value)
+			if (_separator.HasValue)
+			{
+				// Only store as pending if non-empty
+				if (element.Length != 0)
+					_pendingElement = element;
+				current = _separator;
+				return true;
+			}
+
+			// No separator, only yield non-empty elements
+			if (element.Length == 0)
+				continue;
+			current = element;
+			return true;
+		}
+
+		_completed = true;
+		current = default;
+		return false;
+	}
+
+	/// <summary>
+	/// Returns false as we cannot determine count without enumerating.
+	/// </summary>
+	public bool TryGetNonEnumeratedCount(out int count)
+	{
+		count = 0;
+		return false;
+	}
+
+	/// <summary>
+	/// Returns false as joined segments are not contiguous in memory.
+	/// </summary>
+	public bool TryGetSpan(out ReadOnlySpan<StringSegment> span)
+	{
+		span = default;
+		return false;
+	}
+
+	/// <summary>
+	/// Returns false as we don't support indexed access efficiently.
+	/// </summary>
+	public bool TryCopyTo(scoped Span<StringSegment> destination, Index offset)
+	{
+		return false;
+	}
+
+	/// <summary>
+	/// Disposes the underlying enumerator.
+	/// </summary>
+	public void Dispose()
+	{
+		_source.Dispose();
+	}
+}
