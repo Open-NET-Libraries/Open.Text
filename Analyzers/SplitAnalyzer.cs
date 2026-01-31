@@ -140,8 +140,8 @@ public class SplitAnalyzer : DiagnosticAnalyzer
 		}
 
 		var argument = elementAccess.ArgumentList.Arguments[0];
-			if (argument.Expression is not LiteralExpressionSyntax literal
-				|| literal.Token.ValueText != "0")
+		if (argument.Expression is not LiteralExpressionSyntax literal
+			|| literal.Token.ValueText != "0")
 		{
 			return;
 		}

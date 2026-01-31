@@ -1,5 +1,3 @@
-using ZLinq;
-
 namespace Open.Text;
 
 /// <summary>

@@ -1,5 +1,3 @@
-using ZLinq;
-
 namespace Open.Text;
 
 /// <summary>
@@ -29,7 +27,7 @@ public static partial class TextExtensions
 		char splitCharacter,
 		StringSplitOptions options = StringSplitOptions.None)
 		=> source.HasValue
-			? new (new StringSegmentSplitEnumerator(source, splitCharacter, options))
+			? new(new StringSegmentSplitEnumerator(source, splitCharacter, options))
 			: throw new ArgumentNullException(nameof(source), "Must be a StringSegment that has a value (is not null).");
 
 	/// <summary>
@@ -52,7 +50,7 @@ public static partial class TextExtensions
 		if (pattern is null) throw new ArgumentNullException(nameof(pattern));
 		Contract.EndContractBlock();
 
-		return new (new RegexSplitSegmentEnumerator(source, pattern, options));
+		return new(new RegexSplitSegmentEnumerator(source, pattern, options));
 	}
 
 	/// <summary>
@@ -99,7 +97,7 @@ public static partial class TextExtensions
 		this IEnumerable<StringSegment> source, StringSegment between)
 		=> source is null
 			? throw new ArgumentNullException(nameof(source))
-			: new (new StringSegmentJoinEnumerator(source, between));
+			: new(new StringSegmentJoinEnumerator(source, between));
 
 	/// <summary>
 	/// Joins a regex split sequence of segments with a separator sequence (zero-allocation).
