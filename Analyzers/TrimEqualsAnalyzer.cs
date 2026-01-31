@@ -27,36 +27,42 @@ public class TrimEqualsAnalyzer : DiagnosticAnalyzer
 		var invocation = (InvocationExpressionSyntax)context.Node;
 
 		// Check for .Trim().Equals(...)
-		if (invocation.Expression is MemberAccessExpressionSyntax memberAccess &&
-			memberAccess.Name.Identifier.Text == "Equals")
+		if (invocation.Expression is not MemberAccessExpressionSyntax memberAccess
+			|| memberAccess.Name.Identifier.Text != "Equals")
 		{
-			// Check if the expression before .Equals() is a .Trim() call
-			if (memberAccess.Expression is InvocationExpressionSyntax trimInvocation &&
-				trimInvocation.Expression is MemberAccessExpressionSyntax trimMemberAccess &&
-				trimMemberAccess.Name.Identifier.Text == "Trim")
-			{
-				var symbolInfo = context.SemanticModel.GetSymbolInfo(trimMemberAccess, context.CancellationToken);
-				if (symbolInfo.Symbol is IMethodSymbol trimMethod &&
-					trimMethod.ContainingType?.SpecialType == SpecialType.System_String)
-				{
-					// Get the arguments from the Equals call
-					var equalsArgs = invocation.ArgumentList.Arguments;
-					string argsString = equalsArgs.Count > 0 ? equalsArgs[0].ToString() : "";
-
-					// Add comparison type if present
-					if (equalsArgs.Count > 1)
-					{
-						argsString += $", {equalsArgs[1]}";
-					}
-
-					var diagnostic = Diagnostic.Create(
-						DiagnosticDescriptors.UseTrimEquals,
-						invocation.GetLocation(),
-						argsString);
-					context.ReportDiagnostic(diagnostic);
-				}
-			}
+			return;
 		}
+
+		// Check if the expression before .Equals() is a .Trim() call
+		if (memberAccess.Expression is not InvocationExpressionSyntax trimInvocation
+			|| trimInvocation.Expression is not MemberAccessExpressionSyntax trimMemberAccess
+			|| trimMemberAccess.Name.Identifier.Text != "Trim")
+		{
+			return;
+		}
+
+		var symbolInfo = context.SemanticModel.GetSymbolInfo(trimMemberAccess, context.CancellationToken);
+		if (symbolInfo.Symbol is not IMethodSymbol trimMethod
+			|| trimMethod.ContainingType?.SpecialType != SpecialType.System_String)
+		{
+			return;
+		}
+
+		// Get the arguments from the Equals call
+		var equalsArgs = invocation.ArgumentList.Arguments;
+		string argsString = equalsArgs.Count > 0 ? equalsArgs[0].ToString() : "";
+
+		// Add comparison type if present
+		if (equalsArgs.Count > 1)
+		{
+			argsString += $", {equalsArgs[1]}";
+		}
+
+		var diagnostic = Diagnostic.Create(
+			DiagnosticDescriptors.UseTrimEquals,
+			invocation.GetLocation(),
+			argsString);
+		context.ReportDiagnostic(diagnostic);
 	}
 
 	private static void AnalyzeBinaryExpression(SyntaxNodeAnalysisContext context)
@@ -67,20 +73,21 @@ public class TrimEqualsAnalyzer : DiagnosticAnalyzer
 		InvocationExpressionSyntax? trimCall = null;
 		ExpressionSyntax? otherSide = null;
 
-		if (binaryExpr.Left is InvocationExpressionSyntax leftInvocation &&
-			IsTrimCall(leftInvocation, context))
+		if (binaryExpr.Left is InvocationExpressionSyntax leftInvocation
+			&& IsTrimCall(leftInvocation, context))
 		{
 			trimCall = leftInvocation;
 			otherSide = binaryExpr.Right;
 		}
-		else if (binaryExpr.Right is InvocationExpressionSyntax rightInvocation &&
-				 IsTrimCall(rightInvocation, context))
+		else if (binaryExpr.Right is InvocationExpressionSyntax rightInvocation
+				 && IsTrimCall(rightInvocation, context))
 		{
 			trimCall = rightInvocation;
 			otherSide = binaryExpr.Left;
 		}
 
-		if (trimCall != null && otherSide != null)
+		if (trimCall != null
+			&& otherSide != null)
 		{
 			// Check if the other side is a string
 			var typeInfo = context.SemanticModel.GetTypeInfo(otherSide, context.CancellationToken);
@@ -97,12 +104,12 @@ public class TrimEqualsAnalyzer : DiagnosticAnalyzer
 
 	private static bool IsTrimCall(InvocationExpressionSyntax invocation, SyntaxNodeAnalysisContext context)
 	{
-		if (invocation.Expression is MemberAccessExpressionSyntax memberAccess &&
-			memberAccess.Name.Identifier.Text == "Trim")
+		if (invocation.Expression is MemberAccessExpressionSyntax memberAccess
+			&& memberAccess.Name.Identifier.Text == "Trim")
 		{
 			var symbolInfo = context.SemanticModel.GetSymbolInfo(memberAccess, context.CancellationToken);
-			if (symbolInfo.Symbol is IMethodSymbol method &&
-				method.ContainingType?.SpecialType == SpecialType.System_String)
+			if (symbolInfo.Symbol is IMethodSymbol method
+				&& method.ContainingType?.SpecialType == SpecialType.System_String)
 			{
 				return true;
 			}

@@ -110,8 +110,8 @@ public class StringComparablePatternMatchingSuppressor : DiagnosticSuppressor
 			return false;
 
 		// For || or && expressions, check both sides
-		if (binaryExpression.IsKind(SyntaxKind.LogicalOrExpression) ||
-			binaryExpression.IsKind(SyntaxKind.LogicalAndExpression))
+		if (binaryExpression.IsKind(SyntaxKind.LogicalOrExpression)
+			|| binaryExpression.IsKind(SyntaxKind.LogicalAndExpression))
 		{
 			// Check if any child expression involves StringComparable
 			return ContainsStringComparableComparison(binaryExpression, semanticModel, context);
@@ -131,9 +131,9 @@ public class StringComparablePatternMatchingSuppressor : DiagnosticSuppressor
 		// Recursively check all binary expressions
 		foreach (var descendant in node.DescendantNodesAndSelf())
 		{
-			if (descendant is BinaryExpressionSyntax binaryExpr &&
-				(binaryExpr.IsKind(SyntaxKind.EqualsExpression) ||
-				 binaryExpr.IsKind(SyntaxKind.NotEqualsExpression)))
+			if (descendant is BinaryExpressionSyntax binaryExpr
+				&& (binaryExpr.IsKind(SyntaxKind.EqualsExpression)
+					|| binaryExpr.IsKind(SyntaxKind.NotEqualsExpression)))
 			{
 				var leftType = semanticModel.GetTypeInfo(binaryExpr.Left, context.CancellationToken).Type;
 				if (leftType != null)

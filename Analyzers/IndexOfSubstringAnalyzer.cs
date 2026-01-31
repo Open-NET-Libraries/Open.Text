@@ -91,16 +91,16 @@ public class IndexOfSubstringAnalyzer : DiagnosticAnalyzer
 
 	private static bool IsIndexOfCall(InvocationExpressionSyntax invocation, SyntaxNodeAnalysisContext context)
 	{
-		if (invocation.Expression is MemberAccessExpressionSyntax memberAccess &&
-			(memberAccess.Name.Identifier.Text == "IndexOf" ||
-			 memberAccess.Name.Identifier.Text == "LastIndexOf"))
+		if (invocation.Expression is MemberAccessExpressionSyntax memberAccess
+			&& (memberAccess.Name.Identifier.Text == "IndexOf"
+				|| memberAccess.Name.Identifier.Text == "LastIndexOf"))
 		{
 			var symbolInfo = context.SemanticModel.GetSymbolInfo(memberAccess, context.CancellationToken);
 			if (symbolInfo.Symbol is IMethodSymbol methodSymbol)
 			{
 				var containingType = methodSymbol.ContainingType;
-				return containingType?.SpecialType == SpecialType.System_String ||
-					   containingType?.ToString() == "Microsoft.Extensions.Primitives.StringSegment";
+				return containingType?.SpecialType == SpecialType.System_String
+					|| containingType?.ToString() == "Microsoft.Extensions.Primitives.StringSegment";
 			}
 		}
 		return false;
@@ -117,8 +117,8 @@ public class IndexOfSubstringAnalyzer : DiagnosticAnalyzer
 		{
 			foreach (var invocation in statement.DescendantNodes().OfType<InvocationExpressionSyntax>())
 			{
-				if (invocation.Expression is MemberAccessExpressionSyntax memberAccess &&
-					memberAccess.Name.Identifier.Text == "Substring")
+				if (invocation.Expression is MemberAccessExpressionSyntax memberAccess
+					&& memberAccess.Name.Identifier.Text == "Substring")
 				{
 					// Check if any argument references our variable
 					foreach (var arg in invocation.ArgumentList.Arguments)

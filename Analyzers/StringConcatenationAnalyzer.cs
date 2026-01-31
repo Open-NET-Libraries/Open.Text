@@ -53,19 +53,18 @@ public class StringConcatenationAnalyzer : DiagnosticAnalyzer
 				return;
 
 			// Check if right side involves the same variable (e.g., str = str + "...")
-			if (assignment.Right is BinaryExpressionSyntax binaryExpr &&
-				binaryExpr.IsKind(SyntaxKind.AddExpression))
+			if (assignment.Right is not BinaryExpressionSyntax binaryExpr
+				|| !binaryExpr.IsKind(SyntaxKind.AddExpression)
+				|| !ReferencesVariable(binaryExpr.Left, assignment.Left, context)
+					&& !ReferencesVariable(binaryExpr.Right, assignment.Left, context))
 			{
-				// Check if either side of the addition references the same variable
-				if (ReferencesVariable(binaryExpr.Left, assignment.Left, context) ||
-					ReferencesVariable(binaryExpr.Right, assignment.Left, context))
-				{
-					var diagnostic = Diagnostic.Create(
-						DiagnosticDescriptors.UseStringBuilderInLoop,
-						assignment.GetLocation());
-					context.ReportDiagnostic(diagnostic);
-				}
+				return;
 			}
+
+			var diagnostic = Diagnostic.Create(
+				DiagnosticDescriptors.UseStringBuilderInLoop,
+				assignment.GetLocation());
+			context.ReportDiagnostic(diagnostic);
 		}
 	}
 
@@ -89,12 +88,14 @@ public class StringConcatenationAnalyzer : DiagnosticAnalyzer
 
 	private static bool ReferencesVariable(SyntaxNode expression, SyntaxNode variable, SyntaxNodeAnalysisContext context)
 	{
-		if (expression is IdentifierNameSyntax identifier && variable is IdentifierNameSyntax varIdentifier)
+		if (expression is not IdentifierNameSyntax identifier
+			|| variable is not IdentifierNameSyntax varIdentifier)
 		{
-			var exprSymbol = context.SemanticModel.GetSymbolInfo(identifier, context.CancellationToken).Symbol;
-			var varSymbol = context.SemanticModel.GetSymbolInfo(varIdentifier, context.CancellationToken).Symbol;
-			return SymbolEqualityComparer.Default.Equals(exprSymbol, varSymbol);
+			return false;
 		}
-		return false;
+
+		var exprSymbol = context.SemanticModel.GetSymbolInfo(identifier, context.CancellationToken).Symbol;
+		var varSymbol = context.SemanticModel.GetSymbolInfo(varIdentifier, context.CancellationToken).Symbol;
+		return SymbolEqualityComparer.Default.Equals(exprSymbol, varSymbol);
 	}
 }
