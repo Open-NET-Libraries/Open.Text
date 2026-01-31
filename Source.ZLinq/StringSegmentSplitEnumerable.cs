@@ -69,11 +69,6 @@ public struct StringSegmentSplitEnumerator : IValueEnumerator<StringSegment>
 				if (_trimEach)
 				{
 					segment = segment.Trim();
-					if (_removeEmpty && segment.Length == 0)
-					{
-						current = default;
-						return false;
-					}
 				}
 #endif
 
@@ -86,7 +81,8 @@ public struct StringSegmentSplitEnumerator : IValueEnumerator<StringSegment>
 				current = segment;
 				return true;
 			}
-			else if (nextIndex == len)
+
+			if (nextIndex == len)
 			{
 				// Ends with separator
 				_completed = true;
@@ -96,11 +92,6 @@ public struct StringSegmentSplitEnumerator : IValueEnumerator<StringSegment>
 				if (_trimEach)
 				{
 					segment = segment.Trim();
-					if (_removeEmpty && segment.Length == 0)
-					{
-						current = default;
-						return false;
-					}
 				}
 #endif
 
@@ -113,7 +104,7 @@ public struct StringSegmentSplitEnumerator : IValueEnumerator<StringSegment>
 				current = segment;
 				return true;
 			}
-			else
+
 			{
 				// Found separator
 				var segment = _source.Subsegment(_startIndex, nextIndex - _startIndex);
@@ -123,12 +114,7 @@ public struct StringSegmentSplitEnumerator : IValueEnumerator<StringSegment>
 				if (_trimEach)
 				{
 					segment = segment.Trim();
-					if (_removeEmpty && segment.Length == 0)
-					{
-						continue; // Skip empty after trim
-					}
 				}
-				else
 #endif
 				if (_removeEmpty && segment.Length == 0)
 				{
@@ -254,13 +240,7 @@ public struct StringSegmentSequenceSplitEnumerator : IValueEnumerator<StringSegm
 				if (_trimEach)
 				{
 					segment = segment.Trim();
-					if (_removeEmpty && segment.Length == 0)
-					{
-						current = default;
-						return false;
-					}
 				}
-				else
 #endif
 				if (_removeEmpty && segment.Length == 0)
 				{
@@ -281,13 +261,7 @@ public struct StringSegmentSequenceSplitEnumerator : IValueEnumerator<StringSegm
 				if (_trimEach)
 				{
 					segment = segment.Trim();
-					if (_removeEmpty && segment.Length == 0)
-					{
-						current = default;
-						return false;
-					}
 				}
-				else
 #endif
 				if (_removeEmpty && segment.Length == 0)
 				{
@@ -308,10 +282,6 @@ public struct StringSegmentSequenceSplitEnumerator : IValueEnumerator<StringSegm
 				if (_trimEach)
 				{
 					segment = segment.Trim();
-					if (_removeEmpty && segment.Length == 0)
-					{
-						continue; // Skip empty after trim
-					}
 				}
 				else
 #endif
