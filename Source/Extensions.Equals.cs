@@ -146,9 +146,8 @@ public static partial class TextExtensions
 	/// <inheritdoc cref="TrimmedEquals(string?, StringSegment, ReadOnlySpan{char}, StringComparison)"/>
 	public static bool TrimmedEquals(this string? source, StringSegment other, char trimChar, StringComparison comparisonType = StringComparison.Ordinal)
 	{
-		bool otherHasValue = !other.HasValue;
-		if (source is null) return otherHasValue;
-		if (otherHasValue) return false;
+		if (source is null) return !other.HasValue;
+		if (!other.HasValue) return false;
 		int slen = source.Length, olen = other.Length;
 		if (slen < olen) return false;
 		ReadOnlySpan<char> span = source.AsSpan().Trim(trimChar);
