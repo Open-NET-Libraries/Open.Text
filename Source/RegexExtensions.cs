@@ -1,4 +1,6 @@
-﻿namespace Open.Text;
+﻿using ZLinq;
+
+namespace Open.Text;
 
 /// <summary>
 /// A set of regular expression extensions.
@@ -93,26 +95,15 @@ public static class RegexExtensions
 	/// </summary>
 	/// <param name="pattern">The pattern to search with.</param>
 	/// <param name="input">The string to search.</param>
-	/// <returns>An enumerable containing the found segments.</returns>
+	/// <returns>A ValueEnumerable of the found segments (zero-allocation when used with foreach or ZLinq).</returns>
 	/// <exception cref="ArgumentNullException">If the pattern or input is null.</exception>
-	public static IEnumerable<StringSegment> AsSegments(this Regex pattern, string input)
+	[CLSCompliant(false)]
+	public static ValueEnumerable<RegexMatchSegmentEnumerator, StringSegment> AsSegments(this Regex pattern, string input)
 	{
-		return pattern is null
-			? throw new ArgumentNullException(nameof(pattern))
-			: input is null
-			? throw new ArgumentNullException(nameof(input))
-			: input.Length == 0
-			? Enumerable.Empty<StringSegment>()
-			: AsSegmentsCore(pattern, input);
+		if (pattern is null) throw new ArgumentNullException(nameof(pattern));
+		if (input is null) throw new ArgumentNullException(nameof(input));
 
-		static IEnumerable<StringSegment> AsSegmentsCore(Regex pattern, string input)
-		{
-			Match match = pattern.Match(input);
-			while (match.Success)
-			{
-				yield return new(input, match.Index, match.Length);
-				match = match.NextMatch();
-			}
-		}
+		return new ValueEnumerable<RegexMatchSegmentEnumerator, StringSegment>(
+			new RegexMatchSegmentEnumerator(pattern, input));
 	}
 }

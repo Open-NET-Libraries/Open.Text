@@ -97,79 +97,18 @@ public static partial class TextExtensions
 	/// <param name="source">The source characters to look through.</param>
 	/// <param name="pattern">The pattern to split by.</param>
 	/// <param name="options">Can specify to omit empty entries.</param>
-	/// <returns>An enumerable of the segments.</returns>
-	public static IEnumerable<StringSegment> SplitAsSegments(
+	/// <returns>A ValueEnumerable of the segments (zero-allocation when used with foreach or ZLinq).</returns>
+	[CLSCompliant(false)]
+	public static ValueEnumerable<RegexSplitSegmentEnumerator, StringSegment> SplitAsSegments(
 		this string source,
 		Regex pattern,
 		StringSplitOptions options = StringSplitOptions.None)
 	{
-		return source is null
-			? throw new ArgumentNullException(nameof(source))
-			: pattern is null
-			? throw new ArgumentNullException(nameof(pattern))
-			: source.Length == 0
-			? options.HasFlag(StringSplitOptions.RemoveEmptyEntries)
-				? Enumerable.Empty<StringSegment>()
-				: Enumerable.Repeat(StringSegment.Empty, 1)
-			: SplitCore(source, pattern, options);
+		if (source is null) throw new ArgumentNullException(nameof(source));
+		if (pattern is null) throw new ArgumentNullException(nameof(pattern));
 
-		static IEnumerable<StringSegment> SplitCore(string source, Regex pattern, StringSplitOptions options)
-		{
-			int nextStart = 0;
-			Match match = pattern.Match(source);
-			bool removeEmpty = options.HasFlag(StringSplitOptions.RemoveEmptyEntries);
-#if NET5_0_OR_GREATER
-			bool trimEach = options.HasFlag(StringSplitOptions.TrimEntries);
-#endif
-			while (match.Success)
-			{
-				if (!removeEmpty || match.Index - nextStart != 0)
-				{
-					StringSegment next = new(source, nextStart, match.Index - nextStart);
-#if NET5_0_OR_GREATER
-					if (trimEach)
-					{
-						next = next.Trim();
-						if (!removeEmpty || next.Length != 0) yield return next;
-					}
-					else
-					{
-						yield return next;
-					}
-#else
-					yield return next;
-#endif
-				}
-
-				nextStart = match.Index + match.Length;
-				match = match.NextMatch();
-			}
-
-			int len;
-			if (removeEmpty)
-			{
-				len = source.Length - nextStart;
-				if (len == 0) yield break;
-			}
-			else
-			{
-				len = source.Length - nextStart;
-			}
-
-			{
-				StringSegment next = source.AsSegment(nextStart, len);
-#if NET5_0_OR_GREATER
-				if (trimEach)
-				{
-					next = next.Trim();
-					if (!removeEmpty || next.Length != 0) yield return next;
-					yield break;
-				}
-#endif
-
-				yield return next;
-			}
-		}
+		return new ValueEnumerable<RegexSplitSegmentEnumerator, StringSegment>(
+			new RegexSplitSegmentEnumerator(source, pattern, options));
 	}
 
 	/// <returns>A ValueEnumerable of the segments (zero-allocation when used with foreach or ZLinq).</returns>
@@ -217,6 +156,21 @@ public static partial class TextExtensions
 	}
 
 	/// <summary>
+	/// Joins a regex split sequence of segments with a separator sequence (zero-allocation).
+	/// </summary>
+	/// <param name="source">The regex split segments to join.</param>
+	/// <param name="between">The segment to place between each segment.</param>
+	/// <returns>A ValueEnumerable of the joined segments (zero-allocation when used with foreach or ZLinq).</returns>
+	[CLSCompliant(false)]
+	public static ValueEnumerable<RegexSplitJoinEnumerator, StringSegment> Join(
+		this ValueEnumerable<RegexSplitSegmentEnumerator, StringSegment> source,
+		StringSegment between)
+	{
+		return new ValueEnumerable<RegexSplitJoinEnumerator, StringSegment>(
+			new RegexSplitJoinEnumerator(source.Enumerator, between));
+	}
+
+	/// <summary>
 	/// Joins a sequence of segments with an optional separator sequence.
 	/// </summary>
 	/// <returns>A StringBuilder of the segments.</returns>
@@ -257,7 +211,7 @@ public static partial class TextExtensions
 
 	/// <inheritdoc cref="Replace(StringSegment, StringSegment, StringSegment, StringComparison)"/>
 	[CLSCompliant(false)]
-	public static ValueEnumerable<StringSegmentJoinEnumerator, StringSegment> ReplaceAsSegments(
+	public static ValueEnumerable<RegexSplitJoinEnumerator, StringSegment> ReplaceAsSegments(
 		this string source,
 		Regex splitSequence,
 		StringSegment replacement)
