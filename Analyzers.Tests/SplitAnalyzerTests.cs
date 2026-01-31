@@ -54,7 +54,7 @@ public class SplitAnalyzerTests
 				void TestMethod()
 				{
 					string text = "a,b,c";
-					string first = {|OPENTXT007:{|OPENTXT002:text.Split(',')|}|}.First();
+					string first = {|OPENTXT007:{|OPENTXT002:text.Split(',')|}.First()|};
 				}
 			}
 			""";

@@ -30,12 +30,16 @@ public static partial class TextExtensions
 			: throw new ArgumentNullException(nameof(source), "Must be a StringSegment that has a value (is not null).");
 
 	/// <summary>
-	/// Enumerates a string by segments that are separated by the regular expression matches (zero-allocation).
+	/// Enumerates a string by segments that are separated by the regular expression matches.
 	/// </summary>
+	/// <remarks>
+	/// Note: Regex matching internally allocates Match objects per match. The enumerator itself
+	/// is stack-allocated, but regex operations have unavoidable allocations.
+	/// </remarks>
 	/// <param name="source">The source characters to look through.</param>
 	/// <param name="pattern">The pattern to split by.</param>
 	/// <param name="options">Can specify to omit empty entries.</param>
-	/// <returns>A ValueEnumerable of the segments (zero-allocation when used with foreach or ZLinq).</returns>
+	/// <returns>A ValueEnumerable of the segments.</returns>
 	[CLSCompliant(false)]
 	public static ValueEnumerable<RegexSplitSegmentEnumerator, StringSegment> SplitAsSegmentsNoAlloc(
 		this string source,
@@ -81,11 +85,15 @@ public static partial class TextExtensions
 	}
 
 	/// <summary>
-	/// Joins a sequence of segments with a separator sequence (zero-allocation).
+	/// Joins a sequence of segments with a separator sequence.
 	/// </summary>
+	/// <remarks>
+	/// Note: This overload accepts IEnumerable which may cause boxing if the source is a struct enumerator.
+	/// For true zero-allocation joins, use the ValueEnumerable overloads returned by split operations.
+	/// </remarks>
 	/// <param name="source">The segments to join.</param>
 	/// <param name="between">The segment to place between each segment.</param>
-	/// <returns>A ValueEnumerable of the joined segments (zero-allocation when used with foreach or ZLinq).</returns>
+	/// <returns>A ValueEnumerable of the joined segments.</returns>
 	/// <exception cref="System.ArgumentNullException">The source is null.</exception>
 	[CLSCompliant(false)]
 	public static ValueEnumerable<StringSegmentJoinEnumerator, StringSegment> JoinNoAlloc(

@@ -351,7 +351,7 @@ public class SmartDetectionTests
 			        string text = "a,b,c,d,e";
 			        
 			        // Split with FirstOrDefault - double diagnostic
-			        string first = {|OPENTXT007:{|OPENTXT002:text.Split(',')|}|}.FirstOrDefault();
+			        string first = {|OPENTXT007:{|OPENTXT002:text.Split(',')|}.FirstOrDefault()|};
 			        
 			        // Split in foreach
 			        foreach (var part in {|OPENTXT008:text.Split(',')|})

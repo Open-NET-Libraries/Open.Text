@@ -36,7 +36,9 @@ Comparing `string.Split()` (BCL) vs `SplitAsSegments` (IEnumerable) vs `SplitAsS
 | | SplitAsSegments(string) | 215.2 ns | 128 B |
 | | BCL Split(string) | 227.1 ns | 696 B |
 
-> **Key Takeaway:** The `*NoAlloc` methods achieve **zero heap allocations** while maintaining competitive performance—ideal for high-throughput scenarios where GC pressure matters.
+> **Key Takeaway:** The `SplitAsSegmentsNoAlloc` methods achieve **zero heap allocations** when iterating `StringSegment` values—ideal for high-throughput scenarios where GC pressure matters.
+>
+> **Note:** Regex-based split methods have unavoidable `Match` object allocations. Methods returning `string` (like `SplitToEnumerableNoAlloc`) allocate per segment.
 
 ---
 

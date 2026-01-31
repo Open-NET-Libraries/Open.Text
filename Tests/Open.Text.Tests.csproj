@@ -35,10 +35,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Source\Open.Text.csproj" />
 		<!-- Reference the analyzer to suppress false IDE0078 suggestions for StringComparable -->
-		<ProjectReference Include="..\Analyzers\Open.Text.Analyzers.csproj" 
-		                  ReferenceOutputAssembly="false" 
-		                  OutputItemType="Analyzer" 
-		                  PrivateAssets="all" />
+		<ProjectReference Include="..\Analyzers\Open.Text.Analyzers.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer" PrivateAssets="all" />
 	</ItemGroup>
 
 </Project>

@@ -7,10 +7,14 @@ public static partial class TextExtensions
 	/// <summary>
 	/// Enumerates a string by segments that are separated by the split character.
 	/// </summary>
+	/// <remarks>
+	/// Note: Each segment allocates a new string via ToString(). For true zero-allocation,
+	/// use <see cref="SplitAsSegmentsNoAlloc(string, char, StringSplitOptions)"/> which returns StringSegments.
+	/// </remarks>
 	/// <param name="source">The source characters to look through.</param>
 	/// <param name="splitCharacter">The character to find.</param>
 	/// <param name="options">Can specify to omit empty entries.</param>
-	/// <returns>A zero-allocation enumerable of the string segments.</returns>
+	/// <returns>A ValueEnumerable of string segments (allocates per segment).</returns>
 	[CLSCompliant(false)]
 	public static ValueEnumerable<ZLinq.Linq.Select<StringSegmentSplitEnumerator, StringSegment, string>, string> SplitToEnumerableNoAlloc(
 		this string source,
