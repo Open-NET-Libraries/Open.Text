@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Primitives;
-
-namespace Open.Text.Tests;
+﻿namespace Open.Text.Tests;
 
 [ExcludeFromCodeCoverage]
 public static class FindAPITests

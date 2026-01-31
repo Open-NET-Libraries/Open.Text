@@ -1,4 +1,5 @@
 ﻿namespace Open.Text;
+
 public static partial class TextExtensions
 {
 	/// <inheritdoc cref="string.IndexOf(char)"/>

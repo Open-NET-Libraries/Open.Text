@@ -102,7 +102,7 @@ public class EqualityTests
 	public void TrimmedEqualsChar(string value, string? other, StringComparison comparison = StringComparison.Ordinal)
 	{
 		Assert.True(value.TrimmedEquals(other, ' ', comparison));
-		Assert.True(value.TrimmedEquals(other!.AsSegment(), comparison));
+		Assert.True(value.TrimmedEquals(other!.AsSegment(), ' ', comparison));
 		Assert.True(value.TrimmedEquals(other.AsSpan(), ' ', comparison));
 	}
 
@@ -115,6 +115,28 @@ public class EqualityTests
 	public void TrimmedEqualsChars(string? value, string? other, StringComparison comparison = StringComparison.Ordinal)
 	{
 		Assert.True(value.TrimmedEquals(other, Chars.Span, comparison));
+		Assert.True(value.TrimmedEquals(other!.AsSegment(), Chars.Span, comparison));
 		Assert.True(value.TrimmedEquals(other.AsSpan(), Chars.Span, comparison));
+	}
+
+	[Fact]
+	public void TrimmedEqualsCharNegativeCases()
+	{
+		Assert.False(" hello ".TrimmedEquals("world", ' '));
+		Assert.False(" hello ".TrimmedEquals("world".AsSegment(), ' '));
+		Assert.False(" hello ".TrimmedEquals("hell", ' '));
+		Assert.False(" hello ".TrimmedEquals("hell".AsSegment(), ' '));
+		Assert.False("x".TrimmedEquals("y".AsSegment(), ' '));
+		Assert.False("  x  ".TrimmedEquals("y".AsSegment(), ' '));
+	}
+
+	[Fact]
+	public void TrimmedEqualsCharsNegativeCases()
+	{
+		Assert.False("	 hello ".TrimmedEquals("world", Chars.Span));
+		Assert.False("	 hello ".TrimmedEquals("world".AsSegment(), Chars.Span));
+		Assert.False("	 hello ".TrimmedEquals("hell", Chars.Span));
+		Assert.False("	 hello ".TrimmedEquals("hell".AsSegment(), Chars.Span));
+		Assert.False("	x	".TrimmedEquals("y".AsSegment(), Chars.Span));
 	}
 }

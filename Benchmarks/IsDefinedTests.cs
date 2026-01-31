@@ -4,7 +4,7 @@ namespace Open.Text.Benchmarks;
 
 public class IsDefinedTests
 {
-	static readonly IReadOnlyList<int> Values = Enumerable.Range(-2, 30).ToArray();
+	static readonly IReadOnlyList<int> Values = [.. Enumerable.Range(-2, 30)];
 
 	[Benchmark(Baseline = true)]
 	public void EnumIsDefined()

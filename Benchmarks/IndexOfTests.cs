@@ -13,8 +13,6 @@ public class IndexOfTests
 	public static readonly string TextUpper = Text.ToUpper();
 	public const string Search = "fox";
 	public const string SearchCased = "Fox";
-
-	private StringComparison _comparison = StringComparison.Ordinal;
 	private StringComparison _comparisonCaseIgnored;
 
 	[Params(
@@ -23,11 +21,11 @@ public class IndexOfTests
 		StringComparison.InvariantCulture)]
 	public StringComparison Comparison
 	{
-		get => _comparison;
+		get;
 		set
 		{
-			_comparison = value;
-			_comparisonCaseIgnored = _comparison switch
+			field = value;
+			_comparisonCaseIgnored = field switch
 			{
 				StringComparison.Ordinal => StringComparison.OrdinalIgnoreCase,
 				StringComparison.CurrentCulture => StringComparison.CurrentCultureIgnoreCase,
@@ -35,11 +33,11 @@ public class IndexOfTests
 				_ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
 			};
 		}
-	}
+	} = StringComparison.Ordinal;
 
 	[Benchmark(Baseline = true)]
 	public int IndexOf()
-		=> Text.IndexOf(Search, _comparison);
+		=> Text.IndexOf(Search, Comparison);
 
 	[Benchmark]
 	public int IndexOfCaseIgnored()
@@ -47,7 +45,7 @@ public class IndexOfTests
 
 	[Benchmark]
 	public int IndexOfSpan()
-		=> Text.IndexOf(Search.AsSpan(), _comparison);
+		=> Text.IndexOf(Search.AsSpan(), Comparison);
 
 	[Benchmark]
 	public int IndexOfSpanCaseIgnored()
@@ -55,7 +53,7 @@ public class IndexOfTests
 
 	[Benchmark]
 	public int IndexOfSpanSlice()
-		=> Text.IndexOf(Text.AsSpan(16, 3), _comparison);
+		=> Text.IndexOf(Text.AsSpan(16, 3), Comparison);
 
 	[Benchmark]
 	public int IndexOfSpanSliceCaseIgnored()

@@ -34,6 +34,16 @@ public static partial class TextExtensions
 		};
 	}
 
+	// Cover the edge case of string null:
+
+	/// <inheritdoc cref="Equals(ReadOnlySpan{char}, StringSegment, StringComparison)"/>
+	public static bool Equals(this Span<char> source, string? other, StringComparison comparisonType)
+		=> other is not null && source.Equals(other.AsSpan(), comparisonType);
+
+	/// <inheritdoc cref="Equals(ReadOnlySpan{char}, StringSegment, StringComparison)"/>
+	public static bool Equals(this ReadOnlySpan<char> source, string? other, StringComparison comparisonType)
+		=> other is not null && source.Equals(other.AsSpan(), comparisonType);
+
 	/// <inheritdoc cref="Equals(ReadOnlySpan{char}, StringSegment, StringComparison)"/>
 	public static bool Equals(this Span<char> source, ReadOnlySpan<char> other, StringComparison comparisonType)
 	{
@@ -136,9 +146,8 @@ public static partial class TextExtensions
 	/// <inheritdoc cref="TrimmedEquals(string?, StringSegment, ReadOnlySpan{char}, StringComparison)"/>
 	public static bool TrimmedEquals(this string? source, StringSegment other, char trimChar, StringComparison comparisonType = StringComparison.Ordinal)
 	{
-		bool otherHasValue = !other.HasValue;
-		if (source is null) return otherHasValue;
-		if (otherHasValue) return false;
+		if (source is null) return !other.HasValue;
+		if (!other.HasValue) return false;
 		int slen = source.Length, olen = other.Length;
 		if (slen < olen) return false;
 		ReadOnlySpan<char> span = source.AsSpan().Trim(trimChar);

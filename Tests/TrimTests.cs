@@ -52,7 +52,7 @@ public static class TrimTests
 		int max = -1,
 		StringComparison comparison = StringComparison.Ordinal)
 	{
-		Assert.Equal(expected, source.TrimStartPattern(pattern, comparison, max));
+		Assert.Equal(expected.AsSegment(), source.TrimStartPattern(pattern, comparison, max));
 		Assert.Equal(expected, source.AsSpan().TrimStartPattern(pattern, comparison, max).ToString());
 		Assert.Equal(expected, source.AsSpan().TrimStartPattern(pattern.AsSpan(), comparison, max).ToString());
 	}
@@ -75,7 +75,7 @@ public static class TrimTests
 		int max = -1,
 		StringComparison comparison = StringComparison.Ordinal)
 	{
-		Assert.Equal(expected, source.TrimEndPattern(pattern, comparison, max));
+		Assert.Equal(expected.AsSegment(), source.TrimEndPattern(pattern, comparison, max));
 		Assert.Equal(expected, source.AsSpan().TrimEndPattern(pattern, comparison, max).ToString());
 		Assert.Equal(expected, source.AsSpan().TrimEndPattern(pattern.AsSpan(), comparison, max).ToString());
 	}
@@ -83,29 +83,29 @@ public static class TrimTests
 	[Fact]
 	public static void TrimStartPatternRegex()
 	{
-		Assert.Equal("", "".TrimStartPattern(new Regex("[a-z]")));
-		Assert.Equal("xyzxyzABCxyz", "xyzxyzABCxyz".TrimStartPattern(new Regex("[a-z]"), 0));
-		Assert.Equal("ABCxyz", "xyzxyzABCxyz".TrimStartPattern(new Regex("[a-z]")));
-		Assert.Equal("ABCxyz", "xyzxyzABCxyz".TrimStartPattern(new Regex("xyz")));
-		Assert.Equal("ABCxyz", "xyzABCxyz".TrimStartPattern(new Regex("xyz"), 2));
-		Assert.Equal("yzABCxyz", "xyzxyzABCxyz".TrimStartPattern(new Regex("[a-z]"), 4));
-		Assert.Equal("xyzABCxyz", "XYZxyzABCxyz".TrimStartPattern(new Regex("xyz", RegexOptions.IgnoreCase | RegexOptions.RightToLeft), 1));
-		Assert.Equal("ABCxyz", "xyzxyzABCxyz".TrimStartPattern(new Regex("[a-z]+")));
-		Assert.Equal("ABCxyz", "xyzxyzABCxyz".TrimStartPattern(new Regex("[a-z]", RegexOptions.RightToLeft)));
-		Assert.Equal("ABCxyz", "xyzxyzABCxyz".TrimStartPattern(new Regex("[a-z]+", RegexOptions.RightToLeft)));
+		Assert.Equal("".AsSegment(), "".TrimStartPattern(new Regex("[a-z]")));
+		Assert.Equal("xyzxyzABCxyz".AsSegment(), "xyzxyzABCxyz".TrimStartPattern(new Regex("[a-z]"), 0));
+		Assert.Equal("ABCxyz".AsSegment(), "xyzxyzABCxyz".TrimStartPattern(new Regex("[a-z]")));
+		Assert.Equal("ABCxyz".AsSegment(), "xyzxyzABCxyz".TrimStartPattern(new Regex("xyz")));
+		Assert.Equal("ABCxyz".AsSegment(), "xyzABCxyz".TrimStartPattern(new Regex("xyz"), 2));
+		Assert.Equal("yzABCxyz".AsSegment(), "xyzxyzABCxyz".TrimStartPattern(new Regex("[a-z]"), 4));
+		Assert.Equal("xyzABCxyz".AsSegment(), "XYZxyzABCxyz".TrimStartPattern(new Regex("xyz", RegexOptions.IgnoreCase | RegexOptions.RightToLeft), 1));
+		Assert.Equal("ABCxyz".AsSegment(), "xyzxyzABCxyz".TrimStartPattern(new Regex("[a-z]+")));
+		Assert.Equal("ABCxyz".AsSegment(), "xyzxyzABCxyz".TrimStartPattern(new Regex("[a-z]", RegexOptions.RightToLeft)));
+		Assert.Equal("ABCxyz".AsSegment(), "xyzxyzABCxyz".TrimStartPattern(new Regex("[a-z]+", RegexOptions.RightToLeft)));
 	}
 
 	[Fact]
 	public static void TrimEndPatternRegex()
 	{
-		Assert.Equal("", "".TrimEndPattern(new Regex("[a-z]")));
-		Assert.Equal("xyzxyzABCxyz", "xyzxyzABCxyz".TrimEndPattern(new Regex("[a-z]"), 0));
-		Assert.Equal("xyzABC", "xyzABCxyzxyz".TrimEndPattern(new Regex("[a-z]", RegexOptions.RightToLeft)));
-		Assert.Equal("xyzABC", "xyzABCxyzxyz".TrimEndPattern(new Regex("[a-z]+", RegexOptions.RightToLeft)));
-		Assert.Equal("xyzABC", "xyzABCxyzxyz".TrimEndPattern(new Regex("[a-z]")));
-		Assert.Equal("xyzABC", "xyzABCxyzxyz".TrimEndPattern(new Regex("[a-z]+")));
-		Assert.Equal("xyzABCxyzx", "xyzABCxyzxyz".TrimEndPattern(new Regex("yz"), 2));
-		Assert.Equal("xyzABCxyzx", "xyzABCxyzxyz".TrimEndPattern(new Regex("yz", RegexOptions.RightToLeft), 2));
+		Assert.Equal("".AsSegment(), "".TrimEndPattern(new Regex("[a-z]")));
+		Assert.Equal("xyzxyzABCxyz".AsSegment(), "xyzxyzABCxyz".TrimEndPattern(new Regex("[a-z]"), 0));
+		Assert.Equal("xyzABC".AsSegment(), "xyzABCxyzxyz".TrimEndPattern(new Regex("[a-z]", RegexOptions.RightToLeft)));
+		Assert.Equal("xyzABC".AsSegment(), "xyzABCxyzxyz".TrimEndPattern(new Regex("[a-z]+", RegexOptions.RightToLeft)));
+		Assert.Equal("xyzABC".AsSegment(), "xyzABCxyzxyz".TrimEndPattern(new Regex("[a-z]")));
+		Assert.Equal("xyzABC".AsSegment(), "xyzABCxyzxyz".TrimEndPattern(new Regex("[a-z]+")));
+		Assert.Equal("xyzABCxyzx".AsSegment(), "xyzABCxyzxyz".TrimEndPattern(new Regex("yz"), 2));
+		Assert.Equal("xyzABCxyzx".AsSegment(), "xyzABCxyzxyz".TrimEndPattern(new Regex("yz", RegexOptions.RightToLeft), 2));
 	}
 
 	[Fact]
