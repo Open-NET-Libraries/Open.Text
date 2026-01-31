@@ -190,8 +190,7 @@ public class ZLinqImprovementsBenchmark
 	public int LinqChain_ZLinq()
 		=> SmallCsv.SplitAsSegments(',')
 			.Where(s => s.Length > 4)
-			.Select(s => s.Length)
-			.Sum();
+			.Sum(s => s.Length);
 
 	// =====================================================================
 	// CATEGORY: ToArray Materialization

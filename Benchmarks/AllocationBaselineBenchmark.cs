@@ -83,15 +83,13 @@ public class SplitAsSegmentsBaselineBenchmark
 	public int Medium_LinqWhere()
 		=> MediumString.AsSegment()
 			.SplitAsSegments(',')
-			.Where(s => s.Length > 5)
-			.Count();
+			.Count(s => s.Length > 5);
 
 	[Benchmark(Description = "Medium - LINQ Select")]
 	public int Medium_LinqSelect()
 		=> MediumString.AsSegment()
 			.SplitAsSegments(',')
-			.Select(s => s.Length)
-			.Sum();
+			.Sum(s => s.Length);
 
 	// ========== Large String Tests ==========
 
