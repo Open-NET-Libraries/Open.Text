@@ -52,10 +52,6 @@ public static class SplitTests
 		Assert.Throws<ArgumentNullException>(() => default(string)!.SplitAsSegments(","));
 		Assert.Throws<ArgumentNullException>(() => DefaultTestString.SplitAsSegments(default(string)!));
 		// NoAlloc variants
-		Assert.Throws<ArgumentNullException>(() => default(string)!.SplitToEnumerableNoAlloc(','));
-		Assert.Throws<ArgumentNullException>(() => default(string)!.SplitToEnumerableNoAlloc(","));
-		Assert.Throws<ArgumentNullException>(() => default(string)!.SplitAsMemoryNoAlloc(','));
-		Assert.Throws<ArgumentNullException>(() => default(string)!.SplitAsMemoryNoAlloc(","));
 		Assert.Throws<ArgumentNullException>(() => default(string)!.SplitAsSegmentsNoAlloc(','));
 		Assert.Throws<ArgumentNullException>(() => default(string)!.SplitAsSegmentsNoAlloc(","));
 		Assert.Throws<ArgumentNullException>(() => DefaultTestString.SplitAsSegmentsNoAlloc(default(string)!));
@@ -116,10 +112,6 @@ public static class SplitTests
 		Assert.Equal(segments, sequence.SplitAsSegments(",", options: options).Select(m => m.ToString()).ToArray());
 		Assert.Equal(segments, sequence.SplitAsSegments(new Regex(","), options: options).Select(m => m.ToString()).ToArray());
 		// NoAlloc variants - should produce identical results
-		Assert.Equal(segments, sequence.SplitToEnumerableNoAlloc(',', options).ToArray());
-		Assert.Equal(segments, sequence.SplitToEnumerableNoAlloc(",", options: options).ToArray());
-		Assert.Equal(segments, sequence.SplitAsMemoryNoAlloc(',', options).Select(m => m.Span.ToString()).ToArray());
-		Assert.Equal(segments, sequence.SplitAsMemoryNoAlloc(",", options: options).Select(m => m.Span.ToString()).ToArray());
 		Assert.Equal(segments, sequence.SplitAsSegmentsNoAlloc(',', options).Select(m => m.ToString()).ToArray());
 		Assert.Equal(segments, sequence.SplitAsSegmentsNoAlloc(",", options: options).Select(m => m.ToString()).ToArray());
 		Assert.Equal(segments, sequence.SplitAsSegmentsNoAlloc(new Regex(","), options: options).Select(m => m.ToString()).ToArray());
@@ -167,8 +159,6 @@ public static class SplitTests
 		Assert.Equal(segments, sequence.SplitAsMemory(split, options, StringComparison.OrdinalIgnoreCase).Select(m => m.Span.ToString()));
 		Assert.Equal(segments, sequence.SplitAsSegments(split, options, StringComparison.OrdinalIgnoreCase).Select(m => m.ToString()));
 		// NoAlloc variants
-		Assert.Equal(segments, sequence.SplitToEnumerableNoAlloc(split, options, StringComparison.OrdinalIgnoreCase).ToArray());
-		Assert.Equal(segments, sequence.SplitAsMemoryNoAlloc(split, options, StringComparison.OrdinalIgnoreCase).Select(m => m.Span.ToString()).ToArray());
 		Assert.Equal(segments, sequence.SplitAsSegmentsNoAlloc(split, options, StringComparison.OrdinalIgnoreCase).Select(m => m.ToString()).ToArray());
 		var span = sequence.AsSpan();
 		Assert.Equal(segments, span.Split(split, options, StringComparison.OrdinalIgnoreCase));
