@@ -231,25 +231,18 @@ public static partial class TextExtensions
 	/// <param name="source">The source characters to look through.</param>
 	/// <param name="splitCharacter">The character to find.</param>
 	/// <param name="options">Can specify to omit empty entries.</param>
-	/// <returns>An enumerable of the segments.</returns>
-	public static IEnumerable<string> SplitToEnumerable(
+	/// <returns>A zero-allocation enumerable of the string segments.</returns>
+	public static ValueEnumerable<ZLinq.Linq.Select<StringSegmentSplitEnumerator, StringSegment, string>, string> SplitToEnumerable(
 		this string source,
 		char splitCharacter,
 		StringSplitOptions options = StringSplitOptions.None)
 	{
 		if (source is null) throw new ArgumentNullException(nameof(source));
-
 		Contract.EndContractBlock();
-#if NET9_0_OR_GREATER
-		// ValueEnumerator is a ref struct in NET9+, so we must materialize
+
 		return source.AsSegment()
 			.SplitAsSegments(splitCharacter, options)
-			.Select(s => s.ToString())
-			.ToArray();
-#else
-		foreach (var segment in source.AsSegment().SplitAsSegments(splitCharacter, options))
-			yield return segment.ToString();
-#endif
+			.Select(s => s.ToString());
 	}
 
 	/// <summary>
@@ -259,10 +252,10 @@ public static partial class TextExtensions
 	/// <param name="splitSequence">The sequence to find.</param>
 	/// <param name="options">Can specify to omit empty entries.</param>
 	/// <param name="comparisonType">The string comparison type to use.</param>
-	/// <returns>An IEnumerable&lt;string&gt; of the segments.</returns>
-	public static IEnumerable<string> SplitToEnumerable(
+	/// <returns>A zero-allocation enumerable of the string segments.</returns>
+	public static ValueEnumerable<ZLinq.Linq.Select<StringSegmentSequenceSplitEnumerator, StringSegment, string>, string> SplitToEnumerable(
 		this string source,
-		StringSegment splitSequence, // Because we are yielding we cannot use ReadOnlySpan<char>.
+		StringSegment splitSequence,
 		StringSplitOptions options = StringSplitOptions.None,
 		StringComparison comparisonType = StringComparison.Ordinal)
 	{
@@ -274,33 +267,34 @@ public static partial class TextExtensions
 			.Select(s => s.ToString());
 	}
 
-	/// <returns>An IEnumerable&lt;ReadOnlyMemory&lt;char&gt;&gt; of the segments.</returns>
+	/// <returns>A zero-allocation enumerable of ReadOnlyMemory&lt;char&gt; segments.</returns>
 	/// <inheritdoc cref="SplitToEnumerable(string, char, StringSplitOptions)" />
-	public static IEnumerable<ReadOnlyMemory<char>> SplitAsMemory(
+	public static ValueEnumerable<ZLinq.Linq.Select<StringSegmentSplitEnumerator, StringSegment, ReadOnlyMemory<char>>, ReadOnlyMemory<char>> SplitAsMemory(
 		this string source,
 		char splitCharacter,
 		StringSplitOptions options = StringSplitOptions.None)
 	{
-#if NET9_0_OR_GREATER
-		// ValueEnumerator is a ref struct in NET9+, so we must materialize
+		if (source is null) throw new ArgumentNullException(nameof(source));
+		Contract.EndContractBlock();
+
 		return SplitAsSegments(source.AsSegment(), splitCharacter, options)
-			.Select(s => s.AsMemory())
-			.ToArray();
-#else
-		foreach (var segment in SplitAsSegments(source.AsSegment(), splitCharacter, options))
-			yield return segment.AsMemory();
-#endif
+			.Select(s => s.AsMemory());
 	}
 
-	/// <returns>An IEnumerable&lt;ReadOnlyMemory&lt;char&gt;&gt; of the segments.</returns>
+	/// <returns>A zero-allocation enumerable of ReadOnlyMemory&lt;char&gt; segments.</returns>
 	/// <inheritdoc cref="SplitToEnumerable(string, StringSegment, StringSplitOptions, StringComparison)"/>
-	public static IEnumerable<ReadOnlyMemory<char>> SplitAsMemory(this string source,
+	public static ValueEnumerable<ZLinq.Linq.Select<StringSegmentSequenceSplitEnumerator, StringSegment, ReadOnlyMemory<char>>, ReadOnlyMemory<char>> SplitAsMemory(
+		this string source,
 		string splitSequence,
 		StringSplitOptions options = StringSplitOptions.None,
 		StringComparison comparisonType = StringComparison.Ordinal)
+	{
+		if (source is null) throw new ArgumentNullException(nameof(source));
+		Contract.EndContractBlock();
 
-		=> SplitAsSegments(source.AsSegment(), splitSequence, options, comparisonType)
+		return SplitAsSegments(source.AsSegment(), splitSequence, options, comparisonType)
 			.Select(s => s.AsMemory());
+	}
 
 	/// <summary>
 	/// Splits a sequence of characters into strings using the character provided.

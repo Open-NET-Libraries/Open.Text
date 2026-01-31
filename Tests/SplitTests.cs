@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using ZLinq;
 
 namespace Open.Text.Tests;
 
@@ -92,12 +93,12 @@ public static class SplitTests
 	public static void Split(string sequence, StringSplitOptions options = StringSplitOptions.None)
 	{
 		var segments = sequence.Split(',', options);
-		Assert.Equal(segments, sequence.SplitToEnumerable(',', options));
-		Assert.Equal(segments, sequence.SplitToEnumerable(",", options: options));
-		Assert.Equal(segments, sequence.SplitAsMemory(',', options).Select(m => m.Span.ToString()));
-		Assert.Equal(segments, sequence.SplitAsMemory(",", options: options).Select(m => m.Span.ToString()));
-		Assert.Equal(segments, sequence.SplitAsSegments(',', options).Select(m => m.ToString()));
-		Assert.Equal(segments, sequence.SplitAsSegments(",", options: options).Select(m => m.ToString()));
+		Assert.Equal(segments, sequence.SplitToEnumerable(',', options).ToArray());
+		Assert.Equal(segments, sequence.SplitToEnumerable(",", options: options).ToArray());
+		Assert.Equal(segments, sequence.SplitAsMemory(',', options).Select(m => m.Span.ToString()).ToArray());
+		Assert.Equal(segments, sequence.SplitAsMemory(",", options: options).Select(m => m.Span.ToString()).ToArray());
+		Assert.Equal(segments, sequence.SplitAsSegments(',', options).Select(m => m.ToString()).ToArray());
+		Assert.Equal(segments, sequence.SplitAsSegments(",", options: options).Select(m => m.ToString()).ToArray());
 		Assert.Equal(segments, sequence.SplitAsSegments(new Regex(","), options: options).Select(m => m.ToString()));
 		var span = sequence.AsSpan();
 		Assert.Equal(segments, span.Split(',', options));
@@ -139,9 +140,9 @@ public static class SplitTests
 	public static void SplitIgnoreCase(string sequence, string split, string expected, StringSplitOptions options = StringSplitOptions.None)
 	{
 		var segments = expected.Split(',');
-		Assert.Equal(segments, sequence.SplitToEnumerable(split, options, StringComparison.OrdinalIgnoreCase));
-		Assert.Equal(segments, sequence.SplitAsMemory(split, options, StringComparison.OrdinalIgnoreCase).Select(m => m.Span.ToString()));
-		Assert.Equal(segments, sequence.SplitAsSegments(split, options, StringComparison.OrdinalIgnoreCase).Select(m => m.ToString()));
+		Assert.Equal(segments, sequence.SplitToEnumerable(split, options, StringComparison.OrdinalIgnoreCase).ToArray());
+		Assert.Equal(segments, sequence.SplitAsMemory(split, options, StringComparison.OrdinalIgnoreCase).Select(m => m.Span.ToString()).ToArray());
+		Assert.Equal(segments, sequence.SplitAsSegments(split, options, StringComparison.OrdinalIgnoreCase).Select(m => m.ToString()).ToArray());
 		var span = sequence.AsSpan();
 		Assert.Equal(segments, span.Split(split, options, StringComparison.OrdinalIgnoreCase));
 	}
