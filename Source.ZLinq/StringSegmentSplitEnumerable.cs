@@ -75,8 +75,8 @@ public struct StringSegmentSplitEnumerator : IValueEnumerator<StringSegment>
 						return false;
 					}
 				}
+				else
 #endif
-
 				if (_removeEmpty && segment.Length == 0)
 				{
 					current = default;
@@ -102,8 +102,8 @@ public struct StringSegmentSplitEnumerator : IValueEnumerator<StringSegment>
 						return false;
 					}
 				}
+				else
 #endif
-
 				if (_removeEmpty && segment.Length == 0)
 				{
 					current = default;
