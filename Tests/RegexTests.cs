@@ -48,7 +48,7 @@ public static class RegexTests
 	[Theory]
 	[InlineData(@"\w+", "Hello, world! How are you?")]
 	[InlineData(@"\d+", "abc123def456ghi789")]
-	[InlineData(@"[aeiou]", "Hello World")]
+	[InlineData("[aeiou]", "Hello World")]
 	public static void AsSegments(string patternStr, string input)
 	{
 		var pattern = new Regex(patternStr);
@@ -64,6 +64,6 @@ public static class RegexTests
 	{
 		var pattern = new Regex(@"\w+");
 		Assert.Throws<ArgumentNullException>(() => default(Regex)!.AsSegmentsNoAlloc("test"));
-		Assert.Throws<ArgumentNullException>(() => pattern.AsSegmentsNoAlloc(default(string)!));
+		Assert.Throws<ArgumentNullException>(() => pattern.AsSegmentsNoAlloc(default!));
 	}
 }

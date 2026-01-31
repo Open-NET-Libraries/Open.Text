@@ -163,9 +163,9 @@ public static class SplitTests
 	public static void SplitIgnoreCase(string sequence, string split, string expected, StringSplitOptions options = StringSplitOptions.None)
 	{
 		var segments = expected.Split(',');
-		Assert.Equal(segments, sequence.SplitToEnumerable(split, options, StringComparison.OrdinalIgnoreCase).ToArray());
-		Assert.Equal(segments, sequence.SplitAsMemory(split, options, StringComparison.OrdinalIgnoreCase).Select(m => m.Span.ToString()).ToArray());
-		Assert.Equal(segments, sequence.SplitAsSegments(split, options, StringComparison.OrdinalIgnoreCase).Select(m => m.ToString()).ToArray());
+		Assert.Equal(segments, sequence.SplitToEnumerable(split, options, StringComparison.OrdinalIgnoreCase));
+		Assert.Equal(segments, sequence.SplitAsMemory(split, options, StringComparison.OrdinalIgnoreCase).Select(m => m.Span.ToString()));
+		Assert.Equal(segments, sequence.SplitAsSegments(split, options, StringComparison.OrdinalIgnoreCase).Select(m => m.ToString()));
 		// NoAlloc variants
 		Assert.Equal(segments, sequence.SplitToEnumerableNoAlloc(split, options, StringComparison.OrdinalIgnoreCase).ToArray());
 		Assert.Equal(segments, sequence.SplitAsMemoryNoAlloc(split, options, StringComparison.OrdinalIgnoreCase).Select(m => m.Span.ToString()).ToArray());
