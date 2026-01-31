@@ -23,7 +23,7 @@ public ReadOnlySpan<char> ExtractDomain(string email)
     int atIndex = email.IndexOf('@');
     if (atIndex == -1) return ReadOnlySpan<char>.Empty;
     
-    // Zero allocation! Returns a span view
+    // No string allocation! Returns a span view
     return email.AsSpan(atIndex + 1);
 }
 
@@ -39,8 +39,8 @@ public string ExtractDomainString(string email)
 ```
 
 **Performance Impact:** 
-- Before: ~100ns, 40 bytes allocated
-- After: ~15ns, 0 bytes allocated (until ToString())
+- Before: ~100ns, 40 bytes allocated per call
+- After: ~15ns, 0 bytes allocated for string (until ToString())
 
 ---
 
@@ -69,7 +69,7 @@ void ProcessColumn(string column)
 ```csharp
 public void ProcessCsvLine(string line)
 {
-    // Zero allocations! Returns IEnumerable<StringSegment>
+    // Avoids array + string allocations! Returns IEnumerable<StringSegment>
     var columns = line.SplitAsSegments(',');
     
     foreach (var column in columns)
@@ -87,7 +87,7 @@ void ProcessColumn(StringSegment column)
 
 **Performance Impact:**
 - Before: ~500ns, 200+ bytes allocated (array + 5 strings)
-- After: ~150ns, 0 bytes allocated (lazy evaluation)
+- After: ~150ns, minimal allocations (enumerator only, no string array)
 
 ---
 

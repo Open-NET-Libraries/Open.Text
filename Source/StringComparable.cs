@@ -3,6 +3,21 @@
 /// <summary>
 /// A <see cref="StringComparison"/> struct for comparing a <see cref="string"/> against other values.
 /// </summary>
+/// <remarks>
+/// <para><b>⚠️ Pattern Matching Limitation:</b> Pattern matching syntax (e.g., <c>comparable is "hello" or "world"</c>)
+/// does NOT work with <see cref="StringComparable"/>. Always use the <c>==</c> operator for comparisons:</para>
+/// <code>
+/// var comparable = text.AsCaseInsensitive();
+/// // ✅ Correct:
+/// bool matches = comparable == "hello" || comparable == "world";
+/// // ❌ Won't compile:
+/// // bool matches = comparable is "hello" or "world";
+/// </code>
+/// <para>Your IDE may suggest converting to pattern matching - this is a false positive.
+/// Pattern matching requires type conversion, while <see cref="StringComparable"/> uses operator overloads.</para>
+/// <para><b>💡 Tip:</b> Install the optional <c>Open.Text.Analyzers</c> NuGet package to automatically
+/// suppress these incorrect IDE suggestions.</para>
+/// </remarks>
 public readonly struct StringComparable
 	: IEquatable<StringComparable>, IEquatable<string>, IEquatable<StringSegment>
 {

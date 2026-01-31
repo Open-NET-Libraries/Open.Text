@@ -138,6 +138,92 @@ public static class EnumValueTests
 	}
 
 	[Fact]
+	public static void EnumValueCaseIgnored_TryParse_Success()
+	{
+		Assert.True(EnumValue.TryParse("alpha", true, out Greek result));
+		Assert.Equal(Greek.Alpha, result);
+
+		Assert.True(EnumValue.TryParse("BETA", true, out result));
+		Assert.Equal(Greek.Beta, result);
+
+		Assert.True(EnumValue.TryParse("GaMmA", true, out result));
+		Assert.Equal(Greek.Gamma, result);
+	}
+
+	[Fact]
+	public static void EnumValueCaseIgnored_TryParse_Fail()
+	{
+		Assert.False(EnumValue.TryParse("NotAValue", true, out Greek result));
+		Assert.Equal(default, result);
+	}
+
+	[Fact]
+	public static void EnumValueCaseIgnored_Constructor()
+	{
+		var value = new EnumValueCaseIgnored<Greek>("alpha".AsSegment());
+		Assert.Equal(Greek.Alpha, value.Value);
+
+		var value2 = new EnumValueCaseIgnored<Greek>(Greek.Beta);
+		Assert.Equal(Greek.Beta, value2.Value);
+	}
+
+	[Fact]
+	public static void EnumValueCaseIgnored_ToString()
+	{
+		var value = new EnumValueCaseIgnored<Greek>(Greek.Alpha);
+		Assert.Equal("Alpha", value.ToString());
+	}
+
+	[Fact]
+	public static void EnumValueCaseIgnored_Equals()
+	{
+		var value1 = new EnumValueCaseIgnored<Greek>(Greek.Alpha);
+		var value2 = new EnumValueCaseIgnored<Greek>(Greek.Alpha);
+		var value3 = new EnumValueCaseIgnored<Greek>(Greek.Beta);
+
+		Assert.True(value1.Equals(value2));
+		Assert.False(value1.Equals(value3));
+		Assert.True(value1.Equals(Greek.Alpha));
+		Assert.False(value1.Equals(Greek.Beta));
+	}
+
+	[Fact]
+	[SuppressMessage("Assertions", "xUnit2024:Do not use boolean asserts for simple equality tests")]
+	public static void EnumValueCaseIgnored_Operators()
+	{
+		var value1 = new EnumValueCaseIgnored<Greek>(Greek.Alpha);
+		var value2 = new EnumValueCaseIgnored<Greek>(Greek.Alpha);
+		var value3 = new EnumValueCaseIgnored<Greek>(Greek.Beta);
+
+		Assert.True(value1 == value2);
+		Assert.False(value1 != value2);
+		Assert.False(value1 == value3);
+		Assert.True(value1 != value3);
+
+		Assert.True(value1 == Greek.Alpha);
+		Assert.False(value1 != Greek.Alpha);
+	}
+
+	[Fact]
+	public static void EnumValueCaseIgnored_ImplicitConversion()
+	{
+		EnumValueCaseIgnored<Greek> value = Greek.Alpha;
+		Assert.Equal(Greek.Alpha, value.Value);
+
+		Greek greekValue = value;
+		Assert.Equal(Greek.Alpha, greekValue);
+	}
+
+	[Fact]
+	public static void EnumValueCaseIgnored_GetHashCode()
+	{
+		var value1 = new EnumValueCaseIgnored<Greek>(Greek.Alpha);
+		var value2 = new EnumValueCaseIgnored<Greek>(Greek.Alpha);
+
+		Assert.Equal(value1.GetHashCode(), value2.GetHashCode());
+	}
+
+	[Fact]
 	public static void IsIntType()
 	{
 		var tInt = typeof(int);

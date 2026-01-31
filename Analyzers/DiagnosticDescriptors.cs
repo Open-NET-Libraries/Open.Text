@@ -22,12 +22,12 @@ internal static class DiagnosticDescriptors
 
 	public static readonly DiagnosticDescriptor UseSplitAsSegments = new(
 		id: "OPENTXT002",
-		title: "Use SplitAsSegments for zero-allocation splitting",
-		messageFormat: "Consider using '.SplitAsSegments({0})' instead of '.Split({0})' to avoid allocating an array and individual strings",
+		title: "Use SplitAsSegments to reduce string allocations",
+		messageFormat: "Consider using '.SplitAsSegments({0})' instead of '.Split({0})' to avoid allocating an array and individual strings. Use '.SplitToEnumerable({0})' if you still need strings with lazy evaluation.",
 		category: Category,
 		defaultSeverity: DiagnosticSeverity.Info,
 		isEnabledByDefault: true,
-		description: "SplitAsSegments returns IEnumerable<StringSegment> which avoids allocating strings until ToString() is called.",
+		description: "SplitAsSegments returns IEnumerable<StringSegment> which defers string allocation until ToString() is called. SplitToEnumerable provides lazy string allocation with IEnumerable<string>.",
 		helpLinkUri: HelpLinkUriBase + "OPENTXT002.md");
 
 	public static readonly DiagnosticDescriptor UseSpanForIndexOfSubstring = new(
@@ -82,11 +82,11 @@ internal static class DiagnosticDescriptors
 
 	public static readonly DiagnosticDescriptor UseSplitToEnumerable = new(
 		id: "OPENTXT008",
-		title: "Use SplitToEnumerable for deferred execution",
-		messageFormat: "Consider using '.SplitToEnumerable({0})' instead of '.Split({0})' when iterating results for lazy evaluation",
+		title: "Use SplitToEnumerable for lazy string evaluation",
+		messageFormat: "Consider using '.SplitToEnumerable({0})' instead of '.Split({0})' when iterating results to avoid allocating the full array upfront. For even less allocation, use '.SplitAsSegments({0})' which returns StringSegments.",
 		category: Category,
 		defaultSeverity: DiagnosticSeverity.Info,
 		isEnabledByDefault: true,
-		description: "SplitToEnumerable provides lazy evaluation and avoids allocating the full array upfront.",
+		description: "SplitToEnumerable returns IEnumerable<string> with lazy evaluation, avoiding the upfront allocation of the full string array. Strings are still created on demand during iteration.",
 		helpLinkUri: HelpLinkUriBase + "OPENTXT008.md");
 }

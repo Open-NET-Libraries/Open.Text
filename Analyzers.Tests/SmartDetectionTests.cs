@@ -1,9 +1,8 @@
-using System;
 using System.Threading.Tasks;
 using Xunit;
-using VerifySubstring = Open.Text.Analyzers.Tests.CSharpAnalyzerVerifier<Open.Text.Analyzers.SubstringAnalyzer>;
-using VerifySplit = Open.Text.Analyzers.Tests.CSharpAnalyzerVerifier<Open.Text.Analyzers.SplitAnalyzer>;
 using VerifyConcat = Open.Text.Analyzers.Tests.CSharpAnalyzerVerifier<Open.Text.Analyzers.StringConcatenationAnalyzer>;
+using VerifySplit = Open.Text.Analyzers.Tests.CSharpAnalyzerVerifier<Open.Text.Analyzers.SplitAnalyzer>;
+using VerifySubstring = Open.Text.Analyzers.Tests.CSharpAnalyzerVerifier<Open.Text.Analyzers.SubstringAnalyzer>;
 using VerifyTrim = Open.Text.Analyzers.Tests.CSharpAnalyzerVerifier<Open.Text.Analyzers.TrimEqualsAnalyzer>;
 
 namespace Open.Text.Analyzers.Tests;

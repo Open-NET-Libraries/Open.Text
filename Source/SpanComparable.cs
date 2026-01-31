@@ -6,7 +6,10 @@ namespace Open.Text;
 /// A <see cref="StringComparison"/> struct for comparing a span against other values.
 /// </summary>
 /// <remarks>
-/// Constructs a <see cref="SpanComparable"/> using the provided string and comparison type.
+/// <para>Constructs a <see cref="SpanComparable"/> using the provided string and comparison type.</para>
+/// <para><b>⚠️ Pattern Matching Limitation:</b> Pattern matching syntax does NOT work with <see cref="SpanComparable"/>.
+/// Always use the <c>==</c> operator. Your IDE may suggest converting to pattern matching - ignore this suggestion.</para>
+/// <para><b>💡 Tip:</b> Install the optional <c>Open.Text.Analyzers</c> NuGet package to suppress incorrect IDE suggestions.</para>
 /// </remarks>
 public readonly ref struct SpanComparable(ReadOnlySpan<char> source, StringComparison type)
 {

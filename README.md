@@ -27,7 +27,7 @@ dotnet add package Open.Text.Analyzers
 
 The analyzers detect patterns like:
 - `.Substring()` → suggests `.AsSpan()` or span slicing
-- `.Split()` → suggests `.SplitAsSegments()` for zero allocations
+- `.Split()` → suggests `.SplitAsSegments()` or `.SplitToEnumerable()` to reduce allocations
 - `.Split()[0]` → suggests `.FirstSplit()` to avoid array allocation
 - String concatenation in loops → suggests `StringBuilder`
 - `.Trim().Equals()` → suggests `.TrimEquals()` to avoid intermediate string

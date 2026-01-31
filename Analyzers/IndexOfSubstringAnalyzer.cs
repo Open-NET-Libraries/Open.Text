@@ -76,7 +76,7 @@ public class IndexOfSubstringAnalyzer : DiagnosticAnalyzer
 				if (IsIndexOfCall(indexOfCall, context))
 				{
 					var variableName = identifier.Identifier.Text;
-				if (FindSubstringUsage(statements.Skip(i + 1), variableName, out var substringLocation))
+					if (FindSubstringUsage(statements.Skip(i + 1), variableName, out var substringLocation))
 					{
 						var diagnostic = Diagnostic.Create(
 							DiagnosticDescriptors.UseSpanForIndexOfSubstring,

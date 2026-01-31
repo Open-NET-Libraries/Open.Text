@@ -1,9 +1,6 @@
 using System.Threading.Tasks;
 using Xunit;
 using VerifyAnalyzer = Open.Text.Analyzers.Tests.CSharpAnalyzerVerifier<Open.Text.Analyzers.SplitAnalyzer>;
-using VerifyCodeFix = Open.Text.Analyzers.Tests.CSharpCodeFixVerifier<
-	Open.Text.Analyzers.SplitAnalyzer,
-	Open.Text.Analyzers.SplitCodeFixProvider>;
 
 namespace Open.Text.Analyzers.Tests;
 

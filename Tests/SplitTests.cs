@@ -1,11 +1,11 @@
-﻿using System.ComponentModel;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 namespace Open.Text.Tests;
 
 #if NET472
 internal static class Shim
 {
+	[SuppressMessage("Performance", "OPENTXT002:Use SplitAsSegments to reduce string allocations", Justification = "<Pending>")]
 	internal static string[] Split(this string sequence, char separator, StringSplitOptions options = StringSplitOptions.None)
 		=> sequence.Split([separator], options);
 }
@@ -86,6 +86,9 @@ public static class SplitTests
 	[InlineData(",Hello,there,I,am,Joe,")]
 	[InlineData(",Hello,there,I,am,Joe", StringSplitOptions.RemoveEmptyEntries)]
 	[InlineData(",Hello,there,I,am,Joe,", StringSplitOptions.RemoveEmptyEntries)]
+#pragma warning disable IDE0079 // Use SplitAsSegments to reduce string allocations
+	[SuppressMessage("Performance", "OPENTXT002:Use SplitAsSegments to reduce string allocations")]
+#pragma warning restore IDE0079 // Use SplitAsSegments to reduce string allocations
 	public static void Split(string sequence, StringSplitOptions options = StringSplitOptions.None)
 	{
 		var segments = sequence.Split(',', options);
@@ -132,6 +135,7 @@ public static class SplitTests
 	[InlineData("Hello", "LL", "He,o")]
 	[InlineData("Hello", "l", "He,o", StringSplitOptions.RemoveEmptyEntries)]
 	[InlineData("HelLo", "L", "He,o", StringSplitOptions.RemoveEmptyEntries)]
+	[SuppressMessage("Performance", "OPENTXT002:Use SplitAsSegments to reduce string allocations")]
 	public static void SplitIgnoreCase(string sequence, string split, string expected, StringSplitOptions options = StringSplitOptions.None)
 	{
 		var segments = expected.Split(',');

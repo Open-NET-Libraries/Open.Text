@@ -18,8 +18,8 @@ public static class RegexExtensions
 			return (Func<Capture, string>)method.CreateDelegate(typeof(Func<Capture, string>));
 		}
 
-			// Some older versions of .NET use this instead.
-			FieldInfo? textField = typeof(Capture).GetField("_text", BindingFlags.Instance | BindingFlags.NonPublic);
+		// Some older versions of .NET use this instead.
+		FieldInfo? textField = typeof(Capture).GetField("_text", BindingFlags.Instance | BindingFlags.NonPublic);
 		return textField is not null
 			? (capture => (string)textField.GetValue(capture)!)
 			: throw new NotSupportedException("Capture: could not find the Text property or _text field.");

@@ -29,19 +29,26 @@ ReadOnlySpan<char> span = text.AsSpan(6);
 ReadOnlySpan<char> span = text.AsSpan()[6..];
 ```
 
-### OPENTXT002: Use SplitAsSegments for zero-allocation splitting
+### OPENTXT002: Use SplitAsSegments to reduce string allocations
 
-**Problem:** `.Split()` allocates an array and individual strings for each segment.
+**Problem:** `.Split()` allocates an array and individual strings for each segment upfront.
 
 ```csharp
-// ❌ Inefficient
-string[] parts = text.Split(',');  // Allocates array + strings
+// ❌ Allocates array + all strings immediately
+string[] parts = text.Split(',');
 
-// ✅ Better - Returns segments without allocations
+// ✅ Better - Defers string allocation
 IEnumerable<StringSegment> segments = text.SplitAsSegments(',');
 foreach (var segment in segments)
 {
-    // segment is a StringSegment - zero allocations until .ToString()
+    // segment is a StringSegment - strings only created when .ToString() is called
+}
+
+// ✅ Alternative - Lazy string evaluation if you need strings
+IEnumerable<string> parts = text.SplitToEnumerable(',');
+foreach (var part in parts)
+{
+    // Strings created on-demand during iteration, not upfront
 }
 ```
 
