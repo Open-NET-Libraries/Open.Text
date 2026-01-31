@@ -70,8 +70,8 @@ public struct StringSegmentSplitEnumerator : IValueEnumerator<StringSegment>
 				{
 					segment = segment.Trim();
 				}
-#endif
 
+#endif
 				if (_removeEmpty && segment.Length == 0)
 				{
 					current = default;
@@ -93,8 +93,8 @@ public struct StringSegmentSplitEnumerator : IValueEnumerator<StringSegment>
 				{
 					segment = segment.Trim();
 				}
-#endif
 
+#endif
 				if (_removeEmpty && segment.Length == 0)
 				{
 					current = default;
@@ -262,6 +262,7 @@ public struct StringSegmentSequenceSplitEnumerator : IValueEnumerator<StringSegm
 				{
 					segment = segment.Trim();
 				}
+
 #endif
 				if (_removeEmpty && segment.Length == 0)
 				{
@@ -503,12 +504,8 @@ public struct RegexSplitSegmentEnumerator : IValueEnumerator<StringSegment>
 			if (_trimEach)
 			{
 				result = result.Trim();
-				if (_removeEmpty && result.Length == 0)
-				{
-					continue; // Skip empty after trim
-				}
 			}
-			else
+
 #endif
 			if (_removeEmpty && result.Length == 0)
 			{
