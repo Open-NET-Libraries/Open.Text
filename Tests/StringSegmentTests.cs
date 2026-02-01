@@ -391,4 +391,437 @@ public static class StringSegmentTests
 		var result = input.SplitAsSegmentsNoAlloc(splitBy[0], options).JoinToString(joinBy);
 		Assert.Equal(expected, result);
 	}
+
+	#region ZLinq Integration Tests
+
+	// These tests prove that our JoinToString extension works correctly downstream of ZLinq operations
+
+	[Fact]
+	public static void ZLinq_SplitWhereJoin_FilterByLength()
+	{
+		// Split, filter segments with length > 3, then join
+		const string input = "a,bb,ccc,dddd,eeeee,ff";
+		var result = input
+			.SplitAsSegmentsNoAlloc(',')
+			.Where(s => s.Length > 3)
+			.JoinToString("-");
+
+		Assert.Equal("dddd-eeeee", result);
+	}
+
+	[Fact]
+	public static void ZLinq_SplitWhereJoin_FilterByContent()
+	{
+		// Split, filter segments containing 'o', then join
+		const string input = "hello,world,foo,bar,boo";
+		var result = input
+			.SplitAsSegmentsNoAlloc(',')
+			.Where(s => s.AsSpan().Contains('o', StringComparison.Ordinal))
+			.JoinToString(" | ");
+
+		Assert.Equal("hello | world | foo | boo", result);
+	}
+
+	[Fact]
+	public static void ZLinq_SplitSelectJoin_TransformAndJoin()
+	{
+		// Split, select first character of each, then join
+		const string input = "apple,banana,cherry,date";
+		var result = input
+			.SplitAsSegmentsNoAlloc(',')
+			.Select(s => s.Subsegment(0, 1))
+			.JoinToString("");
+
+		Assert.Equal("abcd", result);
+	}
+
+	[Fact]
+	public static void ZLinq_SplitTakeJoin()
+	{
+		// Split and take first N segments
+		const string input = "one,two,three,four,five";
+		var result = input
+			.SplitAsSegmentsNoAlloc(',')
+			.Take(3)
+			.JoinToString("-");
+
+		Assert.Equal("one-two-three", result);
+	}
+
+	[Fact]
+	public static void ZLinq_SplitSkipJoin()
+	{
+		// Split and skip first N segments
+		const string input = "one,two,three,four,five";
+		var result = input
+			.SplitAsSegmentsNoAlloc(',')
+			.Skip(2)
+			.JoinToString("-");
+
+		Assert.Equal("three-four-five", result);
+	}
+
+	[Fact]
+	public static void ZLinq_SplitSkipTakeJoin()
+	{
+		// Split, skip, take (pagination pattern)
+		const string input = "a,b,c,d,e,f,g,h";
+		var result = input
+			.SplitAsSegmentsNoAlloc(',')
+			.Skip(2)
+			.Take(3)
+			.JoinToString(",");
+
+		Assert.Equal("c,d,e", result);
+	}
+
+	[Fact]
+	public static void ZLinq_SplitWhereSelectJoin_ComplexPipeline()
+	{
+		// Complex pipeline: split, filter, transform, join
+		const string input = "Item1:10,Item2:25,Item3:5,Item4:30,Item5:15";
+		var result = input
+			.SplitAsSegmentsNoAlloc(',')
+			.Where(s => s.Length > 7) // Filter items with value >= 10 (longer strings)
+			.Select(s => s.Subsegment(0, s.IndexOf(':'))) // Extract just the name
+			.JoinToString("; ");
+
+		Assert.Equal("Item1; Item2; Item4; Item5", result);
+	}
+
+	[Fact]
+	public static void ZLinq_SplitDistinctJoin()
+	{
+		// Split and get distinct values
+		const string input = "apple,banana,apple,cherry,banana,date";
+		var result = input
+			.SplitAsSegmentsNoAlloc(',')
+			.Distinct()
+			.JoinToString(",");
+
+		Assert.Equal("apple,banana,cherry,date", result);
+	}
+
+	[Fact]
+	public static void ZLinq_SplitOrderByJoin()
+	{
+		// Split and order alphabetically
+		const string input = "cherry,apple,banana,date";
+		var result = input
+			.SplitAsSegmentsNoAlloc(',')
+			.OrderBy(s => s.ToString())
+			.JoinToString(",");
+
+		Assert.Equal("apple,banana,cherry,date", result);
+	}
+
+	[Fact]
+	public static void ZLinq_ChainedSplitOperations()
+	{
+		// Split by one delimiter, filter, then join with another
+		const string input = "key1=value1;key2=value2;key3=value3";
+		var result = input
+			.SplitAsSegmentsNoAlloc(';')
+			.Where(s => !s.AsSpan().Contains('1', StringComparison.Ordinal))
+			.JoinToString(" & ");
+
+		Assert.Equal("key2=value2 & key3=value3", result);
+	}
+
+	[Fact]
+	public static void ZLinq_EmptyAfterFilter()
+	{
+		// All segments filtered out should produce empty string
+		const string input = "a,b,c";
+		var result = input
+			.SplitAsSegmentsNoAlloc(',')
+			.Where(s => s.Length > 10) // Nothing matches
+			.JoinToString("-");
+
+		Assert.Equal(string.Empty, result);
+	}
+
+	[Fact]
+	public static void ZLinq_SingleElementAfterFilter()
+	{
+		// Single element remaining after filter
+		const string input = "short,verylongword,tiny";
+		var result = input
+			.SplitAsSegmentsNoAlloc(',')
+			.Where(s => s.Length > 5)
+			.JoinToString("-");
+
+		Assert.Equal("verylongword", result);
+	}
+
+	[Theory]
+	[InlineData("a::b::c::d", "::", 2, "a-b")]
+	[InlineData("one||two||three||four", "||", 3, "one-two-three")]
+	public static void ZLinq_SequenceSplit_TakeJoin(string input, string delimiter, int takeCount, string expected)
+	{
+		var result = input
+			.SplitAsSegmentsNoAlloc(delimiter)
+			.Take(takeCount)
+			.JoinToString("-");
+
+		Assert.Equal(expected, result);
+	}
+
+	[Fact]
+	public static void ZLinq_RegexSplit_WhereJoin()
+	{
+		// Split by regex (digits), filter, join
+		var regex = new Regex(@"\d+");
+		var result = "abc123def456ghi789jkl"
+			.SplitAsSegmentsNoAlloc(regex)
+			.Where(s => s.Length == 3)
+			.JoinToString("-");
+
+		Assert.Equal("abc-def-ghi-jkl", result);
+	}
+
+	[Fact]
+	public static void ZLinq_JoinToStringBuilder_Direct()
+	{
+		// Test JoinToStringBuilder works directly on split result (no intermediate operations)
+		const string input = "alpha,beta,gamma,delta";
+		var sb = input
+			.SplitAsSegmentsNoAlloc(',')
+			.JoinToStringBuilder("-");
+
+		Assert.NotNull(sb);
+		Assert.Equal("alpha-beta-gamma-delta", sb!.ToString());
+	}
+
+	[Fact]
+	public static void ZLinq_JoinToStringBuilder_AppendToExisting()
+	{
+		// Append split result to existing StringBuilder (no intermediate operations)
+		var existingSb = new System.Text.StringBuilder("Result: ");
+		const string input = "x,y,z";
+		var sb = input
+			.SplitAsSegmentsNoAlloc(',')
+			.JoinToStringBuilder(existingSb, "-");
+
+		Assert.Same(existingSb, sb);
+		Assert.Equal("Result: x-y-z", sb!.ToString());
+	}
+
+	// Test IEnumerable<StringSegment> -> ValueEnumerable -> JoinToString
+	[Fact]
+	public static void ZLinq_FromIEnumerable_AsValueEnumerable_Join()
+	{
+		// Start with IEnumerable<StringSegment>, convert to ValueEnumerable, then join
+		IEnumerable<StringSegment> segments = "a,b,c,d,e".SplitAsSegments(',');
+		var result = segments
+			.AsValueEnumerable()
+			.Where(s => s.Length == 1)
+			.JoinToString("-");
+
+		Assert.Equal("a-b-c-d-e", result);
+	}
+
+	[Fact]
+	public static void ZLinq_FromIEnumerable_FilterAndJoin()
+	{
+		// IEnumerable -> ValueEnumerable -> Filter -> Join
+		IEnumerable<StringSegment> segments = "apple,banana,apricot,cherry".SplitAsSegments(',');
+		var result = segments
+			.AsValueEnumerable()
+			.Where(s => s.AsSpan().StartsWith("a".AsSpan(), StringComparison.Ordinal))
+			.JoinToString(", ");
+
+		Assert.Equal("apple, apricot", result);
+	}
+
+	[Fact]
+	public static void ZLinq_FromArray_AsValueEnumerable_Join()
+	{
+		// Array of StringSegment -> ValueEnumerable -> Join
+		var segments = new[]
+		{
+			"first".AsSegment(),
+			"second".AsSegment(),
+			"third".AsSegment()
+		};
+
+		var result = segments
+			.AsValueEnumerable()
+			.Skip(1)
+			.JoinToString(" -> ");
+
+		Assert.Equal("second -> third", result);
+	}
+
+	[Fact]
+	public static void ZLinq_FromList_ComplexPipeline()
+	{
+		// List<StringSegment> -> ValueEnumerable -> complex operations -> Join
+		var list = new List<StringSegment>
+		{
+			"Item-A".AsSegment(),
+			"Item-B".AsSegment(),
+			"Thing-C".AsSegment(),
+			"Item-D".AsSegment()
+		};
+
+		var result = list
+			.AsValueEnumerable()
+			.Where(s => s.AsSpan().StartsWith("Item".AsSpan(), StringComparison.Ordinal))
+			.Select(s => s.Subsegment(5)) // Get part after "Item-"
+			.JoinToString(",");
+
+		Assert.Equal("A,B,D", result);
+	}
+
+	[Theory]
+	[InlineData("1,2,3,4,5", 2, "3,4,5")]
+	[InlineData("a;b;c;d", 1, "b;c;d")]
+	public static void ZLinq_FromSplitAsSegments_ToValueEnumerable_SkipJoin(string input, int skipCount, string expected)
+	{
+		char delimiter = input.Contains(';') ? ';' : ',';
+		string joinDelimiter = delimiter.ToString();
+
+		IEnumerable<StringSegment> segments = input.SplitAsSegments(delimiter);
+		var result = segments
+			.AsValueEnumerable()
+			.Skip(skipCount)
+			.JoinToString(joinDelimiter);
+
+		Assert.Equal(expected, result);
+	}
+
+	[Fact]
+	public static void ZLinq_SelectMany_FromStringArray_SplitAndFlatten()
+	{
+		// Start with string[], split each, flatten all segments, then join
+		var lines = new[] { "a,b,c", "d,e,f", "g,h,i" };
+		var result = lines
+			.AsValueEnumerable()
+			.SelectMany(line => line.SplitAsSegmentsNoAlloc(','))
+			.JoinToString("-");
+
+		Assert.Equal("a-b-c-d-e-f-g-h-i", result);
+	}
+
+	[Fact]
+	public static void ZLinq_SelectMany_FilterThenFlatten()
+	{
+		// Filter lines first, then split and flatten
+		var lines = new[] { "keep:a,b,c", "skip:x,y,z", "keep:d,e,f" };
+		var result = lines
+			.AsValueEnumerable()
+			.Where(line => line.StartsWith("keep:"))
+			.SelectMany(line => line.AsSegment().Subsegment(5).SplitAsSegmentsNoAlloc(','))
+			.JoinToString(" ");
+
+		Assert.Equal("a b c d e f", result);
+	}
+
+	[Fact]
+	public static void ZLinq_SelectMany_FlattenThenFilter()
+	{
+		// Split and flatten first, then filter the segments
+		var lines = new[] { "apple,apricot,banana", "avocado,blueberry,cherry" };
+		var result = lines
+			.AsValueEnumerable()
+			.SelectMany(line => line.SplitAsSegmentsNoAlloc(','))
+			.Where(s => s.AsSpan().StartsWith("a".AsSpan(), StringComparison.Ordinal))
+			.JoinToString(", ");
+
+		Assert.Equal("apple, apricot, avocado", result);
+	}
+
+	[Fact]
+	public static void ZLinq_SelectMany_FromIEnumerableStrings()
+	{
+		// Start with IEnumerable<string>
+		IEnumerable<string> lines = ["1,2,3", "4,5,6"];
+		var result = lines
+			.AsValueEnumerable()
+			.SelectMany(line => line.SplitAsSegmentsNoAlloc(','))
+			.JoinToString("+");
+
+		Assert.Equal("1+2+3+4+5+6", result);
+	}
+
+	[Fact]
+	public static void ZLinq_SelectMany_NestedSplit()
+	{
+		// Split by one delimiter, then split each result by another
+		const string input = "a.b.c|d.e.f|g.h.i";
+		var result = input
+			.SplitAsSegmentsNoAlloc('|')
+			.SelectMany(segment => segment.SplitAsSegmentsNoAlloc('.'))
+			.JoinToString("-");
+
+		Assert.Equal("a-b-c-d-e-f-g-h-i", result);
+	}
+
+	[Fact]
+	public static void ZLinq_SelectMany_WithTake()
+	{
+		// Flatten then take first N
+		var lines = new[] { "a,b,c", "d,e,f", "g,h,i" };
+		var result = lines
+			.AsValueEnumerable()
+			.SelectMany(line => line.SplitAsSegmentsNoAlloc(','))
+			.Take(5)
+			.JoinToString(",");
+
+		Assert.Equal("a,b,c,d,e", result);
+	}
+
+	[Fact]
+	public static void ZLinq_SelectMany_EmptyLines()
+	{
+		// Handle empty strings in the source
+		var lines = new[] { "a,b", "", "c,d" };
+		var result = lines
+			.AsValueEnumerable()
+			.Where(line => line.Length > 0) // Filter out empty
+			.SelectMany(line => line.SplitAsSegmentsNoAlloc(','))
+			.JoinToString("-");
+
+		Assert.Equal("a-b-c-d", result);
+	}
+
+	[Fact]
+	public static void ZLinq_SelectMany_CSVRows()
+	{
+		// Realistic scenario: process CSV-like data
+		var csvRows = new[]
+		{
+			"Name,Age,City",
+			"Alice,30,NYC",
+			"Bob,25,LA"
+		};
+
+		// Extract just the names (first column of data rows)
+		var names = csvRows
+			.AsValueEnumerable()
+			.Skip(1) // Skip header
+			.SelectMany(row => row.SplitAsSegmentsNoAlloc(',').Take(1))
+			.JoinToString(" and ");
+
+		Assert.Equal("Alice and Bob", names);
+	}
+
+	[Fact]
+	public static void ZLinq_SelectMany_KeyValuePairs()
+	{
+		// Parse key=value pairs from multiple config lines
+		var configLines = new[] { "host=localhost;port=8080", "timeout=30;retries=3" };
+
+		// Extract all keys
+		var keys = configLines
+			.AsValueEnumerable()
+			.SelectMany(line => line.SplitAsSegmentsNoAlloc(';'))
+			.Select(pair => pair.Subsegment(0, pair.IndexOf('=')))
+			.JoinToString(", ");
+
+		Assert.Equal("host, port, timeout, retries", keys);
+	}
+
+	#endregion
 }
