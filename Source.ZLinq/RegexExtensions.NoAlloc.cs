@@ -3,7 +3,7 @@ namespace Open.Text;
 /// <summary>
 /// Zero-allocation regular expression extensions using ZLinq ValueEnumerable patterns.
 /// </summary>
-public static partial class RegexExtensions
+public static class RegexExtensions
 {
 	/// <summary>
 	/// Returns the available matches as StringSegments.

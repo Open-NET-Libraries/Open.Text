@@ -1,9 +1,11 @@
+using System.Text;
+
 namespace Open.Text;
 
 /// <summary>
 /// Zero-allocation text extension methods using ZLinq ValueEnumerable patterns.
 /// </summary>
-public static partial class TextExtensions
+public static class NoAllocTextExtensions
 {
 	private const string MustBeSegmentWithValue = "Must be a StringSegment that has a value (is not null).";
 
@@ -152,4 +154,109 @@ public static partial class TextExtensions
 		StringSegment replacement,
 		StringComparison comparisonType = StringComparison.Ordinal)
 		=> ReplaceNoAlloc(source, splitSequence, replacement, comparisonType);
+
+	/// <summary>
+	/// Joins a ValueEnumerable of StringSegments into a single string with an optional separator.
+	/// </summary>
+	/// <typeparam name="TEnumerator">The type of the value enumerator.</typeparam>
+	/// <param name="source">The source ValueEnumerable to join.</param>
+	/// <param name="separator">Optional separator to place between segments.</param>
+	/// <returns>The joined string.</returns>
+	public static string JoinToString<TEnumerator>(
+		this ValueEnumerable<TEnumerator, StringSegment> source,
+		StringSegment separator = default)
+		where TEnumerator : struct, IValueEnumerator<StringSegment>
+	{
+		using var enumerator = source.GetEnumerator();
+
+		if (!enumerator.MoveNext())
+			return string.Empty;
+
+		var current = enumerator.Current;
+		if (!enumerator.MoveNext())
+			return current.ToString();
+
+		var sb = new StringBuilder();
+		sb.Append(current.AsSpan());
+		AppendRemaining(separator, enumerator, sb);
+
+		return sb.ToString();
+	}
+
+	/// <summary>
+	/// Appends the string representations of the elements in the sequence to the specified StringBuilder,
+	/// using the specified optional separator between each element.
+	/// </summary>
+	/// <remarks>If the sequence is empty, the returned StringBuilder is unchanged or empty. The method does not add
+	/// a separator after the last element.</remarks>
+	/// <typeparam name="TEnumerator">The type of the value enumerator used to iterate the sequence of StringSegment elements.</typeparam>
+	/// <param name="source">The sequence of StringSegment elements to join and append.</param>
+	/// <param name="stringBuilder">The StringBuilder to append the joined elements to. If null, a new StringBuilder is created.</param>
+	/// <param name="separator">The separator to use between each element. If not specified, no separator is used.</param>
+	/// <returns>A StringBuilder containing the concatenated string representations of the sequence elements, separated by the
+	/// specified separator. Returns the provided StringBuilder if not null; otherwise, returns a new StringBuilder if the source has elements.</returns>
+#if !NETSTANDARD2_0
+	[return: NotNullIfNotNull(nameof(stringBuilder))]
+#endif
+	public static StringBuilder? JoinToStringBuilder<TEnumerator>(
+		this ValueEnumerable<TEnumerator, StringSegment> source,
+		StringBuilder? stringBuilder,
+		StringSegment separator = default)
+		where TEnumerator : struct, IValueEnumerator<StringSegment>
+	{
+		using var enumerator = source.GetEnumerator();
+
+		if (!enumerator.MoveNext())
+			return stringBuilder;
+
+		var current = enumerator.Current;
+		var sb = stringBuilder ?? new StringBuilder();
+		sb.Append(current.AsSpan());
+
+		if (enumerator.MoveNext())
+		{
+			AppendRemaining(separator, enumerator, sb);
+		}
+
+		return sb;
+	}
+
+	/// <summary>
+	/// Concatenates the elements of the sequence, using the specified separator,
+	/// and appends the result to a new StringBuilder instance.
+	/// </summary>
+	/// <typeparam name="TEnumerator">The type of the value-type enumerator used to iterate the sequence.</typeparam>
+	/// <param name="source">The sequence of StringSegment values to concatenate.</param>
+	/// <param name="separator">The separator to use between each element. If not specified, no separator is used.</param>
+	/// <returns>A StringBuilder containing the concatenated elements of the sequence, or null if the sequence is empty.</returns>
+	public static StringBuilder? JoinToStringBuilder<TEnumerator>(
+		this ValueEnumerable<TEnumerator, StringSegment> source,
+		StringSegment separator = default)
+		where TEnumerator : struct, IValueEnumerator<StringSegment>
+		=> source.JoinToStringBuilder(null, separator);
+
+	private static void AppendRemaining<TEnumerator>(
+		StringSegment separator,
+		ValueEnumerator<TEnumerator, StringSegment> enumerator,
+		StringBuilder sb)
+		where TEnumerator : struct, IValueEnumerator<StringSegment>
+	{
+		if (separator.Length == 0)
+		{
+			do
+			{
+				sb.Append(enumerator.Current.AsSpan());
+			}
+			while (enumerator.MoveNext());
+		}
+		else
+		{
+			var sep = separator.AsSpan();
+			do
+			{
+				sb.Append(sep);
+				sb.Append(enumerator.Current.AsSpan());
+			} while (enumerator.MoveNext());
+		}
+	}
 }

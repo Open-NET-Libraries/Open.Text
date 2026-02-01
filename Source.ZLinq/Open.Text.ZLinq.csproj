@@ -23,8 +23,8 @@
 		<RepositoryUrl>https://github.com/Open-NET-Libraries/Open.Text</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<PackageTags>string, span, zlinq, zero-allocation, noalloc, stringsegment, split, high-performance, extensions</PackageTags>
-		<Version>10.0.1</Version>
-		<PackageReleaseNotes>Initial release - zero-allocation string splitting via ZLinq integration.</PackageReleaseNotes>
+		<Version>10.0.2</Version>
+		<PackageReleaseNotes>Added JoinToString and JoinToStringBuilder methods for ValueEnumerable.</PackageReleaseNotes>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<IncludeSymbols>true</IncludeSymbols>

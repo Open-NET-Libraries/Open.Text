@@ -235,6 +235,29 @@ public static class StringSegmentTests
 		Assert.Equal(expected, string.Concat(resultNoAlloc));
 	}
 
+	// Unit tests for JoinToStringBuilder nullable behavior (Open.Text base library)
+	[Fact]
+	public static void JoinToStringBuilder_ReturnsNull_ForEmptySegments()
+	{
+		// Empty source with RemoveEmptyEntries should return null
+		var emptySegments = "".SplitAsSegments(',', StringSplitOptions.RemoveEmptyEntries);
+		var result = emptySegments.JoinToStringBuilder("-");
+		Assert.Null(result);
+
+		// JoinToString should return empty string for empty source
+		var stringResult = emptySegments.JoinToString("-");
+		Assert.Equal(string.Empty, stringResult);
+	}
+
+	[Fact]
+	public static void JoinToStringBuilder_ReturnsStringBuilder_ForNonEmptySegments()
+	{
+		var segments = "a,b,c".SplitAsSegments(',');
+		var result = segments.JoinToStringBuilder("-");
+		Assert.NotNull(result);
+		Assert.Equal("a-b-c", result!.ToString());
+	}
+
 	[Theory]
 	[InlineData("Hello, world!", "world", 0, StringComparison.Ordinal, 7)]
 	[InlineData("Hello, world!", "WORLD", 0, StringComparison.Ordinal, -1)]
@@ -259,5 +282,113 @@ public static class StringSegmentTests
 		Assert.Equal(expectedResult, result);
 		result = segment.IndexOf(valueSegment.AsSpan(), startIndex, comparisonType);
 		Assert.Equal(expectedResult, result);
+	}
+
+	// Unit tests for JoinToString on ZLinq ValueEnumerable
+	[Theory]
+	[InlineData("Hello,there,I,am,Joe", ",", "", "HellothereIamJoe")]
+	[InlineData("Hello,there,I,am,Joe", ",", "-", "Hello-there-I-am-Joe")]
+	[InlineData("Hello,there,I,am,Joe", ",", " | ", "Hello | there | I | am | Joe")]
+	[InlineData("one::two::three", "::", "", "onetwothree")]
+	[InlineData("one::two::three", "::", "-", "one-two-three")]
+	[InlineData("a,b", ",", "---", "a---b")]
+	[InlineData("single", ",", "-", "single")]
+	[InlineData("", ",", "-", "")]
+	public static void JoinToString_NoAlloc(string input, string splitBy, string joinBy, string expected)
+	{
+		// Test JoinToString on character split
+		if (splitBy.Length == 1)
+		{
+			var result = input.SplitAsSegmentsNoAlloc(splitBy[0]).JoinToString(joinBy);
+			Assert.Equal(expected, result);
+		}
+
+		// Test JoinToString on sequence split
+		var resultSeq = input.SplitAsSegmentsNoAlloc(splitBy).JoinToString(joinBy);
+		Assert.Equal(expected, resultSeq);
+	}
+
+	[Theory]
+	[InlineData("Hello,there,I,am,Joe", ",", "", "HellothereIamJoe")]
+	[InlineData("Hello,there,I,am,Joe", ",", "-", "Hello-there-I-am-Joe")]
+	[InlineData("one::two::three", "::", " | ", "one | two | three")]
+	[InlineData("single", ",", "-", "single")]
+	public static void JoinToStringBuilder_NoAlloc(string input, string splitBy, string joinBy, string expected)
+	{
+		// Test JoinToStringBuilder with null StringBuilder (creates new)
+		var sbResult = input.SplitAsSegmentsNoAlloc(splitBy).JoinToStringBuilder(joinBy);
+		Assert.NotNull(sbResult);
+		Assert.Equal(expected, sbResult!.ToString());
+
+		// Test JoinToStringBuilder with existing StringBuilder
+		var existingSb = new System.Text.StringBuilder("PREFIX:");
+		var sbResult2 = input.SplitAsSegmentsNoAlloc(splitBy).JoinToStringBuilder(existingSb, joinBy);
+		Assert.Same(existingSb, sbResult2);
+		Assert.Equal("PREFIX:" + expected, sbResult2!.ToString());
+	}
+
+	[Fact]
+	public static void JoinToStringBuilder_EmptySource_ReturnsNullOrExisting()
+	{
+		// Empty string split produces one empty segment, so result is not null
+		var result = "".SplitAsSegmentsNoAlloc(",").JoinToStringBuilder(null, "-");
+		Assert.NotNull(result);
+		Assert.Equal("", result!.ToString());
+
+		// With existing StringBuilder, appends the empty segment
+		var existingSb = new System.Text.StringBuilder("EXISTING");
+		var result2 = "".SplitAsSegmentsNoAlloc(",").JoinToStringBuilder(existingSb, "-");
+		Assert.Same(existingSb, result2);
+		Assert.Equal("EXISTING", result2!.ToString());
+
+		// Test with RemoveEmptyEntries option - should yield no segments and return null for new StringBuilder
+		var result3 = "".SplitAsSegmentsNoAlloc(',', StringSplitOptions.RemoveEmptyEntries).JoinToStringBuilder(null, "-");
+		Assert.Null(result3);
+
+		// With RemoveEmptyEntries and existing StringBuilder, returns unchanged
+		var existingSb2 = new System.Text.StringBuilder("UNCHANGED");
+		var result4 = "".SplitAsSegmentsNoAlloc(',', StringSplitOptions.RemoveEmptyEntries).JoinToStringBuilder(existingSb2, "-");
+		Assert.Same(existingSb2, result4);
+		Assert.Equal("UNCHANGED", result4!.ToString());
+	}
+
+	[Fact]
+	public static void JoinToString_WithNoSeparator()
+	{
+		var result = "Hello,there,world".SplitAsSegmentsNoAlloc(',').JoinToString();
+		Assert.Equal("Hellothereworld", result);
+	}
+
+	[Fact]
+	public static void JoinToString_SingleElement()
+	{
+		var result = "Hello".SplitAsSegmentsNoAlloc(',').JoinToString("-");
+		Assert.Equal("Hello", result);
+	}
+
+	[Fact]
+	public static void JoinToString_RegexSplit()
+	{
+		var regex = new Regex(@"\d+");
+		var result = "abc123def456ghi".SplitAsSegmentsNoAlloc(regex).JoinToString("-");
+		Assert.Equal("abc-def-ghi", result);
+	}
+
+	[Theory]
+	[InlineData("a,b,c", ",", "X", "aXbXc")]
+	[InlineData("hello world hello", " ", "-", "hello-world-hello")]
+	public static void JoinToString_CharSplit(string input, string splitChar, string joinBy, string expected)
+	{
+		var result = input.SplitAsSegmentsNoAlloc(splitChar[0]).JoinToString(joinBy);
+		Assert.Equal(expected, result);
+	}
+
+	[Theory]
+	[InlineData("Hello,there,,world", ",", StringSplitOptions.None, "-", "Hello-there--world")]
+	[InlineData("Hello,there,,world", ",", StringSplitOptions.RemoveEmptyEntries, "-", "Hello-there-world")]
+	public static void JoinToString_WithOptions(string input, string splitBy, StringSplitOptions options, string joinBy, string expected)
+	{
+		var result = input.SplitAsSegmentsNoAlloc(splitBy[0], options).JoinToString(joinBy);
+		Assert.Equal(expected, result);
 	}
 }

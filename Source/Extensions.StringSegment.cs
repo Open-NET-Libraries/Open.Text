@@ -438,8 +438,9 @@ public static partial class TextExtensions
 		static IEnumerable<StringSegment> JoinCore(IEnumerable<StringSegment> source, StringSegment between)
 		{
 			using IEnumerator<StringSegment> e = source.GetEnumerator();
-			bool ok = e.MoveNext();
-			Debug.Assert(ok);
+			if (!e.MoveNext())
+				yield break;
+
 			StringSegment c = e.Current;
 			if (c.Length != 0) yield return c;
 			while (e.MoveNext())
@@ -456,18 +457,26 @@ public static partial class TextExtensions
 	/// </summary>
 	/// <returns>A StringBuilder of the segments.</returns>
 	/// <inheritdoc cref="Join(IEnumerable{StringSegment}, StringSegment)"/>
-	public static StringBuilder JoinToStringBuilder(this IEnumerable<StringSegment> source, StringSegment between = default)
+	public static StringBuilder? JoinToStringBuilder(this IEnumerable<StringSegment> source, StringSegment between = default)
 	{
+		using var e = Join(source, between).GetEnumerator();
+		if (!e.MoveNext())
+			return null;
+
 		var sb = new StringBuilder();
-		foreach (StringSegment segment in Join(source, between))
-			sb.Append(segment.AsSpan());
+		do
+		{
+			sb.Append(e.Current.AsSpan());
+		}
+		while (e.MoveNext());
+
 		return sb;
 	}
 
 	/// <returns>A joined string of the segments.</returns>
 	/// <inheritdoc cref="JoinToStringBuilder(IEnumerable{StringSegment}, StringSegment)"/>
 	public static string JoinToString(this IEnumerable<StringSegment> source, StringSegment between = default)
-		=> JoinToStringBuilder(source, between).ToString();
+		=> JoinToStringBuilder(source, between)?.ToString() ?? string.Empty;
 
 	/// <summary>
 	/// Splits a sequence and replaces the removed sequences with the replacement sequence.
