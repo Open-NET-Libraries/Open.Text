@@ -1,4 +1,4 @@
-﻿namespace Open.Text;
+namespace Open.Text;
 
 /// <summary>
 /// A comparer for <see cref="StringSegment"/> that uses existing <see cref="StringSegment.Compare(StringSegment, StringSegment, StringComparison)"/>
@@ -6,7 +6,7 @@
 /// and <see cref="TextExtensions.GetHashCodeFromChars(ReadOnlySpan{char}, StringComparison, int)"/> for hash codes.
 /// </summary>
 /// <remarks>
-/// Creates a new instance of <see cref="StringSegmentComparer"/>
+/// Creates a new instance of <see cref="StringSegmentHashComparer"/>
 /// with the specified <paramref name="comparisonType"/>
 /// and <paramref name="maxHashChars"/>.
 /// </remarks>
@@ -15,38 +15,50 @@
 /// The max number of characters to generate a hash from.
 /// See <see cref="TextExtensions.GetHashCodeFromChars(ReadOnlySpan{char}, StringComparison, int)"/> for more details.
 /// </param>
-public class StringSegmentComparer(StringComparison comparisonType = StringComparison.Ordinal, int maxHashChars = int.MaxValue)
+public class StringSegmentHashComparer(StringComparison comparisonType, int maxHashChars)
 		: IComparer<StringSegment>, IEqualityComparer<StringSegment>
 {
 	/// <summary>
-	/// A <see cref="StringSegmentComparer"/> that uses <see cref="StringComparison.Ordinal"/>.
+	/// Creates a comparer using <see cref="StringComparison.Ordinal"/>.
 	/// </summary>
-	public static readonly StringSegmentComparer Ordinal = new();
+	public static StringSegmentHashComparer Create(int maxHashChars)
+		=> new(StringComparison.Ordinal, maxHashChars);
 
 	/// <summary>
-	/// A <see cref="StringSegmentComparer"/> that uses <see cref="StringComparison.OrdinalIgnoreCase"/>.
+	/// Creates a comparer using the specified <paramref name="comparisonType"/>.
 	/// </summary>
-	public static readonly StringSegmentComparer OrdinalIgnoreCase = new(StringComparison.OrdinalIgnoreCase);
+	public static StringSegmentHashComparer Create(StringComparison comparisonType, int maxHashChars)
+		=> new(comparisonType, maxHashChars);
 
 	/// <summary>
-	/// A <see cref="StringSegmentComparer"/> that uses <see cref="StringComparison.CurrentCulture"/>.
+	/// Creates a comparer using <see cref="StringComparison.OrdinalIgnoreCase"/>.
 	/// </summary>
-	public static readonly StringSegmentComparer CurrentCulture = new(StringComparison.CurrentCulture);
+	public static StringSegmentHashComparer CreateOrdinalIgnoreCase(int maxHashChars)
+		=> new(StringComparison.OrdinalIgnoreCase, maxHashChars);
 
 	/// <summary>
-	/// A <see cref="StringSegmentComparer"/> that uses <see cref="StringComparison.CurrentCultureIgnoreCase"/>.
+	/// Creates a comparer using <see cref="StringComparison.CurrentCulture"/>.
 	/// </summary>
-	public static readonly StringSegmentComparer CurrentCultureIgnoreCase = new(StringComparison.CurrentCultureIgnoreCase);
+	public static StringSegmentHashComparer CreateCurrentCulture(int maxHashChars)
+		=> new(StringComparison.CurrentCulture, maxHashChars);
 
 	/// <summary>
-	/// A <see cref="StringSegmentComparer"/> that uses <see cref="StringComparison.InvariantCulture"/>.
+	/// Creates a comparer using <see cref="StringComparison.CurrentCultureIgnoreCase"/>.
 	/// </summary>
-	public static readonly StringSegmentComparer InvariantCulture = new(StringComparison.InvariantCulture);
+	public static StringSegmentHashComparer CreateCurrentCultureIgnoreCase(int maxHashChars)
+		=> new(StringComparison.CurrentCultureIgnoreCase, maxHashChars);
 
 	/// <summary>
-	/// A <see cref="StringSegmentComparer"/> that uses <see cref="StringComparison.InvariantCultureIgnoreCase"/>.
+	/// Creates a comparer using <see cref="StringComparison.InvariantCulture"/>.
 	/// </summary>
-	public static readonly StringSegmentComparer InvariantCultureIgnoreCase = new(StringComparison.InvariantCultureIgnoreCase);
+	public static StringSegmentHashComparer CreateInvariantCulture(int maxHashChars)
+		=> new(StringComparison.InvariantCulture, maxHashChars);
+
+	/// <summary>
+	/// Creates a comparer using <see cref="StringComparison.InvariantCultureIgnoreCase"/>.
+	/// </summary>
+	public static StringSegmentHashComparer CreateInvariantCultureIgnoreCase(int maxHashChars)
+		=> new(StringComparison.InvariantCultureIgnoreCase, maxHashChars);
 
 	/// <summary>
 	/// The string comparison type.
