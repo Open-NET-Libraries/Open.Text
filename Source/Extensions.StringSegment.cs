@@ -35,7 +35,7 @@ public static partial class TextExtensions
 	/// <summary>Shortcut for .AsSegment().Trim().</summary>
 	/// <inheritdoc cref="AsSegment(string)"/>
 	[ExcludeFromCodeCoverage] // Reason: would just test already tested code.
-	public static StringSegment TrimAsSegment(this string buffer)
+	public static StringSegment TrimAsSegment(this string? buffer)
 		=> buffer is null ? default : new StringSegment(buffer).Trim();
 
 	/// <summary>
